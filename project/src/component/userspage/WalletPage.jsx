@@ -156,11 +156,11 @@ const WalletPage = () => {
                   onCancel={handleCancel}
                 >
                   <p>
-                    <span>ID: </span> {transaction?.systemTransactionId}
+                    <span>Transaction ID: </span> {transaction?.systemTransactionId}
                   </p>
                   <p>
                     Status:{" "}
-                    {transaction?.systemTransactionStatus ? (
+                    {transaction?.status ? (
                       <span className="text-green-500 font-semibold">True</span>
                     ) : (
                       <span className="text-red-500 font-semibold">False</span>

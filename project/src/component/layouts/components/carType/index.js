@@ -1,121 +1,65 @@
-import React, { useEffect, useState } from 'react'
-import axios from "axios";
-import { useParams } from 'react-router-dom';
-function ListGroupCar () {
+import React, { useState, useContext, useEffect } from "react";
+import { RiMotorbikeFill } from "react-icons/ri";
+import { FaCar } from "react-icons/fa";
+import { AiOutlineCaretUp, AiOutlineCaretDown } from "react-icons/ai";
+import { CartContext } from "../../../ConText/CartContext";
 
-  
-  const [groupCars, setGroupCars] = useState([]);
-  const {userId} = useParams();
-  
-  useEffect(()=>{
-    loadGroupCar();
-  }, [])
-    
-  
+const options = [
+  { label: "Motorbike", value: 1, icon: <RiMotorbikeFill /> },
+  { label: "4 seater Car", value: 2, icon: <FaCar /> },
+  { label: "6 Seater Car", value: 3, icon: <FaCar /> },
+];
+console.log("skdmklsmslkmxk", options[0].label);
+console.log("skdmklsmslkmxk", options[0].value);
 
-  const loadGroupCar = async ()=>{
-      const result = await axios.get("http://localhost:8080/public/groupCars");
-      setGroupCars(result.data);
-  }
+const CarType = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+  // console.log("selectedOptionselectedOption :", selectedOption);
+
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+  };
+  const { setTheme } = useContext(CartContext);
+  const heloo = selectedOption + " helosssso";
+
+  useEffect(() => {
+    setTheme((prev) => ({ ...prev, selectedOption, heloo }));
+  }, [setTheme, selectedOption, heloo]);
+
   return (
-    <div>
-      
-
-<div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
-        <div>
-           
-            
-            <div id="dropdownAction" className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                <ul className="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownActionButton">
-                    <li>
-                        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reward</a>
-                    </li>
-                    <li>
-                        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Promote</a>
-                    </li>
-                    <li>
-                        <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Activate account</a>
-                    </li>
-                </ul>
-                <div className="py-1">
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete User</a>
-                </div>
-            </div>
-        </div>
-        <label for="table-search" className="sr-only">Search</label>
-        
+    <div className="flex flex-col ">
+      <label className="font-Roboto  font-bold">Select Type Car</label>
+      <div className="relative flex flex-col items-center bg-slate-50 h-[52px] w-[216px]  border-[1px] rounded-md ">
+        <button
+          className="h-full p-4 w-full flex items-center justify-between font-bold text-2xl rounded-lg tracking-wider active:border-white duration-300 active:text-white"
+          onClick={() => setIsOpen((prev) => !prev)}
+        >
+          {selectedOption.label}
+          {!isOpen ? (
+            <AiOutlineCaretDown className="h-8" />
+          ) : (
+            <AiOutlineCaretUp className="h-8" />
+          )}
+        </button>
+        {isOpen && (
+          <div className="bg-white-500 border-vien absolute top-20 flex flex-col items-start rounded-lg p-2 w-full">
+            {options.map((op, idx) => (
+              <div
+                className="flex w-full justify-between hover:bg-blue-300 rounded-r-lg cursor-pointer border-l-transparent hover:border-l-white border-l-4 p-2"
+                key={idx}
+                onClick={() => handleOptionClick(op)}
+              >
+                <h3 className="font-bold text-2xl">{op.label}</h3>
+                <h3>{op.icon}</h3>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
-    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <th scope="col" className="px-6 py-3">
-                    GroupId
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Start Point
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    End Point
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    TimeStart
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Capacity
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Quantity
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Edit
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Join
-                </th>
-                
-            </tr>
-        </thead>
-        <tbody>
-            {groupCars.map((groupCar)=>{
-                if(groupCar.customers.some((customer)=>customer.id==userId)==true){
-                console.log(groupCar.customers.some((customer)=>customer.id==userId))
-                return(
-                  <tr key={groupCar.groupId} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td className="px-6 py-4">
-                    {groupCar.groupId}
-                  </td>
-                  <td className="px-6 py-4">
-                    {groupCar.startPoint}
-                  </td>
-                  <td className="px-6 py-4">
-                    {groupCar.endPoint}
-                  </td>
-                  <td className="px-6 py-4">
-                    {groupCar.timeStart}
-                  </td>
-                  <td className="px-6 py-4">
-                    {groupCar.capacity}
-                  </td>
-                  <td className="px-6 py-4">
-                    {groupCar.customers.length}
-                  </td>
-                  <td className="px-6 py-4">
-                    <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                  </td>
-                  <td className="px-6 py-4">
-                    <a href="#" className="font-medium text-orange-600 dark:text-blue-500 hover:underline">Join</a>
-                  </td>
-                  </tr>
-                )}
-            })}
-            
-        </tbody>
-    </table>
-</div>
+  );
+};
 
-    </div>
-  )
-}
-
-export default ListGroupCar;
+export default CarType;

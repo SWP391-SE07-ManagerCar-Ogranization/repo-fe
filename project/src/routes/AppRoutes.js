@@ -5,11 +5,13 @@ import Logout from "../component/auth/Logout";
 import HomePage from "../component/home/HomePage";
 import ForgotPass from "../component/auth/ForgotPass";
 import UpdatePass from "../component/auth/UpdatePass";
-import Page403 from "../layouts/403";
+import Page404 from "../layouts/404";
 import RegistrationPage from "../component/auth/RegistrationPage";
 import AdminRoutes from "./AdminRoutes";
 import DriverRoutes from "./DriverRoutes";
 import CustomerRoutes from "./CustomerRoutes";
+
+import BookingTraditionnel from "../pages/BookingDriverInvoice/Car";
 
 const appRoutes = createBrowserRouter([
   {
@@ -42,7 +44,7 @@ const appRoutes = createBrowserRouter([
   },
   {
     path: "/404-not-found",
-    element: <Page403 />,
+    element: <Page404 />,
   },
   AdminRoutes(),
   DriverRoutes(),

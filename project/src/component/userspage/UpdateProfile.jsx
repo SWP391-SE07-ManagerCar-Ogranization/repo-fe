@@ -91,7 +91,7 @@ export default function UpdateProfile() {
   };
 
   return (
-    <section className="bg-gradient-to-r from-red-50 via-red-200 to-red-400 h-screen">
+    <section className="bg-gradient-to-r from-red-50 via-red-200 to-red-400 h-full">
       <div className="px-0 py-10 mx-auto max-w-7xl sm:px-4">
         <div className="w-full px-4 pt-5 pb-6 mx-auto mt-8 mb-6 rounded-none shadow-xl sm:rounded-lg sm:w-10/12 md:w-8/12 lg:w-6/12 xl:w-4/12 sm:px-6">
           <h1 className="mb-4 text-lg font-semibold text-center text-gray-600">
@@ -118,32 +118,43 @@ export default function UpdateProfile() {
               />
             </div>
             <div>
-              <label
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                for="file_input"
-              >
-                Upload file
-              </label>
-              <img
-                src={userData.image}
-                style={{ width: "200px", height: "200px" }}
-                alt="img"
-              />
+              
               <br></br>
-              <input
-                onChange={handleOnChangeImg}
-                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                aria-describedby="file_input_help"
-                id="file_input"
-                type="file"
-              />
-              <p
-                class="mt-1 text-sm text-gray-500 dark:text-gray-300"
-                id="file_input_help"
+              {!userData.image ? <label
+                for="uploadFile1"
+                className="bg-white text-gray-500 font-semibold text-base rounded max-w-md h-52 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 border-dashed mx-auto font-[sans-serif]"
               >
-                SVG, PNG, JPG or GIF (MAX. 800x400px).
-              </p>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-11 mb-2 fill-gray-500"
+                  viewBox="0 0 32 32"
+                >
+                  <path
+                    d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z"
+                    data-original="#000000"
+                  />
+                  <path
+                    d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z"
+                    data-original="#000000"
+                  />
+                </svg>
+                Upload file<input type="file" id="uploadFile1" class="hidden" onChange={handleOnChangeImg}/>
+                <p class="text-xs font-medium text-gray-400 mt-2">
+                  PNG, JPG SVG, WEBP, and GIF are Allowed.
+                </p>
+              </label> :<label className="relative group"><img
+                src={userData.image}
+                alt="img" className="w-full h-1/2 mx-auto"
+              /> <input type="file" id="uploadFile1" className="hidden" onChange={handleOnChangeImg}/>
+                <div className="absolute w1/2 mx-auto inset-0 flex items-center justify-center bg-gray-800 bg-opacity-0 text-white opacity-0 group-hover:opacity-100 group-hover:bg-opacity-75 transition-opacity duration-300">
+                    Upload image
+                  </div>
+              </label> 
+              }
+              
+                
             </div>
+
             <br></br>
             <button className="bg-orange-400 hover:focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 w-full text-white">
               Update
