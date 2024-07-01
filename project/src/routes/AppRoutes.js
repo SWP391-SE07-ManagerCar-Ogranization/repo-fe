@@ -10,6 +10,7 @@ import RegistrationPage from "../component/auth/RegistrationPage";
 import AdminRoutes from "./AdminRoutes";
 import DriverRoutes from "./DriverRoutes";
 import CustomerRoutes from "./CustomerRoutes";
+import BookingTraditionnel from "../pages/BookingDriverInvoice/Car";
 
 const appRoutes = createBrowserRouter([
   {
