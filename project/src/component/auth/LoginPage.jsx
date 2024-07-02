@@ -34,13 +34,12 @@ function LoginPage() {
         toast.success("Login Sucessfully !");
         if('ADMIN' === (userData.role.roleName)) {
           navigate('/dashboard');
-          window.location.reload();
         }
         else {
           navigate("/");
         }
       } else {
-        setError("Invalid email or password");
+        setError(userData.message);
       }
     },
   });

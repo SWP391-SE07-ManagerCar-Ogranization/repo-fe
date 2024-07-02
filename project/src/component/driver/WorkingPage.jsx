@@ -36,7 +36,7 @@ const WorkingPage = () => {
       );
     toast.success("Update your working status !!");
     } catch (error) {
-      console.error("Error updating working status:", error);
+      toast.error("Error updating working status");
       setStatus(!checked);
     }
   };

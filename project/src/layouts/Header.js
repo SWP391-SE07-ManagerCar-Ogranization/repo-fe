@@ -212,9 +212,9 @@ export default function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="#" className="flex items-center">
+        <Link to="/booking-driver" className="flex items-center">
           Booking
-        </a>
+        </Link>
       </Typography>
       <Typography
         as="li"

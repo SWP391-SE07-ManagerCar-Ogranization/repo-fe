@@ -2,13 +2,12 @@ import { createContext, useState } from "react";
 
 export const CartContext = createContext();
 
-export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState({ he: "hellow" });
-  console.log("quandosmkxmksl:", theme.heloo);
+export function ThemeProviderConfig({ children }) {
+  const [theme, setTheme] = useState({ hello: "hello" });
 
   return (
     <CartContext.Provider value={{ theme, setTheme }}>
-      { }
+      {children}
     </CartContext.Provider>
   );
 }

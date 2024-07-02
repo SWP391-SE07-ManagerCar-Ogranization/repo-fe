@@ -58,11 +58,11 @@ function HomePage() {
             fleet. We offer appropriate prices on all Premium cars.
           </p>
           <div className="flex flex-col">
-            <button className="py-3 relative transition duration-30 custom-underline font-bold w-fit">
+            <button className="py-3 relative transition duration-30 custom-underline font-bold w-fit font-casanova">
               GET A QOUTE
             </button>
             <br></br>
-            <button class=" py-3 relative transition duration-30 custom-underline font-bold w-fit">
+            <button class=" py-3 relative transition duration-30 custom-underline font-bold w-fit font-casanova">
               BOOK NOW
             </button>
           </div>
@@ -82,11 +82,11 @@ function HomePage() {
               upgrade, whether you're traveling for business or pleasure.
             </p>
             <div className="flex flex-col">
-              <button className="py-3 relative transition duration-30 custom-underline font-bold w-fit">
+              <button className="py-3 relative transition duration-30 custom-underline font-bold w-fit font-casanova">
                 GET A QOUTE
               </button>
               <br></br>
-              <button class=" py-3 relative transition duration-30 custom-underline font-bold w-fit">
+              <button class=" py-3 relative transition duration-30 custom-underline font-bold w-fit font-casanova">
                 BOOK NOW
               </button>
             </div>
@@ -114,11 +114,11 @@ function HomePage() {
               Sound System, Flat Screen TV & DVD and tinted windows for privacy.
             </p>
             <div className="flex flex-col">
-              <button className="py-3 relative transition duration-30 custom-underline font-bold w-fit">
+              <button className="py-3 relative transition duration-30 custom-underline font-bold w-fit font-casanova">
                 GET A QOUTE
               </button>
               <br></br>
-              <button class=" py-3 relative transition duration-30 custom-underline font-bold w-fit">
+              <button class=" py-3 relative transition duration-30 custom-underline font-bold w-fit font-casanova">
                 BOOK NOW
               </button>
             </div>
