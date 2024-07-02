@@ -1,0 +1,17 @@
+.custom-gradient {
+    background: linear-gradient(to right, 
+      gray 16px, 
+      white calc(16px + 1px), 
+      white calc(100% - 16px), 
+      gray calc(100% - 16px + 1px));
+  }
+
+  .rotate-hover {
+    transition: transform 0.5s, color 0.5s;
+}
+
+.rotate-hover:hover {
+    transform: rotate(180deg);
+    color: red;
+}
+
