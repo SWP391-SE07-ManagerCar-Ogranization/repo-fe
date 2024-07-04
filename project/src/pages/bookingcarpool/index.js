@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import L from "leaflet";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 // import "leaflet-control-geocoder/dist/Control.Geocoder.js";
@@ -8,11 +8,15 @@ import DriverType from "../../component/layouts/components/driverType";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Select from "react-dropdown-select";
-import { FaCar } from "react-icons/fa"; 
+import { FaCar } from "react-icons/fa";
 import * as UserService from "../../service/UserService";
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-geosearch/dist/geosearch.css';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 function Bookingcarpool(props) {
-  
+
   const options = [
     { label: "4 seater Car", value: 4, icon: <FaCar /> },
     { label: "6 Seater Car", value: 6, icon: <FaCar /> },
@@ -30,7 +34,36 @@ function Bookingcarpool(props) {
   let groupCarData = {}
   let navigate = useNavigate();
   const [user, setUser] = useState({});
-  
+  // gợi ý search start
+  const [suggestions, setSuggestions] = useState([]);
+  const provider = new OpenStreetMapProvider();
+  const [timeoutId, setTimeoutId] = useState(null);
+  const [currentInput, setCurrentInput] = useState('');
+  const handleSearch = async (value, inputField) => {
+    setCurrentInput(inputField); // Cập nhật trường hiện tại đang nhập
+    if (value.length > 3) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      const newTimeoutId = setTimeout(async () => {
+        const results = await provider.search({ query: value, countrycodes: 'vn' });
+        setSuggestions(results);
+      }, 200); // Đợi 200 ms sau khi người dùng dừng nhập liệu
+      setTimeoutId(newTimeoutId);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+
+  const selectSuggestion = (result) => {
+    setGroupCar(prevState => ({
+      ...prevState,
+      [currentInput]: result.label // Sử dụng currentInput để biết trường nào cần được cập nhật
+    }));
+    setSuggestions([]); // Xóa danh sách gợi ý sau khi chọn
+  };
+  // gợi ý search end
   const fetchProfileInfo = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -46,12 +79,12 @@ function Bookingcarpool(props) {
     fetchProfileInfo();
   }, []);
 
-  
+
   const [groupCar, setGroupCar] = useState({
-    startPoint:"",
-    endPoint:"",
-    timeStart:"",
-    capacity:0
+    startPoint: "",
+    endPoint: "",
+    timeStart: "",
+    capacity: 0
   });
 
   const handleChangeCapacity = (values) => {
@@ -60,61 +93,86 @@ function Bookingcarpool(props) {
 
   const onInputChange = (e) => {
     const { name, value } = e.target;
-    setGroupCar({ ...groupCar, [name]: value });
-  }
+    setGroupCar(prevState => ({ ...prevState, [name]: value }));
+    handleSearch(value, name);
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    
+
     const { startPoint, endPoint, timeStart, capacity } = groupCar;
-    
+
     if (!startPoint || !endPoint || capacity === 0) {
       alert("Please fill in all required fields.");
       return;
     }
-    
+
     let request = await axios.post("http://localhost:8080/public/addGroupCar", groupCar);
     groupCarData = request.data
     console.log("groupCarData >>> ", groupCarData)
     setGroupCar(groupCarData)
-    
+
     // const userString = encodeURIComponent(JSON.stringify(user));
     navigate(`/listGroupCar/${encodeURIComponent(JSON.stringify({ groupCarData, user }))}`);
   };
-  
+
   return (
     <div
       className="flex items-center h-[600px] flex-col"
-      style={{
-        backgroundImage: `url(${tradition2})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+
     >
       <div>
-        <div className="flex flex-col items-center rounded-[20px] w-[1550px] h-[200px] bg-white-500 justify-center">
-<div className="flex flex-row justify-start w-full gap-5 mb-8 ml-[22px]">
-            <DriverType text={"Cars"}></DriverType>
-            <DriverType typeDriver="BsFilePerson" text={"Driver"}></DriverType>
-          </div>
-          <div className="flex flex-row gap-5">
-            
-            <Input_Tradition
-              label={"Start Point"}
-              placeholder={"Nhập nơi đi"}
-              setPickup={(value) => setGroupCar({ ...groupCar, startPoint: value })}
-              name="startPoint"
-              value={groupCar.startPoint}
-              onChange={onInputChange}
-            />
-            <Input_Tradition
-              label={"End Point"}
-              placeholder={"Nhập nơi đến"}
-              setEnd={(value) => setGroupCar({ ...groupCar, endPoint: value })}
-              name="endPoint"
-              value={groupCar.endPoint}
-              onChange={onInputChange}
-            />
+        <div className="flex flex-col items-center rounded-[20px] w-[1750px] h-[350px] bg-orange-300 justify-center pl-4 pr-4 mt-8">
+
+
+          <div className="flex flex-row gap-5 relative">
+
+            <div className="w-full relative">
+              <Input_Tradition
+                label={"Start Point"}
+                placeholder={"Nhập nơi đi"}
+                setPickup={(value) => setGroupCar({ ...groupCar, startPoint: value })}
+                name="startPoint"
+                value={groupCar.startPoint}
+                onChange={onInputChange}
+              />
+              {suggestions.length > 0 && currentInput === 'startPoint' && (
+                <ul className="absolute top-full left-0 mt-1 w-[600px] bg-white shadow-lg max-h-60 overflow-auto z-30 rounded-md">
+                  {suggestions.map(result => (
+                    <li
+                      key={result.x + result.y}
+                      onClick={() => selectSuggestion(result)}
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {result.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="w-full relative">
+              <Input_Tradition
+                label={"End Point"}
+                placeholder={"Nhập nơi đến"}
+                setEnd={(value) => setGroupCar({ ...groupCar, endPoint: value })}
+                name="endPoint"
+                value={groupCar.endPoint}
+                onChange={onInputChange}
+              />
+              {suggestions.length > 0 && currentInput === 'endPoint' && (
+                <ul className="absolute top-full left-0 mt-1 w-[600px] bg-white shadow-lg max-h-60 overflow-auto z-30 rounded-md">
+                  {suggestions.map(result => (
+                    <li
+                      key={result.x + result.y}
+                      onClick={() => selectSuggestion(result)}
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {result.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <div className="flex flex-row gap-10">
               <Input_Tradition
                 label={"Time Start"}
@@ -125,7 +183,7 @@ function Bookingcarpool(props) {
               />
             </div>
             <div className="flex items-center">
-              <div className="w-[199px] border-white-700 border-solid">
+              <div className="w-[199px] border-white-700 border-solid ">
                 <label className="font-Roboto font-bold">Select an Item</label>
                 <Select
                   options={options}
@@ -135,13 +193,15 @@ function Bookingcarpool(props) {
                   value={groupCar.capacity}
                   onChange={handleChangeCapacity}
                   required
-                  className="w-[199px] h-[52px] rounded-md text-bold flex text-center font-Roboto font-semibold"
+                  className="w-[199px] h-[52px] rounded-md text-bold flex text-center font-Roboto font-semibold bg-white"
                   itemRenderer={customItemRenderer}
                 />
               </div>
             </div>
+
+
             <div className="flex mt-8 flex-col justify-center">
-              <Link to={`/SearchGroupCar/${encodeURIComponent(JSON.stringify({ groupCar, user }))}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-orange-300 text-white-500">
+              <Link to={`/SearchGroupCar/${encodeURIComponent(JSON.stringify({ groupCar, user }))}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-purple-300 text-white-500">
                 Search
               </Link>
             </div>
@@ -155,82 +215,13 @@ function Bookingcarpool(props) {
                 My trip
               </Link>
             </div>
-</div>
+
+          </div>
         </div>
       </div>
-      <div className="h-[307px] mt-[310px] w-full flex flex-col bg-orange-300 text-center tightest">
-        <span className="text-[72px] font-Roboto font-black pt-[1.5rem] pb-[1.5rem] leading-[72px] tightest">
-          Don't rent a car.
-        </span>
-        <br />
-        <span className="text-[72px] font-Roboto font-black leading-[72px] tightest">
-          Rent THE Car.
-        </span>
-        <h1 className="font-Roboto font-bold text-3xl">
-          Premium car rental at affordable rates. Worldwide.
-        </h1>
-      </div>
 
-      {/* Map start*/}
 
-      {/* <div className="Map w-[100%]">
-      <input
-        id="start-input"
-        placeholder="đi"
-        onBlur={(e) => {
-          const address = e.target.value;
-          geocodeAddress(address, setStartPoint);
-        }}
-      />
-      <input
-        id="end-input"
-        placeholder="về"
-        onBlur={(e) => {
-          const address = e.target.value;
-          geocodeAddress(address, setEndPoint);
-        }}
-      />
-      <button onClick={handleSearchClick}>Tìm kiếm</button>
 
-      <MapContainer
-        center={position}
-        zoom={13}
-        scrollWheelZoom={false}
-        ref={mapRef}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {startPoint && (
-          <>
-            <Marker position={startPoint}>
-              <Popup>Start Point</Popup>
-            </Marker>
-            <UpdateMapCenter position={startPoint} />
-          </>
-        )}
-        {endPoint && (
-          <>
-            <Marker position={endPoint}>
-              <Popup>End Point</Popup>
-            </Marker>
-            <UpdateMapCenter position={endPoint} />
-          </>
-        )}
-        <LeafletGeocoder
-          setStartPoint={setStartPoint}
-          setEndPoint={setEndPoint}
-        />
-        <LeafletRoutingMachine
-          startPoint={startPoint}
-          endPoint={endPoint}
-          onRouteFound={handleRouteFound}
-        />
-      </MapContainer>
-    </div> */}
-
-      {/* Map end */}
     </div>
   );
 }
