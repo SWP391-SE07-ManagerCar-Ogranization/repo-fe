@@ -7,14 +7,14 @@ function DriverType({ typeDriver, text, isSelected }) {
 
   return (
     <div
-      className={`flex flex-row items-center justify-center gap-3 h-[30px] w-[70px] rounded-[30px] bg-black cursor-pointer ${borderStyle}`}
+      className={`flex flex-row items-center justify-center gap-1 h-[30px] w-[70px] text-white rounded-[30px] bg-black cursor-pointer ${borderStyle}`}
     >
       {typeDriver === "BsFilePerson" ? (
-        <BsFilePerson className="text-white-500 h-[16px] w-[16px]" />
+        <BsFilePerson className="text-[#FFFFFF] h-[20px] w-[17px]" />
       ) : (
-        <FaCar className="text-white-500 h-[16px] w-[16px]" />
+        <FaCar className="text-[#FFFFFF] h-[20px] w-[15px]" />
       )}
-      <h3 className="text-white-500 text-xl font-light">{text}</h3>
+      <h3 className="text-[#FFFFFF] text-[17px] font-light">{text}</h3>
     </div>
   );
 }

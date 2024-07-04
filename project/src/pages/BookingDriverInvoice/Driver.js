@@ -100,7 +100,7 @@ function Driver() {
         setPosition([center.lat, center.lng]);
         callback([center.lat, center.lng]);
       } else {
-        alert("Address not found");
+        console.log("Address not found");
       }
     });
   };
@@ -142,10 +142,10 @@ function Driver() {
   return (
     <>
       {/* Driver start */}
-      <div className=" flex flex-row w-full justify-center items-center gap-5 ">
+      <div className=" flex flex-row w-full mt-[-10px] justify-center items-center gap-3">
         <div className="flex flex-col">
           <label className="font-Roboto font-bold">Pickup</label>
-          <div className="flex flex-row w-[216px] items-center h-[52px] gap-5 rounded-md border-solid border-white-700 border-[1px] bg-slate-50 px-[0.75rem]">
+          <div className="flex flex-row w-[216px] items-center h-[52px] gap-5 rounded-md border-solid border-[#D9D9D9] border-[1px] bg-slate-50 px-[0.75rem]">
             <input
               className="rounded-md w-[200px] h-[40px] border-vien"
               id="start-input"
@@ -156,7 +156,7 @@ function Driver() {
         </div>
         <div className="flex flex-col">
           <label className="font-Roboto font-bold">Return</label>
-          <div className="flex flex-row w-[216px] items-center h-[52px] gap-5 rounded-md border-solid border-white-700 border-[1px] bg-slate-50 px-[0.75rem]">
+          <div className="flex flex-row w-[216px] items-center h-[52px] gap-5 rounded-md border-solid border-[#D9D9D9] border-[1px] bg-slate-50 px-[0.75rem]">
             <input
               className="rounded-md w-[200px] h-[40px] border-vien"
               id="start-input"
@@ -171,10 +171,10 @@ function Driver() {
         <div>
           <CarType></CarType>
         </div>
-        <div className="flex  flex-col justify-center">
+        <div className="flex mb-2 flex-col justify-center">
           <div className="flex mt-8 flex-col justify-center">
             <button
-              className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-orange-300 text-white-500"
+              className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-[#FF5F00] text-[#FFFFFF]"
               onClick={handleBooking}
             >
               Show Map
@@ -186,7 +186,7 @@ function Driver() {
       {isEdit && (
         <div className="fixed inset-0 flex justify-center items-center z-50">
           <div className="absolute inset-0 bg-black opacity-50 z-40"></div>
-          <div className="relative z-50 flex flex-row justify-center w-[1000px] h-[600px] bg-black bg-opacity-75 rounded-lg">
+          <div className="relative z-50 flex flex-row justify-center  w-[1300px] h-[650px] bg-black bg-opacity-75 rounded-lg">
             <div className="flex flex-col bg-white rounded-2xl border-2 border-black p-6 shadow-3d">
               <IoIosCloseCircle
                 onClick={() => setIsEdit(!isEdit)}
@@ -197,9 +197,9 @@ function Driver() {
                   <h4 className="text-white text-3xl font-bold mb-2">
                     Invoice
                   </h4>
-                  <p className="text-gray-300 mb-1">Pickup: {pickUpDriver}</p>
-                  <p className="text-gray-300 mb-1">Return: {returnDriver}</p>
-                  <p className="text-gray-300 mb-1">
+                  <p className="text-[#999999] mb-1">Pickup: {pickUpDriver}</p>
+                  <p className="text-[#999999] mb-1">Return: {returnDriver}</p>
+                  <p className="text-[#999999] mb-1">
                     Pick-up date: {theme.timeDriver}
                   </p>
                   <p className="text-gray-300 mb-1">
@@ -208,18 +208,18 @@ function Driver() {
                 </div>
                 <div>
                   <button
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs md:text-sm lg:text-base font-medium bg-orange-300 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 transition-all relative text-black border-2 z-10 border-black h-10 px-4 py-2 w-full shadow-3d"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs md:text-sm lg:text-base font-medium bg-[#FF5F00] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 transition-all relative text-black border-2 z-10 border-black h-10 px-4 py-2 w-full shadow-3d"
                     type="submit"
                     onClick={(e) => handleSummit(e)}
                   >
-                    Xác nhận
+                    Confirm
                   </button>
                 </div>
               </div>
             </div>
             <MapContainer
               center={position}
-              zoom={13}
+              zoom={20}
               scrollWheelZoom={false}
               whenCreated={(mapInstance) => {
                 mapRef.current = mapInstance;

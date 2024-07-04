@@ -29,11 +29,11 @@ const CarType = () => {
   }, [setTheme, selectedOption, heloo]);
 
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col">
       <label className="font-Roboto  font-bold">Select Type Car</label>
       <div className="relative flex flex-col items-center bg-slate-50 h-[52px] w-[216px]  border-[1px] rounded-md ">
         <button
-          className="h-full p-4 w-full flex items-center justify-between font-bold text-2xl rounded-lg tracking-wider active:border-white duration-300 active:text-white"
+          className="h-full p-4 w-full flex items-center justify-between font-bold text-xl rounded-lg tracking-wider active:border-white duration-300 active:text-white"
           onClick={() => setIsOpen((prev) => !prev)}
         >
           {selectedOption.label}
@@ -44,14 +44,14 @@ const CarType = () => {
           )}
         </button>
         {isOpen && (
-          <div className="bg-white-500 border-vien absolute top-20 flex flex-col items-start rounded-lg p-2 w-full">
+          <div className="bg-[#FFFFFF] border-[#D9D9D9] absolute top-20 flex flex-col items-start rounded-lg p-2 w-full">
             {options.map((op, idx) => (
               <div
                 className="flex w-full justify-between hover:bg-blue-300 rounded-r-lg cursor-pointer border-l-transparent hover:border-l-white border-l-4 p-2"
                 key={idx}
                 onClick={() => handleOptionClick(op)}
               >
-                <h3 className="font-bold text-2xl">{op.label}</h3>
+                <h3 className="font-bold text-xl">{op.label}</h3>
                 <h3>{op.icon}</h3>
               </div>
             ))}
