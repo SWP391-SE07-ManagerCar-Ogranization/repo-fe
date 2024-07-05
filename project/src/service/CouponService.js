@@ -40,9 +40,9 @@ export const updateCoupon = async (coupon) => {
     }
 }
 
-export const getCoupon = async (couponId , token) => {
+export const getCoupon = async (token,coupon) => {
     try {
-        const temp = await axios.post(`http://localhost:8080/public/customer/coupon/get/${couponId}`, {
+        const temp = await axios.post("http://localhost:8080/public/customer/coupon/get", coupon, {
             headers: {Authorization: `Bearer ${token}`}
         });
         console.log(temp);

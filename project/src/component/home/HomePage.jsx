@@ -46,11 +46,12 @@ function HomePage() {
     }
   };
 
-  const handleGetClick = async (couponId) => {
+  const handleGetClick = async (coupon) => {
     try {
-      console.log(couponId);
+      const token = localStorage.getItem("token");
+      console.log(coupon);
       console.log(localStorage.getItem('token'));
-      await getCoupon(couponId, localStorage.getItem('token'));
+      await getCoupon(token,coupon);
       
     } catch (error) {
       console.error('Error getting coupon:', error);
@@ -116,17 +117,17 @@ function HomePage() {
                 </div>
                 <table className="w-full min-w-[250px] table-auto">
                   <tbody>
-                    {coupons?.map(({ couponId, couponName }, key) => {
+                    {coupons?.map((coupon, key) => {
                       const className = `py-3 px-5 ${key === coupons.length - 1 ? "" : "border-b border-blue-gray-50"
                         }`;
 
                       return (
-                        <tr key={couponId}>
+                        <tr key={coupon.couponId}>
                           <td className={className}>
                             <div className="flex items-center gap-4">
                               <div>
                                 <Typography className="text-xs font-normal text-blue-gray-500">
-                                  {couponName}
+                                  {coupon.couponName}
                                 </Typography>
                               </div>
                             </div>
@@ -135,7 +136,7 @@ function HomePage() {
                             <Typography
                               as="a"
                               className="text-xs font-semibold text-orange-500"
-                            onClick={() => handleGetClick({ couponId })}
+                            onClick={() => handleGetClick(coupon)}
                             >
                               Get
                             </Typography>

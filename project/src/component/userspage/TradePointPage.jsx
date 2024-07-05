@@ -17,7 +17,7 @@ function TradePointPage() {
     const fetchPoint = async () => {
         try {
             const response = await loadPoint(localStorage.getItem('token'));
-            console.log("point"+ response);
+            console.log(localStorage.getItem('token'));
             setPoint(response);
         } catch (error) {
             console.error('Error fetching profile information:', error);
