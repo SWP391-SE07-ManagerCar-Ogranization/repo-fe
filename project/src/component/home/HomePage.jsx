@@ -59,7 +59,7 @@ function HomePage() {
 
   const fetchMyCoupons = async () => {
     try {
-      const response = await myCoupon();
+      const response = await myCoupon(localStorage.getItem('token'));
       setCoupons(response);
     } catch (error) {
       console.error('Error fetching coupons:', error);
@@ -132,13 +132,13 @@ function HomePage() {
                             </div>
                           </td>
                           <td className={className}>
-                            <Typography
+                            <Button
                               as="a"
                               className="text-xs font-semibold text-orange-500"
-                            onClick={() => handleGetClick({ couponId })}
+                            onClick={() => handleGetClick( couponId )}
                             >
                               Get
-                            </Typography>
+                            </Button>
                           </td>
                         </tr>
                       );

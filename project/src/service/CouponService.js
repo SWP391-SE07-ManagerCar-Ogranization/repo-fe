@@ -53,9 +53,11 @@ export const getCoupon = async (couponId , token) => {
     }
 }
 
-export const myCoupon = async () => {
+export const myCoupon = async (token) => {
     try {
-        const temp = await axios.get("http://localhost:8080/public/customer/coupon/myCoupon");
+        const temp = await axios.get("http://localhost:8080/public/customer/coupon/myCoupon", {
+            headers: {Authorization: `Bearer ${token}`}
+        });
         return temp.data;
     } catch (e) {
         console.log(e);
