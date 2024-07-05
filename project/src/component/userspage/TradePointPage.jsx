@@ -16,9 +16,9 @@ function TradePointPage() {
 
     const fetchPoint = async () => {
         try {
-            // const response = await loadPoint();
-            // setPoint(response);
-            setPoint(300)
+            const response = await loadPoint(localStorage.getItem('token'));
+            console.log("point"+ response);
+            setPoint(response);
         } catch (error) {
             console.error('Error fetching profile information:', error);
         }
@@ -26,7 +26,7 @@ function TradePointPage() {
 
     const minusPoint = async (coupon) => {
         try {
-          await tradeCouponMinusPoint(coupon);
+          await tradeCouponMinusPoint(coupon,localStorage.getItem('token'));
           setChange(!change);
         } catch (error) {
           console.error('Error fetching coupons:', error);
