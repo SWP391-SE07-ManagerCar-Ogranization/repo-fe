@@ -5,6 +5,7 @@ import UpdateProfile from "../component/userspage/UpdateProfile";
 import ProfilePage from "../component/userspage/ProfilePage";
 import HomeCarPool from "../component/carpool/HomeCarpool/Home";
 import WalletPage from "../component/userspage/WalletPage";
+import TradePointPage from "../component/userspage/TradePointPage";
 import SystemCharge from "../component/payment/SystemCharge";
 import SearchGroupCar from "../component/carpool/searchGroupCar/SearchGroupCar";
 import Mytrip from "../component/carpool/Mytrip";
@@ -47,6 +48,14 @@ const CustomerRoutes = () => {
         element: (
           <ProtectedRoute roles={["CUSTOMER"]}>
             <WalletPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/point/trade-point",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+            <TradePointPage />
           </ProtectedRoute>
         ),
       },

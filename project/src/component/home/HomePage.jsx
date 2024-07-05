@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../layouts/Header";
 import FooterWithSocialLinks from "../../layouts/Footer";
 import Img1 from "../../assets/images/img-home-1.png";
@@ -8,7 +8,73 @@ import Img4 from "../../assets/images/img-home-4.png";
 import Img5 from "../../assets/images/img-home-5.png";
 import { Button } from "@material-tailwind/react";
 import "./homepagecss.css";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Typography
+} from "@material-tailwind/react";
+import { couponView, getCoupon, myCoupon } from "../../service/CouponService";
+import * as UserService from "../../service/UserService";
+
 function HomePage() {
+
+  const [coupons, setCoupons] = useState([]);
+  const [profileInfo, setProfileInfo] = useState({});
+
+  useEffect(() => {
+    fetchCoupons();
+    fetchProfileInfo();
+  }, []);
+
+  const fetchCoupons = async () => {
+    try {
+      const response = await couponView();
+      setCoupons(response);
+    } catch (error) {
+      console.error('Error fetching coupons:', error);
+    }
+  };
+
+  const fetchProfileInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await UserService.getYourProfile(token);
+      setProfileInfo(response.account);
+    } catch (error) {
+      console.error("Error fetching profile information:", error);
+    }
+  };
+
+  const handleGetClick = async (coupon) => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log(coupon);
+      console.log(localStorage.getItem('token'));
+      await getCoupon(token,coupon);
+      
+    } catch (error) {
+      console.error('Error getting coupon:', error);
+    }
+  };
+
+  const fetchMyCoupons = async () => {
+    try {
+      const response = await myCoupon();
+      setCoupons(response);
+    } catch (error) {
+      console.error('Error fetching coupons:', error);
+    }
+  };
+
+  const handleMyCouponClick = async () => {
+    try {
+      await fetchMyCoupons();
+      
+    } catch (error) {
+      console.error('Error getting coupon:', error);
+    }
+  };
 
   return (
     <>
@@ -30,6 +96,58 @@ function HomePage() {
           </div>
           <div className="lg:w-1/2 p-4">
             <img src={Img1} className="w-full" alt="Journey" />
+          </div>
+          {/* Get coupon */}
+          <div>
+            <Card>
+              <CardHeader variant="gradient" className="mb-8 p-6 text-orange-500 bg-white rounded">
+                <Typography variant="h6">
+                  COUPONS FOR YOU
+                </Typography>
+              </CardHeader>
+              <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
+                <div className="mx-6">
+                  <Typography
+                    as="a"
+                    className="text-xs font-semibold text-orange-500"
+                  onClick={() => handleMyCouponClick()}
+                  >
+                    My coupons
+                  </Typography>
+                </div>
+                <table className="w-full min-w-[250px] table-auto">
+                  <tbody>
+                    {coupons?.map((coupon, key) => {
+                      const className = `py-3 px-5 ${key === coupons.length - 1 ? "" : "border-b border-blue-gray-50"
+                        }`;
+
+                      return (
+                        <tr key={coupon.couponId}>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography className="text-xs font-normal text-blue-gray-500">
+                                  {coupon.couponName}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <Typography
+                              as="a"
+                              className="text-xs font-semibold text-orange-500"
+                            onClick={() => handleGetClick(coupon)}
+                            >
+                              Get
+                            </Typography>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </CardBody>
+            </Card>
           </div>
         </div>
       </div>

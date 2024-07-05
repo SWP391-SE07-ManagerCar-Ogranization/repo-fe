@@ -5,7 +5,7 @@ import OtpInput from "react-otp-input";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import firebase from "../../config/firebase.config.js";
-import { Button, Input } from "@material-tailwind/react";
+import { Button, Input, Select, Option } from "@material-tailwind/react";
 import { toast } from "react-toastify";
 
 function RegistrationPage() {
@@ -18,11 +18,16 @@ function RegistrationPage() {
     email: "",
     password: "",
     phone: "",
+    roleName: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleRoleChange = (event) => {
+    setFormData({ ...formData, roleName: event });
   };
 
   const setupRecapcha = () => {
@@ -71,6 +76,7 @@ function RegistrationPage() {
         email: "",
         password: "",
         phone: "",
+        roleName: "",
       });
       toast.success("User registered successfully");
       navigate("/");
@@ -134,6 +140,11 @@ function RegistrationPage() {
               required
             />
             <br></br>
+            <Select label="Role" name="roleName" onChange={handleRoleChange}>
+              <Option value="CUSTOMER">Customer</Option>
+              <Option value="DRIVER">Driver</Option>
+            </Select>
+            <br></br>
             <OtpInput
               value={otp}
               onChange={setOtp}
@@ -143,6 +154,7 @@ function RegistrationPage() {
               inputStyle={{ width: "100%", height: "50px" }}
             />
             <br></br>
+
             <Button fullWidth onClick={handleVerifyOTP}>
               Register
             </Button>

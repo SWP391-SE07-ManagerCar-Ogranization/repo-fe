@@ -15,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronDownIcon,
   Cog6ToothIcon,
+  GiftIcon,
   LifebuoyIcon,
   PowerIcon,
   UserCircleIcon,
@@ -48,6 +49,11 @@ function ProfileMenu() {
       label: "Wallet",
       icon: WalletIcon,
       path: "/wallet/your-wallet",
+    },
+    {
+      label: "Trade Coupon",
+      icon: GiftIcon,
+      path: "/point/trade-point",
     },
     {
       label: "Help",

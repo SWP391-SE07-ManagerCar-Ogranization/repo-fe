@@ -47,3 +47,32 @@ export const updateCoupon = async (coupon) => {
     throw e;
   }
 };
+
+export const getCoupon = async (token, coupon) => {
+  try {
+    const temp = await axios.post(
+      "http://localhost:8080/public/customer/coupon/get",
+      coupon,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    console.log(temp);
+    return temp.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export const myCoupon = async () => {
+  try {
+    const temp = await axios.get(
+      "http://localhost:8080/public/customer/coupon/myCoupon"
+    );
+    return temp.data;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};

@@ -150,7 +150,7 @@ const WalletPage = () => {
                   </div>
                 </Card>
                 <Modal
-                  title="Basic Modal"
+                  title="Detail Transaction"
                   open={isModalOpen}
                   onOk={handleOk}
                   onCancel={handleCancel}

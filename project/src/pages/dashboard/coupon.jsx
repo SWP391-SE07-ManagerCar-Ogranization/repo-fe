@@ -228,7 +228,7 @@ import { addCoupon, couponView, updateCoupon,deleteCoupon } from "../../service/
                     required
                   />
                 </div>
-                <div>
+                {/* <div>
                   <Input
                     type="number"
                     label="Customer ID"
@@ -236,7 +236,7 @@ import { addCoupon, couponView, updateCoupon,deleteCoupon } from "../../service/
                     value={editingCoupon ? editingCoupon.customerId : addingCoupon.customerId}
                     onChange={handleInputChange}
                   />
-                </div>
+                </div> */}
                 <Button type="submit" variant="gradient" color="blue">
                   {editingCoupon ? 'Update Coupon' : 'Add Coupon'}
                 </Button>
