@@ -1,68 +1,6 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-=======
-import React from "react";
->>>>>>> origin/dev
+import React, { useEffect, useState } from "react";
 import Header from "../../layouts/Header";
 import FooterWithSocialLinks from "../../layouts/Footer";
-<<<<<<< HEAD
-import { Carousel, Image } from "antd";
-import Bg1 from "../../assets/images/bg_tradition2.png";
-import Bg2 from "../../assets/images/bg_tradition.png";
-import Bg3 from "../../assets/images/xe2.jpg";
-import { couponView } from "../../service/CouponService";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Typography,
-  Button,
-  Input,
-  Alert,
-} from "@material-tailwind/react";
-import * as UserService from "../../service/UserService";
-
-function HomePage() {
-
-  const [visible, setVisible] = useState(false);
-  const [coupons, setCoupons] = useState();
-  const [change, setChange] = useState(false);
-  const [profile, setProfile] = useState({});
-  useEffect(() => {
-    fetchProfileInfo();
-    fetchCoupons();
-    console.log(profile);
-  }, [change]);
-
-  const fetchProfileInfo = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await UserService.getYourProfile(token);
-      setProfile(response.account);
-    } catch (error) {
-      console.error("Error fetching profile information:", error);
-    }
-  };
-
-  const fetchCoupons = async () => {
-    try {
-      const response = await couponView();
-      setCoupons(response);
-    } catch (error) {
-      console.error('Error fetching profile information:', error);
-    }
-  };
-
-  const getCoupon = async (couponId) => {
-    try {
-      // await setCouponCustomer(couponId, profile.accountId);
-      setChange(!change);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-=======
 import Img1 from "../../assets/images/img-home-1.png";
 import Img2 from "../../assets/images/img-home-2.png";
 import Img3 from "../../assets/images/img-home-3.png";
@@ -70,9 +8,73 @@ import Img4 from "../../assets/images/img-home-4.png";
 import Img5 from "../../assets/images/img-home-5.png";
 import { Button } from "@material-tailwind/react";
 import "./homepagecss.css";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Typography
+} from "@material-tailwind/react";
+import { couponView, getCoupon, myCoupon } from "../../service/CouponService";
+import * as UserService from "../../service/UserService";
+
 function HomePage() {
 
->>>>>>> origin/dev
+  const [coupons, setCoupons] = useState([]);
+  const [profileInfo, setProfileInfo] = useState({});
+
+  useEffect(() => {
+    fetchCoupons();
+    fetchProfileInfo();
+  }, []);
+
+  const fetchCoupons = async () => {
+    try {
+      const response = await couponView();
+      setCoupons(response);
+    } catch (error) {
+      console.error('Error fetching coupons:', error);
+    }
+  };
+
+  const fetchProfileInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await UserService.getYourProfile(token);
+      setProfileInfo(response.account);
+    } catch (error) {
+      console.error("Error fetching profile information:", error);
+    }
+  };
+
+  const handleGetClick = async (couponId) => {
+    try {
+      console.log(couponId);
+      console.log(localStorage.getItem('token'));
+      await getCoupon(couponId, localStorage.getItem('token'));
+      
+    } catch (error) {
+      console.error('Error getting coupon:', error);
+    }
+  };
+
+  const fetchMyCoupons = async () => {
+    try {
+      const response = await myCoupon();
+      setCoupons(response);
+    } catch (error) {
+      console.error('Error fetching coupons:', error);
+    }
+  };
+
+  const handleMyCouponClick = async () => {
+    try {
+      await fetchMyCoupons();
+      
+    } catch (error) {
+      console.error('Error getting coupon:', error);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -94,103 +96,61 @@ function HomePage() {
           <div className="lg:w-1/2 p-4">
             <img src={Img1} className="w-full" alt="Journey" />
           </div>
+          {/* Get coupon */}
+          <div>
+            <Card>
+              <CardHeader variant="gradient" className="mb-8 p-6 text-orange-500 bg-white rounded">
+                <Typography variant="h6">
+                  COUPONS FOR YOU
+                </Typography>
+              </CardHeader>
+              <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
+                <div className="mx-6">
+                  <Typography
+                    as="a"
+                    className="text-xs font-semibold text-orange-500"
+                  onClick={() => handleMyCouponClick()}
+                  >
+                    My coupons
+                  </Typography>
+                </div>
+                <table className="w-full min-w-[250px] table-auto">
+                  <tbody>
+                    {coupons?.map(({ couponId, couponName }, key) => {
+                      const className = `py-3 px-5 ${key === coupons.length - 1 ? "" : "border-b border-blue-gray-50"
+                        }`;
+
+                      return (
+                        <tr key={couponId}>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography className="text-xs font-normal text-blue-gray-500">
+                                  {couponName}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <Typography
+                              as="a"
+                              className="text-xs font-semibold text-orange-500"
+                            onClick={() => handleGetClick({ couponId })}
+                            >
+                              Get
+                            </Typography>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </CardBody>
+            </Card>
+          </div>
         </div>
       </div>
 
-<<<<<<< HEAD
-      {/* display coupon card */}
-      {coupons >= 1 && (
-        <Card>
-        <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
-          <Typography variant="h6" color="white">
-            COUPONS
-          </Typography>
-        </CardHeader>
-        <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
-          <table className="w-full min-w-[640px] table-auto">
-            <thead>
-              <tr>
-                {["coupon name", "coupon value", "quantity", ""].map((el) => (
-                  <th
-                    key={el}
-                    className="border-b border-blue-gray-50 py-3 px-5 text-left"
-                  >
-                    <Typography
-                      variant="small"
-                      className="text-[11px] font-bold uppercase text-blue-gray-400"
-                    >
-                      {el}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {coupons?.map(
-                ({ couponId, couponName, couponValue, couponQuantity }, key) => {
-                  const className = `py-3 px-5 ${
-                    key === coupons.length - 1
-                      ? ""
-                      : "border-b border-blue-gray-50"
-                  }`;
-
-                  return (
-                    <tr key={couponId}>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography className="text-xs font-normal text-blue-gray-500">
-                              {couponName}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography className="text-xs font-normal text-blue-gray-500">
-                              {couponValue}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography className="text-xs font-normal text-blue-gray-500">
-                              {couponQuantity}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      
-                      <td className={className}>
-                        <Typography
-                          as="a"
-                          className="text-xs font-semibold text-red-600"
-                          onClick={() => getCoupon(couponId)}
-                        >
-                          Get
-                        </Typography>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
-            </tbody>
-          </table>
-        </CardBody>
-      </Card>
-      )}
-      {/*  */}
-
-      <section className="bg-blue-600 text-white py-20">
-        <div className="container mx-auto text-center">
-          <h2 className="text-5xl font-bold mb-5">Book a Driver Easily</h2>
-          <p className="text-lg mb-5">
-            Reliable and professional drivers at your service, anytime,
-            anywhere.
-=======
       <div class="container mx-auto flex flex-col lg:flex-row items-center">
         <div class="lg:w-1/2 p-16 relative">
           <div className="absolute -top-3">
@@ -207,7 +167,6 @@ function HomePage() {
           <img src={Img2} alt="Luxury Car" class="w-full mb-6 -mt-40" />
           <p class="text-lg font-semibold mb-2 font-casanova">
             TRUSTED, PREMIUM SERVICE with PREMIUM NEW CARS.
->>>>>>> origin/dev
           </p>
           <p class="text-md mb-6 text-justify">
             When it comes to choosing an exotic car we provide you with first
