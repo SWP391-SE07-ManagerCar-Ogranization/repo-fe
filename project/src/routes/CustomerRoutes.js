@@ -11,7 +11,9 @@ import Mytrip from "../component/carpool/Mytrip";
 import ListGroupCar from "../component/carpool/listGroupCar/ListGroupCar";
 import Success from "../layouts/payment/Success";
 import Booking from "../pages/BookingDriverInvoice/Car";
-import BookingTraditionnel from "../pages/BookingDriverInvoice/Car";
+import BookingTraditional from "../pages/BookingDriverInvoice/Car";
+import ViewTripBooking from "../pages/BookingDriverInvoice/ViewTripBooking";
+import CurrentPosition from "../pages/BookingDriverInvoice/CurrentPosition";
 
 const CustomerRoutes = () => {
   return {
@@ -92,7 +94,15 @@ const CustomerRoutes = () => {
         path: "/booking-driver",
         element: (
           <ProtectedRoute roles={["CUSTOMER"]}>
-            <BookingTraditionnel />
+            <BookingTraditional />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/view-trip",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+            <ViewTripBooking />
           </ProtectedRoute>
         ),
       },

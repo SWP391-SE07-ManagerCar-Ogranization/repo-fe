@@ -3,7 +3,7 @@ import React, { useState, useRef, useContext, useEffect } from "react";
 import { CartContext } from "../../component/ConText/CartContext";
 import DateTimeDriver from "../../component/layouts/components/dropDown/DateTimeDriver";
 import CarType from "../../component/layouts/components/carType";
-import { createInvoice } from "../../component/service/InvoiceService";
+import { createInvoice } from "../../service/InvoiceService";
 import { IoIosCloseCircle } from "react-icons/io";
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
@@ -186,13 +186,16 @@ function Driver() {
       {isEdit && (
         <div className="fixed inset-0 flex justify-center items-center z-50">
           <div className="absolute inset-0 bg-black opacity-50 z-40"></div>
-          <div className="relative z-50 flex flex-row justify-center  w-[1300px] h-[650px] bg-black bg-opacity-75 rounded-lg">
-            <div className="flex flex-col bg-white rounded-2xl border-2 border-black p-6 shadow-3d">
-              <IoIosCloseCircle
-                onClick={() => setIsEdit(!isEdit)}
-                className="text-red-500 cursor-pointer text-[30px] transition duration-300 transform hover:rotate-90 hover:scale-110 mr-2"
-              />
-              <div>
+          <div className="relative z-50 flex flex-row justify-center  w-[1300px] h-[650px] bg-black bg-opacity-75 ">
+            <div className="flex flex-col bg-white  border-2 border-black p-4 shadow-3d">
+              <div className="flex flex-row ">
+                <IoIosCloseCircle
+                  onClick={() => setIsEdit(!isEdit)}
+                  className="text-red-500 cursor-pointer text-[30px] transition duration-300 transform hover:rotate-90 hover:scale-110 mr-2"
+                />
+                <h2>Booking Confirmation </h2>
+              </div>
+              <div className="max-w-64">
                 <div>
                   <h4 className="text-white text-3xl font-bold mb-2">
                     Invoice
@@ -208,7 +211,7 @@ function Driver() {
                 </div>
                 <div>
                   <button
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs md:text-sm lg:text-base font-medium bg-[#FF5F00] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 transition-all relative text-black border-2 z-10 border-black h-10 px-4 py-2 w-full shadow-3d"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs md:text-sm lg:text-base font-medium bg-[#FF5F00] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 transition-all relative text-white border-2 z-10 border-white h-10 px-4 py-2 w-full shadow-3d"
                     type="submit"
                     onClick={(e) => handleSummit(e)}
                   >

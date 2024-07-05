@@ -15,7 +15,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import LeafletGeocoder from "../../component/layouts/Map/LeafletGeocoder";
 import LeafletRoutingMachine from "../../component/layouts/Map/LeafletRoutingMachine";
 import Swal from "sweetalert2";
-import { createInvoice } from "../../component/service/InvoiceService";
+import { createInvoice } from "../../service/InvoiceService";
 
 const UpdateMapCenter = ({ position }) => {
   const map = useMap();
@@ -284,12 +284,12 @@ const BookingTraditional = () => {
         <div className="fixed inset-0 flex justify-center items-center z-50">
           <div className="absolute inset-0 bg-black opacity-50 z-40"></div>
           <div className="relative z-50 flex flex-row justify-center w-[1300px] h-[650px] bg-black bg-opacity-75 rounded-lg">
-            <div className="flex flex-col bg-white  border-2 border-black p-6 shadow-3d  md:p-10 lg:gap-16 lg:p-14">
+            <div className="flex flex-col bg-white border-2 border-black p-4 shadow-3d">
               <IoIosCloseCircle
                 onClick={() => setIsEdit(!isEdit)}
                 className="text-red-500 cursor-pointer text-[30px] transition duration-300 transform hover:rotate-90 hover:scale-110 mr-2"
               />
-              <div className="">
+              <div className="max-w-64">
                 <div>
                   <h4 className="text-white text-3xl font-bold mb-2">
                     Invoice
