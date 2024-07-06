@@ -31,7 +31,7 @@ function LoginPage() {
       if (userData.token) {
         localStorage.setItem("token", userData.token);
         localStorage.setItem("role", userData.role.roleName);
-        localStorage.setItem("expire", new Date().getTime() + userData.expirationTime);
+        localStorage.setItem("expire", userData.expirationTime);
         toast.success("Login Sucessfully !");
         if('ADMIN' === (userData.role.roleName)) {
           navigate('/dashboard');
@@ -51,7 +51,7 @@ function LoginPage() {
       if (userData.token) {
         localStorage.setItem("token", userData.token);
         localStorage.setItem("role", userData.role.roleName);
-        localStorage.setItem("expire", new Date().getTime() + userData.expirationTime);
+        localStorage.setItem("expire", userData.expirationTime);
         toast.success("Login Sucessfully !");
         navigate("/");
       } else {

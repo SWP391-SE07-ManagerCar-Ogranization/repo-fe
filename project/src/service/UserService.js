@@ -1,4 +1,5 @@
 import axios from "axios";
+import { convertHoursToMilliseconds } from "../config/RegexTime";
 
 export const login = async (email, password) => {
   try {
@@ -128,12 +129,13 @@ export const getRole = async () => {
   return role;
 };
 
-export const isTokenExpire = async () => {
-  const timeExpire = localStorage.getItem("expire");
+export const isTokenExpire = () => {
+  const timeExpire = new Date().getTime() + convertHoursToMilliseconds(localStorage.getItem("expire"));
   const currentTime = new Date().getTime();
-    if (currentTime > parseInt(timeExpire)) {
+  console.log("currentTime: "+currentTime);
+  console.log("time expire: "+timeExpire);
+    if (currentTime > timeExpire) {
         return true; 
     }
-
     return false;
 };

@@ -10,6 +10,7 @@ export default function ProtectedRoute({ children, roles }) {
       logout();
       navigate("/login", { replace: true });
     }
+    console.log(isTokenExpire());
     if (role === null) {
       navigate("/login", { replace: true });
     } else if (!roles.includes(role)) {

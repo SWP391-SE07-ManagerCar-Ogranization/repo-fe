@@ -29,6 +29,9 @@ const WorkingPage = () => {
 
   const handleStatusChange = async (checked) => {
     setStatus(checked);
+    if(checked) {
+      console.log("handle input location");
+    }
     try {
       await DriverService.setWorkingStatus(
         localStorage.getItem("token"),
