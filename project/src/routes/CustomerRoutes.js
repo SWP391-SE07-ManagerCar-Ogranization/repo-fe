@@ -92,7 +92,7 @@ const CustomerRoutes = () => {
         ),
       },
       {
-        path: "/listGroupCar/:groupCarAndUserString",
+        path: "/listGroupCar/:userString",
         element: (
           <ProtectedRoute roles={["CUSTOMER"]}>
             <ListGroupCar />

@@ -26,9 +26,8 @@ function ListGroupCar() {
   const [checkMap, setCheckMap] = useState(false);
   const [checkMembers, setCheckMembers] = useState(false);
   const [checkDriverDetail, setCheckDriverDetail] = useState(true);
-  const { groupCarAndUserString } = useParams();
-  console.log("account >>> ", accounts)
-
+  const { userString } = useParams();
+  
   // start show driverdetail
   const countDown =async (id) => {
     let result;
@@ -152,24 +151,23 @@ function ListGroupCar() {
   };
   // map end //
   useEffect(() => {
-    let groupCarAndUserObject;
+    
     try {
-      if (groupCarAndUserString) {
-        groupCarAndUserObject = JSON.parse(decodeURIComponent(groupCarAndUserString));
-        const { groupCarData, user } = groupCarAndUserObject;
+      if (userString) {
+        let userParse = JSON.parse(decodeURIComponent(userString));
+        
         // addOwnerTrip(user, groupCarData)
         // axios.post(`http://localhost:8080/public/addCustomer/${user.id}/${groupCarData.groupId}`);
-        console.log("groupCardata >>> ", groupCarData)
-        console.log("userId >>>> ", user.accountId)
-        setResrep({ ...resrep, accountId: user.accountId });
-        setUserObject(user);
-        setGroupCarDetail(groupCarData);
+        
+        console.log("userId >>>> ", userParse.accountId)
+        setResrep({ ...resrep, accountId: userParse.accountId });
+        setUserObject(userParse);
         console.log(resrep);
       }
     } catch (error) {
       console.error('Failed to parse combinedDataString:', error);
     }
-  }, [groupCarAndUserString]);
+  }, [userString]);
   // useEffect(()=>{
   //   try{
   //     axios.post(`http://localhost:8080/public/addCustomer/${userObject.id}/${groupCarDetail.groupId}`);
