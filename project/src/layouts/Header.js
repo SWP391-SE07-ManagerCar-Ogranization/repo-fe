@@ -15,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronDownIcon,
   Cog6ToothIcon,
+  GiftIcon,
   LifebuoyIcon,
   PowerIcon,
   UserCircleIcon,
@@ -48,6 +49,11 @@ function ProfileMenu() {
       label: "Wallet",
       icon: WalletIcon,
       path: "/wallet/your-wallet",
+    },
+    {
+      label: "Trade Coupon",
+      icon: GiftIcon,
+      path: "/point/trade-point",
     },
     {
       label: "Help",
@@ -212,9 +218,9 @@ export default function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="#" className="flex items-center">
+        <Link to="/booking-driver" className="flex items-center">
           Booking
-        </a>
+        </Link>
       </Typography>
       <Typography
         as="li"
@@ -240,13 +246,13 @@ export default function StickyNavbar() {
   );
 
   return (
-    <div className="">
-      <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4">
+    <div className="sticky top-0" style={{zIndex: "100"}}>
+      <Navbar className="h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4">
         <div className="flex items-center justify-between text-blue-gray-900">
           <Link to="/">
             <img src={Logo} alt="logo-ct" className="w-20 h-fit" />
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" style={{zIndex: "100"}}>
             <div className="mr-4 hidden lg:block">{navList}</div>
             <div className="flex items-center gap-x-1">
               {localStorage.getItem("token") ? (

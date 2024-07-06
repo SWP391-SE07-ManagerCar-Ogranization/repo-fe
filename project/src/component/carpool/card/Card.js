@@ -1,7 +1,7 @@
 import React from 'react'
-import Service from 'D:/fpt/SWP/fcar/front-end/project/src/assets/images/servicemulti.png'
-import Save from 'D:/fpt/SWP/fcar/front-end/project/src/assets/images/save.avif'
-import Quality from 'D:/fpt/SWP/fcar/front-end/project/src/assets/images/quality.png'
+import Service from '../../../assets/images/servicemulti.png'
+import Save from '../../../assets/images/save.avif'
+import Quality from '../../../assets/images/quality.png'
 const Card = () => {
   return (
     <div className='w-full py-[1rem] px-4 bg-white mt-0'>

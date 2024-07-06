@@ -1,7 +1,7 @@
 import React from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-function Input_Tradition(props) {
+function InputTradition(props) {
   const { label, placeholder, name, value, onChange, type } = props;
 
   return (
@@ -23,4 +23,4 @@ function Input_Tradition(props) {
   );
 }
 
-export default Input_Tradition;
+export default InputTradition;

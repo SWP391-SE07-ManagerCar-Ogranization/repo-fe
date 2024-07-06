@@ -1,23 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import { FaCar } from "react-icons/fa";
 import { BsFilePerson } from "react-icons/bs";
 
-function DriverType(props) {
-  // const [typeCar, setTypeCar] = useState(1);
-  const { typeDriver, text } = props;
+function DriverType({ typeDriver, text, isSelected }) {
+  const borderStyle = isSelected ? "border-2 border-orange-500" : "";
+
   return (
-    <div className="flex flex-row items-start">
+    <div
+      className={`flex flex-row items-center justify-center gap-1 h-[30px] w-[70px] text-white rounded-[30px] bg-black cursor-pointer ${borderStyle}`}
+    >
       {typeDriver === "BsFilePerson" ? (
-        <div className="flex flex-row items-center justify-center gap-3 h-[30px] w-[70px] rounded-[30px] bg-black cursor-pointer">
-          <BsFilePerson className="text-white-500 h-[16px] w-[16px]"></BsFilePerson>
-          <h3 className="text-white-500 text-xl font-light ">{text}</h3>
-        </div>
+        <BsFilePerson className="text-[#FFFFFF] h-[20px] w-[17px]" />
       ) : (
-        <div className="flex flex-row items-center justify-center gap-3 h-[30px] w-[70px] rounded-[30px] bg-black cursor-pointer">
-          <FaCar className="text-white-500 h-[16px] w-[16px]"></FaCar>
-          <h3 className="text-white-500 text-xl font-light ">{text}</h3>
-        </div>
+        <FaCar className="text-[#FFFFFF] h-[20px] w-[15px]" />
       )}
+      <h3 className="text-[#FFFFFF] text-[17px] font-light">{text}</h3>
     </div>
   );
 }

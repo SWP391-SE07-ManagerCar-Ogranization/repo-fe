@@ -1,8 +1,8 @@
 import React from 'react'
 import { FaCarSide } from "react-icons/fa";
-import AirportCar from 'D:/fpt/SWP/fcar/front-end/project/src/assets/images/airportCar.jpg'
-import Marketing2 from 'D:/fpt/SWP/fcar/front-end/project/src/assets/images/marketing2.jpg'
-import Marketing3 from 'D:/fpt/SWP/fcar/front-end/project/src/assets/images/marketing3.jpg'
+import AirportCar from '../../../assets/images/airportCar.jpg'
+import Marketing2 from '../../../assets/images/marketing2.jpg'
+import Marketing3 from '../../../assets/images/marketing3.jpg'
 const Marketing = () => {
   return (
     <div className="w-full py-8 px-4 bg-white mt-0">
