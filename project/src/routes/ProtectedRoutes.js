@@ -6,18 +6,13 @@ export default function ProtectedRoute({ children, roles }) {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   useEffect(() => {
-<<<<<<< HEAD
-    // if(isTokenExpire()) {
-    //   logout();
-    //   navigate("/login", { replace: true });
-    // }
-=======
+
     if(isTokenExpire()) {
       logout();
       navigate("/login", { replace: true });
     }
     console.log(isTokenExpire());
->>>>>>> origin/dev
+
     if (role === null) {
       navigate("/login", { replace: true });
     } else if (!roles.includes(role)) {
