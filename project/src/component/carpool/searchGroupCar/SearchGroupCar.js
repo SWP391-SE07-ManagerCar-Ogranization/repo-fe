@@ -15,6 +15,7 @@ import LeafletRoutingMachine from '../map/LeafletRoutingMachine';
 function SearchGroupCar () {
   const [checkMembers, setCheckMembers] = useState(false);
   const [accounts, setAccounts] = useState([]);
+  const [checkMap, setCheckMap] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
   const [driverDetail, setDriverDetail] = useState({name: "Nguyen Duc Thinh", phone: "0703224025"});
   const [groupCarObject, setGroupCarObject] = useState ({})
@@ -46,6 +47,7 @@ function SearchGroupCar () {
   // end show driverdetail
   // map start //
   const handleShowMap = (groupCar) => {
+    setCheckMap(!checkMap)
     geocodeAddress(groupCar.startPoint, (start) => {
       setStartPoint(start);
       geocodeAddress(groupCar.endPoint, (end) => {
@@ -223,6 +225,9 @@ function SearchGroupCar () {
     
     return groupCar.startPoint.trim() === groupCarObject.startPoint.trim() || groupCar.endPoint.trim() === groupCarObject.endPoint.trim(); 
 });
+  console.log("searchgroup >>>> ", filteredGroupCars)
+  console.log("groupCars >>>> ", groupCars)
+
   return (
     <div className='flex'>
       
@@ -321,15 +326,15 @@ function SearchGroupCar () {
     </table>
     {/* start map */}
 
-<div className=" flex items-center justify-center z-50 mt-5 mb-5">
-      
+    {checkMap && <div className=" flex items-center justify-center z-50 mt-5 mb-5">
+      <button onClick={() => setCheckMap(!checkMap)} className="mb-5 p-2 bg-blue-500 text-white rounded"></button>
       
       <MapContainer
         center={position}
         zoom={13}
         scrollWheelZoom={false}
         ref={mapRef}
-        className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2"
+        className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -364,7 +369,7 @@ function SearchGroupCar () {
           onRouteFound={handleRouteFound}
         />
       </MapContainer>
-    </div>
+    </div>}
 
       {/* end map */}
 

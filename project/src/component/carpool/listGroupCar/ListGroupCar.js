@@ -13,13 +13,13 @@ import LeafletGeocoder from '../map/LeafletGeocoder';
 import LeafletRoutingMachine from '../map/LeafletRoutingMachine';
 import * as TransactionService from '../../../service/TransactionService'
 import * as PaymentService from '../../../service/PaymentService'
-import  DriverCard  from '../card/DriverCard';
+import DriverCard from '../card/DriverCard';
 import { Modal } from 'antd';
 
 function ListGroupCar() {
   const [modal, contextHolder] = Modal.useModal();
-  const [driverDetail, setDriverDetail] = useState({name: "Nguyen Duc Thinh", phone: "0703224025"});
-  const [accounts, setAccounts] = useState([]); 
+  const [driverDetail, setDriverDetail] = useState({ name: "Nguyen Duc Thinh", phone: "0703224025" });
+  const [accounts, setAccounts] = useState([]);
   const [userObject, setUserObject] = useState({});
   const [groupCars, setGroupCars] = useState([]);
   const [groupCarDetail, setGroupCarDetail] = useState({});
@@ -27,32 +27,55 @@ function ListGroupCar() {
   const [checkMembers, setCheckMembers] = useState(false);
   const [checkDriverDetail, setCheckDriverDetail] = useState(true);
   const { userString } = useParams();
-  
+
   // start show driverdetail
-  const countDown =async (id) => {
+  const countDown = async (id) => {
     let result;
     try {
       result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`)
       setDriverDetail(result.data);
-      const instance = modal.success({  
-      
+      const instance = modal.success({
+
         title: `Name : ${driverDetail.name}`,
         content: `Phone : ${driverDetail.phone}`,
-      });  
+      });
     } catch (error) {
       alert("The group does not have a driver yet");
     }
-    
-    
+
+
   };
   // end show driverdetail
   // map start //
+  const toggleMapVisibility = () => {
+    setCheckMap(!checkMap);
+
+    if (checkMap) {
+      // Xóa các marker và reset route khi đóng bản đồ
+      resetMap();
+    }
+  };
+  const resetMap = () => {
+    // Reset các thông tin đường đi và điểm
+    setStartPoint(null);
+    setEndPoint(null);
+    setPosition([16.047079, 108.20623]); // Reset vị trí ban đầu của bản đồ
+    setRouteInfo("");
+
+    // Xóa routing control nếu nó tồn tại
+    const map = mapRef.current?.leafletElement;
+    if (map && map.routingControl) {
+      map.removeControl(map.routingControl);
+      map.routingControl = null;
+    }
+  };
+
   const UpdateMapCenter = ({ position }) => {
     const map = useMap();
     map.setView(position);
     return null;
   };
-  let groupCarData={};
+  let groupCarData = {};
   let DefaultIcon = L.icon({
     iconUrl: "/marker-icon.png",
     iconSize: [25, 41],
@@ -60,7 +83,7 @@ function ListGroupCar() {
     popupAnchor: [2, -40],
   });
   L.Marker.prototype.options.icon = DefaultIcon;
-  
+
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
   const [routeInfo, setRouteInfo] = useState("");
@@ -79,7 +102,7 @@ function ListGroupCar() {
   });
   const handleRouteFound = (summary) => {
     setDistance((summary.totalDistance / 1000).toFixed(2));
-    setResrep({ ...resrep, amount: (summary.totalDistance / 1000).toFixed(2)*10000 });
+    setResrep({ ...resrep, amount: (summary.totalDistance / 1000).toFixed(2) * 10000 });
     const time = (summary.totalTime / 60).toFixed(2) + " minutes";
     setRouteInfo(`Distance: ${distance}, time: ${time}`);
   };
@@ -88,14 +111,14 @@ function ListGroupCar() {
     try {
       await TransactionService.addTrans(resrep);
     } catch (error) {
-      console.error( error);
+      console.error(error);
     }
   };
   const handlePayment = async (e) => {
     try {
       await PaymentService.charge(resrep.amount);
     } catch (error) {
-      console.error( error);
+      console.error(error);
     }
   };
 
@@ -112,53 +135,63 @@ function ListGroupCar() {
       }
     });
   };
-  
-  useEffect(()=>{
-    console.log("routeInfo >>>> ",routeInfo)
-  },[routeInfo])
+
+  useEffect(() => {
+    console.log("routeInfo >>>> ", routeInfo)
+  }, [routeInfo])
   const handleSearchClick = () => {
     if (startPoint && endPoint) {
-      // Get the map instance from the ref
-      const map = mapRef.current;
+      // Đảm bảo rằng ref và bản đồ đã sẵn sàng
+      const map = mapRef.current?.leafletElement;
 
-      // Initialize the routing machine to find the route and update the info
-      let routingControl = L.Routing.control({
-        waypoints: [L.latLng(startPoint), L.latLng(endPoint)],
-        lineOptions: {
-          styles: [
-            {
-              color: "red",
-              weight: 4,
-              opacity: 0.7,
-            },
-          ],
-        },
-        routeWhileDragging: false,
-        geocoder: L.Control.Geocoder.nominatim(),
-        addWaypoints: false,
-        draggableWaypoints: false,
-        fitSelectedRoutes: true,
-        showAlternatives: true,
-      })
-        .on("routesfound", function (e) {
+      if (map) {
+        // Kiểm tra và xóa routingControl hiện có trước khi tạo mới
+        if (map.routingControl) {
+          map.removeControl(map.routingControl);
+          map.routingControl = null; // Đặt lại routingControl thành null sau khi xóa
+        }
+
+        // Khởi tạo routing machine mới
+        map.routingControl = L.Routing.control({
+          waypoints: [L.latLng(startPoint), L.latLng(endPoint)],
+          lineOptions: {
+            styles: [{ color: "red", weight: 4, opacity: 0.7 }],
+          },
+          routeWhileDragging: false,
+          geocoder: L.Control.Geocoder.nominatim(),
+          addWaypoints: false,
+          draggableWaypoints: false,
+          fitSelectedRoutes: true,
+          showAlternatives: true,
+        }).on("routesfound", function (e) {
           const route = e.routes[0];
           handleRouteFound(route.summary);
-        })
-        .addTo(map);
+        }).addTo(map);
+      }
     } else {
       alert("Please enter both start and end addresses.");
     }
   };
+  // Sử dụng useEffect để dọn dẹp khi component unmount
+  useEffect(() => {
+    return () => {
+      const map = mapRef.current?.leafletElement;
+      if (map && map.routingControl) {
+        map.removeControl(map.routingControl);
+      }
+    };
+  }, []);
+
   // map end //
   useEffect(() => {
-    
+
     try {
       if (userString) {
         let userParse = JSON.parse(decodeURIComponent(userString));
-        
+
         // addOwnerTrip(user, groupCarData)
         // axios.post(`http://localhost:8080/public/addCustomer/${user.id}/${groupCarData.groupId}`);
-        
+
         console.log("userId >>>> ", userParse.accountId)
         setResrep({ ...resrep, accountId: userParse.accountId });
         setUserObject(userParse);
@@ -203,12 +236,12 @@ function ListGroupCar() {
     }
   };
   const handleShowMap = (groupCar) => {
-    setCheckMap(!checkMap)
+    setCheckMap(true)
     geocodeAddress(groupCar.startPoint, (start) => {
       setStartPoint(start);
       geocodeAddress(groupCar.endPoint, (end) => {
         setEndPoint(end);
-      setResrep({ ...resrep, startPoint: start.lat, endPoint: end.lat});
+        setResrep({ ...resrep, startPoint: start.lat, endPoint: end.lat });
 
       });
     });
@@ -227,22 +260,22 @@ function ListGroupCar() {
     setCheckMembers(!checkMembers);
     const listAccount = await axios.get(`http://localhost:8080/public/getAccountsByGroupId/${id}`)
     setAccounts(listAccount.data);
-     // Ensure groupCarDetail is updated
+    // Ensure groupCarDetail is updated
   };
 
   const handleJoin = async (groupId) => {
     try {
       const groupCar = groupCars.find((car) => car.groupId === groupId);
-  
+
       if (groupCar.customers.length >= groupCar.capacity) {
         alert('Group is full');
         return;
       }
-  
+
       console.log(resrep);
       // Replace 11 with userObject.accountId
       await axios.post(`http://localhost:8080/public/addCustomer/${userObject.accountId}/${groupId}`);
-  
+
       // Alert join successful
       // Update quantity of the joined groupCar
       const updatedGroupCars = groupCars.map((car) => {
@@ -254,7 +287,7 @@ function ListGroupCar() {
         }
         return car;
       });
-  
+
       // Set updated groupCars state
       handleSubmit();
       handlePayment();
@@ -265,7 +298,7 @@ function ListGroupCar() {
       alert('Join fail');
     }
   };
-  
+
   // render lại khi click join
   useEffect(() => {
     loadGroupCar();
@@ -288,7 +321,7 @@ function ListGroupCar() {
               <th scope="col" className="px-6 py-3">Members</th>
               <th scope="col" className="px-6 py-3">Driver</th>
               <th scope="col" className="px-6 py-3">Capacity</th>
-              <th scope="col" className="px-6 py-3">Quantity</th> 
+              <th scope="col" className="px-6 py-3">Quantity</th>
               <th scope="col" className="px-6 py-3">Join</th>
               <th scope="col" className="px-6 py-3">Show Map</th>
 
@@ -296,169 +329,144 @@ function ListGroupCar() {
           </thead>
           <tbody>
             {groupCars?.map((groupCar) => (
-              
-                
-                  <tr key={groupCar.groupId} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td className="px-6 py-4">{groupCar.groupId}</td>
-                    <td className="px-6 py-4">{groupCar.startPoint}</td>
-                    <td className="px-6 py-4">{groupCar.endPoint}</td>
-                    <td className="px-6 py-4">{formatDate(groupCar.timeStart)}</td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleMembers(groupCar.groupId)}
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-orange-700 text-white"
-                      >
-                        Members
-                      </button>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Link
-                        onClick={() => countDown(groupCar.groupId)}
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-green-700 text-white"
-                      >
-                        Driver
-                      </Link>
-                    </td>
-                    
-                    <td className="px-6 py-4">{groupCar.capacity}</td>
-                    <td className="px-6 py-4">{groupCar.customers?.length ?? 0}</td>
-                    
-                    <td className="px-6 py-4">
-                    <button
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-700 text-white"
-                        onClick={()=>handleJoin(groupCar.groupId)}
-                      >
-                        Join
-                      </button>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
-                        onClick={()=>handleShowMap(groupCar)}
-                      >
-                        Show Map
-                      </button>
-                    </td>
-                  </tr>
+
+
+              <tr key={groupCar.groupId} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td className="px-6 py-4">{groupCar.groupId}</td>
+                <td className="px-6 py-4">{groupCar.startPoint}</td>
+                <td className="px-6 py-4">{groupCar.endPoint}</td>
+                <td className="px-6 py-4">{formatDate(groupCar.timeStart)}</td>
+                <td className="px-6 py-4">
+                  <button
+                    onClick={() => handleMembers(groupCar.groupId)}
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-orange-700 text-white"
+                  >
+                    Members
+                  </button>
+                </td>
+                <td className="px-6 py-4">
+                  <Link
+                    onClick={() => countDown(groupCar.groupId)}
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-green-700 text-white"
+                  >
+                    Driver
+                  </Link>
+                </td>
+
+                <td className="px-6 py-4">{groupCar.capacity}</td>
+                <td className="px-6 py-4">{groupCar.customers?.length ?? 0}</td>
+
+                <td className="px-6 py-4">
+                  <button
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-700 text-white"
+                    onClick={() => handleJoin(groupCar.groupId)}
+                  >
+                    Join
+                  </button>
+                </td>
+                <td className="px-6 py-4">
+                  <button
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
+                    onClick={() => handleShowMap(groupCar)}
+                  >
+                    Show Map
+                  </button>
+                </td>
+              </tr>
 
             ))}
           </tbody>
         </table>
       </div>
-
-      {/* List Search
-      <div className="w-[30%] max-w-screen-xl mx-auto px-6">
-        <div className="flex justify-center p-4 px-3 py-10">
-          <div className="w-full max-w-md">
-            <div className="bg-white shadow-md rounded-lg px-3 py-2 mb-4">
-              <div className="block text-gray-700 text-lg font-semibold py-2 px-2">
-                Search following by
-              </div>
-              <div className="py-3 text-sm">
-                <div className="flex justify-start cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-100 rounded-md px-2 py-2 my-2">
-                  <span className="bg-green-400 h-2 w-2 m-2 rounded-full"></span>
-                  <div className="flex-grow font-medium px-2">Start Point</div>
-                  <div className="text-sm font-normal text-gray-500 tracking-wide">Start Point</div>
-                </div>
-                <div className="flex justify-start cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-100 rounded-md px-2 py-2 my-2">
-                  <span className="bg-green-400 h-2 w-2 m-2 rounded-full"></span>
-                  <div className="flex-grow font-medium px-2">End Point</div>
-                  <div className="text-sm font-normal text-gray-500 tracking-wide">End Point</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
-      {/* start map */}
-
       {checkMap && <div className=" flex items-center justify-center z-50 mt-5 mb-5">
-      <button onClick={() => setCheckMap(!checkMap)} className="mb-5 p-2 bg-blue-500 text-white rounded"></button>
-      
-      <MapContainer
-        center={position}
-        zoom={13}
-        scrollWheelZoom={false}
-        ref={mapRef}
-        className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <div className="absolute top-4 right-4 z-50">
-          <IoIosCloseCircle size={30} className="text-red-500 cursor-pointer" />
-        </div>
-        {startPoint && (
-          <>
-            <Marker position={startPoint}>
-              <Popup>Start Point</Popup>
-            </Marker>
-            <UpdateMapCenter position={startPoint} />
-          </>
-        )}
-        {endPoint && (
-          <>
-            <Marker position={endPoint}>
-              <Popup>End Point</Popup>
-            </Marker>
-            <UpdateMapCenter position={endPoint} />
-          </>
-        )}
-        <LeafletGeocoder
-          setStartPoint={setStartPoint}
-          setEndPoint={setEndPoint}
-        />
-        <LeafletRoutingMachine
-          startPoint={startPoint}
-          endPoint={endPoint}
-          onRouteFound={handleRouteFound}
-        />
-      </MapContainer>
-    </div>}
+        <button onClick={toggleMapVisibility} className="mb-5 p-2 bg-blue-500 text-white rounded">
+          {checkMap ? "Hide Map" : "Show Map"}
+        </button>
+
+        <MapContainer
+          center={position}
+          zoom={13}
+          scrollWheelZoom={false}
+          ref={mapRef}
+          className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <div className="absolute top-4 right-4 z-50">
+            <IoIosCloseCircle size={30} className="text-red-500 cursor-pointer" />
+          </div>
+          {startPoint && (
+            <>
+              <Marker position={startPoint}>
+                <Popup>Start Point</Popup>
+              </Marker>
+              <UpdateMapCenter position={startPoint} />
+            </>
+          )}
+          {endPoint && (
+            <>
+              <Marker position={endPoint}>
+                <Popup>End Point</Popup>
+              </Marker>
+              <UpdateMapCenter position={endPoint} />
+            </>
+          )}
+          <LeafletGeocoder
+            setStartPoint={setStartPoint}
+            setEndPoint={setEndPoint}
+          />
+          <LeafletRoutingMachine
+            startPoint={startPoint}
+            endPoint={endPoint}
+            onRouteFound={handleRouteFound}
+          />
+        </MapContainer>
+      </div>}
 
       {/* end map */}
       {/* start card members */}
       {checkMembers && <div className="fixed inset-0 flex items-center justify-center z-40 text-center">
         <Card
           title="Members"
-          extra={<IoIosCloseCircle onClick={()=>setCheckMembers(!checkMembers)}  style={{width: 20, height: 20}}/>}
+          extra={<IoIosCloseCircle onClick={() => setCheckMembers(!checkMembers)} style={{ width: 20, height: 20 }} />}
           style={{ width: 500, maxWidth: '80%', height: 400 }}
         >
           <div className="overflow-auto h-full">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
-            <thead className="bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-6 py-3 w-1/3 text-center">Customer Id</th>
-                <th scope="col" className="px-6 py-3 w-1/3 text-center">Customer Name</th>
-                <th scope="col" className="px-6 py-3 w-1/3 text-center">Phone</th>
-              </tr>
-            </thead>
-            <tbody>
-              {accounts.map((account)=>
+            <table className="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
+              <thead className="bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" className="px-6 py-3 w-1/3 text-center">Customer Id</th>
+                  <th scope="col" className="px-6 py-3 w-1/3 text-center">Customer Name</th>
+                  <th scope="col" className="px-6 py-3 w-1/3 text-center">Phone</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accounts.map((account) =>
                 (
                   <tr key={account.accountId} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-6 py-4 w-1/3 text-center">{account.accountId}</td>
-                <td className="px-6 py-4 w-1/3 text-center">{account.name}</td>
-                <td className="px-6 py-4 w-1/3 text-center">{account.phone}</td>
-                </tr>
-              )
-                
-                 
-              )}
-                        
-            </tbody>
-          </table>
-        </div>
+                    <td className="px-6 py-4 w-1/3 text-center">{account.accountId}</td>
+                    <td className="px-6 py-4 w-1/3 text-center">{account.name}</td>
+                    <td className="px-6 py-4 w-1/3 text-center">{account.phone}</td>
+                  </tr>
+                )
+
+
+                )}
+
+              </tbody>
+            </table>
+          </div>
         </Card>
       </div>}
       {/* end card members */}
-            
+
       {/* start card driver */}
-              {checkDriverDetail && contextHolder}
+      {checkDriverDetail && contextHolder}
     </div>
     // card 
-    
+
   );
 }
 
