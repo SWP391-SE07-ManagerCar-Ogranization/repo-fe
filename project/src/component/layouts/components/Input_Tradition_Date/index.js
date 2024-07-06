@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { FaRegCalendar } from "react-icons/fa";
-import DropDownDate from "../dropDown/Date"; // Ensure this path is correct
-import DropDownTime from "../dropDown/Time"; // Ensure this path is correct
+import DropDownDate from "../dropDown/Date";
+import DropDownTime from "../dropDown/Time";
+import { CartContext } from "../../../ConText/CartContext";
 
 function InputTraditionDate(props) {
   const { label } = props;
@@ -9,8 +10,11 @@ function InputTraditionDate(props) {
   const [isTime, setIsTime] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("12:30 PM");
-  console.log("selectedDate :", selectedDate);
-  console.log("selectedTime :", selectedTime);
+
+  const { setTheme } = useContext(CartContext);
+  useEffect(() => {
+    setTheme((prev) => ({ ...prev, selectedDate, selectedTime }));
+  }, [selectedDate, selectedTime, setTheme]);
 
   const dropdownRef = useRef(null);
 

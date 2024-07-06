@@ -5,7 +5,6 @@ const AuthContext = createContext(null);
 export default function AuthProvider({ children }) {
 
   const [role] = useState(localStorage.getItem("role"));
-  console.log(role);
   return <AuthContext.Provider value={role}>{children}</AuthContext.Provider>;
 
 }

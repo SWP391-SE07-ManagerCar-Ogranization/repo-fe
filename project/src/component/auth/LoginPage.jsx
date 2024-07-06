@@ -6,22 +6,22 @@ import { jwtDecode } from "jwt-decode";
 import * as UserService from "../../service/UserService";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/icon/logo.svg";
+import bgImage from "../../assets/image/img-login-form.png";
 import { toast } from "react-toastify";
-import { useAuth } from "../../routes/AuthProvider";
 
 function LoginPage() {
   const [error, setError] = useState("");
-  const role = useAuth();
+  const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const initValues = {
     email: "",
     password: "",
   };
   useEffect(() => {
-    if (role !== null) {
+    if (token !== null) {
       navigate("/");
     }
-  }, [navigate, role]);
+  }, [navigate, token]);
   const { values, handleBlur, handleChange, handleSubmit, errors } = useFormik({
     initialValues: initValues,
     validationSchema: SignupValidation,
@@ -31,17 +31,16 @@ function LoginPage() {
       if (userData.token) {
         localStorage.setItem("token", userData.token);
         localStorage.setItem("role", userData.role.roleName);
+        localStorage.setItem("expire", userData.expirationTime);
         toast.success("Login Sucessfully !");
         if('ADMIN' === (userData.role.roleName)) {
           navigate('/dashboard');
-          window.location.reload();
         }
         else {
           navigate("/");
-          window.location.reload();
         }
       } else {
-        setError("Invalid email or password");
+        setError(userData.message);
       }
     },
   });
@@ -52,9 +51,9 @@ function LoginPage() {
       if (userData.token) {
         localStorage.setItem("token", userData.token);
         localStorage.setItem("role", userData.role.roleName);
+        localStorage.setItem("expire", userData.expirationTime);
         toast.success("Login Sucessfully !");
         navigate("/");
-        window.location.reload();
       } else {
         setError(userData.message);
       }
@@ -79,8 +78,13 @@ function LoginPage() {
   };
 
   return (
-    <section className="bg-gradient-to-r from-red-50 via-red-200 to-red-400 h-screen">
-      <div className="px-0 py-10 mx-auto max-w-7xl sm:px-4">
+    <section className="relative h-screen w-full">
+      <div
+        className="absolute inset-0 bg-right bg-no-repeat"
+        style={{ backgroundImage: `url(${bgImage})`}}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-red-50 via-red-200 to-red-400"/>
+      <div className="px-0 py-10 mx-auto max-w-7xl sm:px-4 z-10 relative">
         <div className="sm:w-10/12 md:w-8/12 lg:w-6/12 xl:w-4/12 sm:px-6 text-gray-400">
           <img src={logo} alt="logo" className="mx-auto" />
         </div>

@@ -94,3 +94,7 @@
 .star-rating button.off .star {
   color: #ccc;
 }
+@font-face {
+  font-family: "Casanova Scotia";
+  src: url("assets/fonts/Casanova\ Scotia.otf");
+}
