@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
+import { getCurrentLocation } from "../../service/PositionService";
 
 const CurrentPosition = () => {
-  const [location, setLocation] = useState({ lat: null, lon: null });
+  const [location, setLocation] = useState({ lat: "", lon: "" });
 
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        setLocation({ lat, lon });
-      });
-    } else {
-      console.log("Geolocation is not supported by this browser.");
+  const showCurrentLocation = async () => {
+    try {
+        const location = await getCurrentLocation();
+        setLocation({lat: location[0], lon: location[1]});
+        return location;
+    } catch (error) {
+        console.error('Error getting location:', error);
     }
   };
 
   useEffect(() => {
-    getCurrentLocation();
+    showCurrentLocation();
   }, []);
 
   return (

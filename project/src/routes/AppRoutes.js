@@ -12,6 +12,7 @@ import DriverRoutes from "./DriverRoutes";
 import CustomerRoutes from "./CustomerRoutes";
 
 import BookingTraditionnel from "../pages/BookingDriverInvoice/Car";
+import CurrentPosition from "../pages/BookingDriverInvoice/CurrentPosition";
 
 const appRoutes = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const appRoutes = createBrowserRouter([
   {
     path: "/registration",
     element: <RegistrationPage />,
+  },
+  {
+    path: "/current-position",
+    element: <CurrentPosition />,
   },
   {
     path: "/*",
