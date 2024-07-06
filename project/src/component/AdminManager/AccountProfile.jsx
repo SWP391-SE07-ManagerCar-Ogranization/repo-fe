@@ -44,7 +44,7 @@ const AccountProfile = (props) => {
             <div className="mb-10 items-center justify-between gap-6">
               <div className="flex items-center gap-6">
                 <Avatar
-                  src="/img/bruce-mars.jpeg"
+                  src={props.customer.image}
                   alt="bruce-mars"
                   size="xl"
                   variant="rounded"

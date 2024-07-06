@@ -16,6 +16,7 @@ import { Button, Dropdown, Space } from 'antd';
 // import {AccountData} from '../../context/accountData'
 import RejectDriver from "../../component/AdminManager/RejectDriver";
 import avatarDefault from "../../assets/images/avatarDefault.jpg"
+import AccountProfile from "../../component/AdminManager/AccountProfile";
 
 
 export function Driver() {
@@ -238,7 +239,7 @@ export function Driver() {
                                         key: '2',
                                         label: (
                                             <div target="_blank" rel="noopener noreferrer" href="">
-                                                DETAIL
+                                                <AccountProfile customer={driver}/>
                                             </div>
                                         ),
                                     },
@@ -420,7 +421,7 @@ export function Driver() {
                                         key: '2',
                                         label: (
                                             <div target="_blank" rel="noopener noreferrer" href="">
-                                                DETAIL
+                                                <AccountProfile customer={driver}/>
                                             </div>
                                         ),
                                     },

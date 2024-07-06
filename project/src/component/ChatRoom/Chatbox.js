@@ -7,8 +7,11 @@
         Tooltip,
         Input,
         Typography,
-        message
+        message,
     } from 'antd'
+    import {
+        SearchOutlined
+    } from '@ant-design/icons'
     import Message from './Message'
     import avt from '../../assets/avt.jpg'
     import {
@@ -213,9 +216,10 @@
                         </div>
 
                     </header> */}
-                    <div className=' content flex flex-col p-[11px] justify-end' style={{
+                    <div className=' content flex flex-col p-[11px] justify-end relative' style={{
                         height: 'calc(100% - 200px)'
                         }}>
+                            <div style={{display: 'none'}} className='absolute top-0 left-[30%] right-[30%] '><Input /><Button><SearchOutlined /></Button></div>
                         <div
                             className='message-list max-h-[100%] flex-1 overflow-auto pr-20 pl-20 mb-[11px]'
                             style={{
