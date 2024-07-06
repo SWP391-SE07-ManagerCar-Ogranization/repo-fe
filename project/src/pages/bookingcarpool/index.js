@@ -32,24 +32,32 @@ function Bookingcarpool() {
       {item.label}
     </div>
   );
-  
+
   // gợi ý search start
-  
+
   const handleSearch = async (value, inputField) => {
-    setCurrentInput(inputField); // Cập nhật trường hiện tại đang nhập
+    setCurrentInput(inputField);
+
     if (value.length > 3) {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
       const newTimeoutId = setTimeout(async () => {
-        const results = await provider.search({ query: value, countrycodes: 'vn' });
-        setSuggestions(results);
-      }, 200); // Đợi 200 ms sau khi người dùng dừng nhập liệu
+
+        try {
+          const results = await provider.search({ query: value });
+          console.log("Results:", results);
+          setSuggestions(results);
+        } catch (error) {
+          console.log("error >>> ", error)
+        }
+      }, 500);
       setTimeoutId(newTimeoutId);
     } else {
       setSuggestions([]);
     }
   };
+
 
 
   const selectSuggestion = (result) => {
@@ -87,7 +95,7 @@ function Bookingcarpool() {
     setGroupCar({ ...groupCar, capacity: values[0].value });
   }
 
-  const onInputChange =async (e) => {
+  const onInputChange = async (e) => {
     const { name, value } = e.target;
     await setGroupCar(prevState => ({ ...prevState, [name]: value }));
     handleSearch(value, name);
@@ -102,7 +110,7 @@ function Bookingcarpool() {
       alert("Please fill in all required fields.");
       return;
     }
-    
+
     let request = await axios.post("http://localhost:8080/public/addGroupCar", groupCar);
     groupCarData = request.data
     // thay 11 bằng user.accountId
@@ -209,12 +217,12 @@ function Bookingcarpool() {
                 <div className="flex mt-8 flex-col justify-center mx-2">
                   <Link to={`/mytrip/${user.accountId}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-red-300 text-white-500">
                     My trip
-                  </Link>              
+                  </Link>
                 </div>
                 <div className="flex mt-8 flex-col justify-center mx-2">
                   <Link to={`/listGroupCar/${encodeURIComponent(JSON.stringify(user))}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-green-300 text-white-500">
                     View trips
-                  </Link>              
+                  </Link>
                 </div>
               </div>
             </div>
