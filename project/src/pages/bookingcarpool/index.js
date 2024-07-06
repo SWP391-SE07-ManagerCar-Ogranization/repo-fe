@@ -113,7 +113,7 @@ function Bookingcarpool() {
     let request = await axios.post("http://localhost:8080/public/addGroupCar", groupCar);
     groupCarData = request.data
     // thay 11 bằng user.accountId
-    await axios.post(`http://localhost:8080/public/addCustomer/11/${groupCarData.groupId}`)
+    await axios.post(`http://localhost:8080/public/addCustomer/${user.accountId}/${groupCarData.groupId}`)
     console.log("groupCarDataId >>> ", groupCarData.groupId)
     setGroupCar(groupCarData)
 

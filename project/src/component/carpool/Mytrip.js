@@ -192,7 +192,7 @@ function ListGroupCar() {
   const loadGroupCar = async () => {
     try {
       // thay 11 bằng userId
-      const result = await axios.get(`http://localhost:8080/public/groupCarsByCustomerId/11`);
+      const result = await axios.get(`http://localhost:8080/public/groupCarsByCustomerId/${userId}`);
       setGroupCars(result.data);
     } catch (error) {
       console.error('Error loading group cars:', error);
