@@ -15,7 +15,7 @@ export default function TripInfor({ group }) {
     return (
         <>
             <Row>
-                <Col span={24} className='border border-b-black h-[3em]'><h1>{groupName}</h1></Col>
+                <Col span={24} className='h-[3em] mt-2'><h1 className='font-sans font-bold'>{groupName}</h1></Col>
               
                 <Col span={24} className='w-full'>
                     <Image

@@ -42,6 +42,8 @@ export const FeedbackTest = () => {
     const [showFeedBack, setShowFeedBack] = useState(false);
     const [deleteChange, setDeleteChange] = useState(false);
 
+    const [nameCustomers, setNameCustomers] = useState([])
+
     console.log("FeedbackByDriverId: ", feedbacksDriverId);
     //
     const fetchDriverFeedbacks = async () => {
@@ -56,26 +58,94 @@ export const FeedbackTest = () => {
         }
     }
 
-    const getAccountById_ = async (id) => {
-        try {
-            const data = await getAccountById(id)
-            console.log("DATA:>>>>", data.name);
-            return data;
+// FIX NAME EMAIL BUG ->>
 
+    const updateDriverFeedbacksByDriverId_ = async () => {
+        try {
+            let nameList = []; 
+            
+            if (feedbacksDriverId.length !== 0) {
+                const promises = feedbacksDriverId.map(async (feedback) => {
+                    const data = await getAccountById(feedback.customer.id?feedback.customer.id:feedback.customer);
+                    let name = data?.name;
+                    let email = data?.email
+                    console.log(feedback);
+                    console.log(name);
+                    console.log(feedback.customer.id);
+                    return {...feedback,
+                            name: name,
+                            email: email    
+                        }
+                });
+                console.log("PRO: ",promises);
+    
+                nameList = await Promise.all(promises);
+            }
+            
+            console.log("NAME LIST", nameList);
+            setFeedbackDriverId(nameList)
+           
         } catch (error) {
             console.error(error);
         }
     }
 
-    // const getAccountId = async (id) => {
+    const updateNameEmail_FillterFeedback = async (filteredFeedbacks) => {
+        try {
+           let nameList = [];
+            
+            if (filteredFeedbacks.length !== 0) {
+                const promises = filteredFeedbacks.map(async (feedback) => {
+                    const data = await getAccountById(feedback.driverDetail.id);
+                    let name = data?.name;
+                    let email = data?.email
+                    console.log(feedback);
+                    console.log(name);
+                    console.log(feedback.customer.id);
+                    return {...feedback,
+                            name: name,
+                            email: email    
+                        }
+                });
+                console.log("PRO: ",promises);
+    
+                nameList = await Promise.all(promises);
+            }
+            
+            console.log("NAME LIST", nameList);
+            setFilterFeedback(nameList);
+           
+        } catch (error) {
+            console.error(error);
+        }
+    
+        
+    }
+
+    
+        
+    useEffect(() => {
+        try {
+            updateDriverFeedbacksByDriverId_();
+        } catch (error) {
+            console.error(error);
+        }
+    }, [showListByDriverId]);
+
+    // FIX NAME EMAIL BUG - end
+    
+ 
+
+    // const test = async (id) => {
 
     //     try {
-    //         const data = await getAccountId(id)
-    //         return data
+    //         const data = await getAccountById(id)
+    //         console.log(data);
     //     } catch (error) {
     //         console.error(error);
     //     }
     // }
+    // test(11)
 
     const getAllFeedbacksByDriver = async (driverDetailId) => {
 
@@ -94,8 +164,10 @@ export const FeedbackTest = () => {
 
     }
 
+
     const handleShowFeedbacks = async (id) => {
         await getAllFeedbacksByDriver(id)
+
         if (id === showListByDriverId) {
             setShowListByDriverId(-1)
         } else {
@@ -135,11 +207,15 @@ export const FeedbackTest = () => {
 
     }, [])
 
-    useEffect(() => {
+    useEffect( () => {
         const filteredFeedbacks = driverIds.map(id =>
             driverFeedbacks.filter(feedback => feedback?.driverDetail?.id === id)
         ).flat();
-        setFilterFeedback(filteredFeedbacks);
+
+        updateNameEmail_FillterFeedback(filteredFeedbacks)
+
+        console.log("AAAAAAAAAAAAAAAAAAAA: ", filteredFeedbacks);
+    
     }, [driverIds, driverFeedbacks]);
 
     useEffect(() => {
@@ -203,12 +279,12 @@ export const FeedbackTest = () => {
                                                             color="blue-gray"
                                                             className="font-semibold"
                                                         >
-                                                            {"Example"}
+                                                            {feedback?.name}
 
                                                         </Typography>
                                                         <Typography className="text-xs font-normal text-blue-gray-500">
-                                                            {feedback?.driverDetail?.account?.email}
-                                                            {"example@gmail.com"}
+                                                            {feedback?.email}
+                                                        
                                                         </Typography>
                                                     </div>
                                                 </div>
@@ -222,7 +298,7 @@ export const FeedbackTest = () => {
                                                             className="font-semibold"
                                                         >
                                                             {feedback?.driverDetail?.rating}
-                                                            <span className="star-icon full">☆</span>
+                                                            <span className="text-orange-400">☆</span>
                                                         </Typography>
                                                     </div>
                                                 </div>
@@ -319,11 +395,11 @@ export const FeedbackTest = () => {
                                                                                             color="blue-gray"
                                                                                             className="font-semibold"
                                                                                         >
-                                                                                            {el.customer.id == undefined ? el.customer : el.customer.id}
+                                                                                            {el?.name}
                                                                                         </Typography>
                                                                                         <Typography className="text-xs font-normal text-blue-gray-500">
                                                                                             {el?.customer?.email}
-                                                                                            {"example@gmail.com"}
+                                                                                            {el?.email}
                                                                                         </Typography>
                                                                                     </div>
                                                                                 </div>

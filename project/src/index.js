@@ -6,17 +6,21 @@ import reportWebVitals from "./reportWebVitals";
 import { ThemeProvider } from "@material-tailwind/react";
 import { MaterialTailwindControllerProvider } from "./context";
 import { ThemeProviderConfig } from "./component/ConText/CartContext";
+import { ThemeChatRoomProvider }  from './context/ChatRoomContext'
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
-      <MaterialTailwindControllerProvider>
-        <ThemeProviderConfig>
-          <App />
-        </ThemeProviderConfig>
-      </MaterialTailwindControllerProvider>
-    </ThemeProvider>
+    <ThemeChatRoomProvider>
+      <ThemeProvider>
+        <MaterialTailwindControllerProvider>
+          <ThemeProviderConfig>
+            <App />
+          </ThemeProviderConfig>
+        </MaterialTailwindControllerProvider>
+      </ThemeProvider>
+    </ThemeChatRoomProvider>
   </React.StrictMode>
 );
 

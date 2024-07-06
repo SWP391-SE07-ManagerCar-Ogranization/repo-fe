@@ -1,9 +1,14 @@
-import React from "react";
+import React, {useContext} from "react";
 import {
+    Button,
     Collapse,
     Typography
 } from 'antd'
 import styled from 'styled-components'
+import {
+    ChatRoomContext
+} from '../../context/ChatRoomContext'
+import { useNavigate } from 'react-router-dom';
 
 const {Panel} = Collapse
 
@@ -26,6 +31,21 @@ const LinkStyled = styled(Typography.Link)`
 `;
 
 export default function RoomList() {
+    const navigate = useNavigate(); 
+    const { theme, setTheme } = useContext(ChatRoomContext)
+    const { groupCars, setGroupCars, groupData, setGroupData, userData, setUserData } = theme
+    console.log("GROUPPPP>>", groupCars);
+
+    const handleOnClick = (group) => {
+        console.log(group);
+
+        setGroupData(group)
+        setUserData({
+            ...userData,
+            groupCarId: group?.groupCarId
+        })
+    }
+
     return(
         <>
           <Collapse ghost defaultActiveKey={['1']}>
@@ -33,10 +53,18 @@ export default function RoomList() {
                 header="Public Chat"
                 key={1}      
             >
-                <LinkStyled>Room1</LinkStyled>
-                <LinkStyled>Room1</LinkStyled>
-                <LinkStyled>Room1</LinkStyled>
-                <LinkStyled>Room1</LinkStyled>
+                {groupCars?.map((item)=>{
+
+                    return(
+                        <LinkStyled onClick={()=>{
+                            handleOnClick(item)
+                        }}>
+                            {item?.groupName}
+                        </LinkStyled>
+                    )
+                })}
+               
+               
             </PanelStyled>
         </Collapse>
         <Collapse ghost defaultActiveKey={['1']}>

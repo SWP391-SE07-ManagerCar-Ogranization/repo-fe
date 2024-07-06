@@ -81,17 +81,17 @@
         useEffect(() => {
             // Call registerUser() immediately on component mount
             registerUser();
-        }, []); // Empty dependency array ensures this runs once on mount
+        }, [group]); // Empty dependency array ensures this runs once on mount
         
 
 
         useEffect(() => {
             getAllMessagesByGroupCarId_(group.groupCarId)
-        }, [])
+        }, [group])
 
         useEffect(() => {
             getAllCustomersByGroupCarId_(group.groupCarId)
-        }, [])
+        }, [group])
 
         useEffect(() => {
             // Scroll chat-messages to bottom when publicChats or privateChats change
@@ -192,7 +192,7 @@
 
         return (
             <>
-                <div className='h-[100vh] border-black border-l '>
+                <div className='h-[100vh] border-l '>
                     {/* <header className='flex justify-between h-[56px] pl-3 pr-3 items-center border-b border-black'>
                         <div className='flex flex-col justify-center'>
                             <div className='m-0 font-bold'>{group.groupName}</div>
@@ -238,9 +238,9 @@
                                     }
                                 }
 
-                                console.log(message?.customer +" <<<<< >>>>>  "+group?.customerId);
+                                // console.log(message?.customer +" <<<<< >>>>>  "+group?.customerId);
 
-                                console.log("isTargetUser>>>", isTargetUser);
+                                // console.log("isTargetUser>>>", isTargetUser);
 
 
 

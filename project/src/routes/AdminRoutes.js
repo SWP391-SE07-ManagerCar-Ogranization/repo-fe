@@ -26,7 +26,7 @@ const AdminRoutes = () => {
         )
       },
       {
-        path: "/room/chatroom",
+        path: "/room/chatroom/*",
         element: (
           <ProtectedRoute roles={["ADMIN"]}>
            <ChatRoom/>

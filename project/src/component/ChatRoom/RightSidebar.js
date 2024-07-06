@@ -25,10 +25,10 @@ export default function RightSidebar({ group }) {
 
     return (
         <>
-            <div className=' h-full border border-l-gray-400 overflow-hidden'>
+            <div className=' h-full border overflow-hidden'>
                 <Row>
                     <Col span={24} className=' h-[50vh] p-[10px]'><TripInfor group={group} /></Col>
-                    <Col span={24} className='border border-black p-[10px]'>
+                    <Col span={24} className='border p-[10px]'>
                         <div className='flex flex-col justify-center mb-[12px]'>
                             <div className='m-0 font-bold '>
                                 <TeamOutlined className='text-[20px] mr-1'/>

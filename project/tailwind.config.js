@@ -6,30 +6,21 @@ module.exports = withMT({
   theme: {
     extend: {
       backgroundImage:{
-        'parallax': 'url("D:/fpt/SWP/fcar/front-end/project/src/assets/images/car1.png")'
-      }
-    },
-  },
-    letterSpacing: {
-      tightest: "1.8px",
-    },
-    fontFamily: {
-      sora: ["Sora"],
-      volkhov: ["Volkhov"],
-      casanova: ["Casanova Scotia"],
-    },
-    extend: {
+        'parallax': 'url("../src/assets/images/car1.png")'
+      },
+      letterSpacing: {
+        tightest: "1.8px",
+      },
+      fontFamily: {
+        sora: ["Sora"],
+        volkhov: ["Volkhov"],
+        casanova: ["Casanova Scotia"],
+      },
       screens: {
         mobile: "400px",
-        // => @media (min-width: 640px) { ... }
-
         ipad: "768px",
-        // => @media (min-width: 1024px) { ... }
-
         desktop: "1100px",
-        // => @media (min-width: 1280px) { ... }
       },
-      border: {},
       colors: {
         "orange-300": "#FF5F00",
         "purple-300": "#CAACFF",
@@ -58,6 +49,5 @@ module.exports = withMT({
       },
     },
   },
-
   plugins: [],
 });

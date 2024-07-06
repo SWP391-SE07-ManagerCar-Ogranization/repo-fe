@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import { ChatRoomContext } from "../../context/ChatRoomContext"
 
 
 const Rooms = () => {
     const navigate = useNavigate();  // Sử dụng hook useNavigate để chuyển hướng
 
+
     //getAllGroupCarByCustomerId
-    const [groupCars, setGropCars] = useState([
+    const [groupCars, setGroupCars] = useState([
         {
             groupCarId: 1,
             customerId: 7,
@@ -25,18 +27,28 @@ const Rooms = () => {
 
         },
 
-
     ])
+
+    const {theme, setTheme} = useContext(ChatRoomContext)
+
+    useEffect(()=> {
+        setTheme((prev)=> ({
+            ...prev,
+            groupCars,
+            setGroupCars
+        })
+        )
+    }, [setTheme, groupCars, setGroupCars])
 
     const [value, setValue] = useState(7)
 
     const handleOnClick = (group) => {
         console.log(group);
-        navigate('/room/chatroom', { state: { group: group } })
+        navigate(`/room/chatroom`, { state: { group: group } })
     }
 
     const handleOnClickEdit = () => {
-        setGropCars(
+        setGroupCars(
             [
             {
                 groupCarId: 1,
