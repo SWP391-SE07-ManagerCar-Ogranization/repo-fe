@@ -14,23 +14,37 @@ import {
   CardBody,
   Typography
 } from "@material-tailwind/react";
-import { couponView, getCoupon, myCoupon } from "../../service/CouponService";
+import { freeCouponView, getCoupon, getTakenCoupon } from "../../service/CouponService";
 import * as UserService from "../../service/UserService";
 
 function HomePage() {
 
+  const [change, setChange] = useState(false);
   const [coupons, setCoupons] = useState([]);
+  const [takenCoupon, setTakenCoupon] = useState([]);
   const [profileInfo, setProfileInfo] = useState({});
 
   useEffect(() => {
     fetchCoupons();
     fetchProfileInfo();
-  }, []);
+    fetchTakenCoupons();
+  }, [change]);
 
   const fetchCoupons = async () => {
     try {
-      const response = await couponView();
+      const response = await freeCouponView();
       setCoupons(response);
+      console.log(response);
+    } catch (error) {
+      console.error('Error fetching coupons:', error);
+    }
+  };
+
+  const fetchTakenCoupons = async () => {
+    try {
+      const response = await getTakenCoupon(localStorage.getItem('token'));
+      setTakenCoupon(response);
+      console.log(response);
     } catch (error) {
       console.error('Error fetching coupons:', error);
     }
@@ -46,30 +60,11 @@ function HomePage() {
     }
   };
 
-  const handleGetClick = async (couponId) => {
+  const handleGetClick = async (coupon) => {
     try {
-      console.log(couponId);
       console.log(localStorage.getItem('token'));
-      await getCoupon(couponId, localStorage.getItem('token'));
-      
-    } catch (error) {
-      console.error('Error getting coupon:', error);
-    }
-  };
-
-  const fetchMyCoupons = async () => {
-    try {
-      const response = await myCoupon(localStorage.getItem('token'));
-      setCoupons(response);
-    } catch (error) {
-      console.error('Error fetching coupons:', error);
-    }
-  };
-
-  const handleMyCouponClick = async () => {
-    try {
-      await fetchMyCoupons();
-      
+      await getCoupon(coupon, localStorage.getItem('token'));
+      setChange(!change);
     } catch (error) {
       console.error('Error getting coupon:', error);
     }
@@ -105,7 +100,7 @@ function HomePage() {
                 </Typography>
               </CardHeader>
               <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
-                <div className="mx-6">
+                {/* <div className="mx-6">
                   <Typography
                     as="a"
                     className="text-xs font-semibold text-orange-500"
@@ -113,33 +108,47 @@ function HomePage() {
                   >
                     My coupons
                   </Typography>
-                </div>
+                </div> */}
                 <table className="w-full min-w-[250px] table-auto">
                   <tbody>
-                    {coupons?.map(({ couponId, couponName }, key) => {
+                    {coupons?.map((coupon, key) => {
                       const className = `py-3 px-5 ${key === coupons.length - 1 ? "" : "border-b border-blue-gray-50"
                         }`;
 
                       return (
-                        <tr key={couponId}>
+                        <tr key={coupon.couponId}>
                           <td className={className}>
                             <div className="flex items-center gap-4">
                               <div>
                                 <Typography className="text-xs font-normal text-blue-gray-500">
-                                  {couponName}
+                                  {coupon.couponName}
+                                </Typography>
+                                <Typography className="text-xs font-normal text-blue-gray-500">
+                                  {"Quantity : " + coupon.couponQuantity}
                                 </Typography>
                               </div>
                             </div>
                           </td>
                           <td className={className}>
-                            <Button
-                              as="a"
-                              className="text-xs font-semibold text-orange-500"
-                            onClick={() => handleGetClick( couponId )}
-                            >
-                              Get
-                            </Button>
+                            {takenCoupon.map(c => c.couponName).includes(coupon.couponName) ? (
+                              <Button
+                                as="a"
+                                className="text-xs font-semibold text-orange-500"
+                                disabled
+                              >
+                                Get
+                              </Button>
+                            ) : (
+                              <Button
+                                as="a"
+                                className="text-xs font-semibold text-orange-500"
+                                onClick={() => handleGetClick(coupon)}
+                              >
+                                Get
+                              </Button>
+                            )}
                           </td>
+
                         </tr>
                       );
                     })}
