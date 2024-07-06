@@ -17,15 +17,15 @@ function Input_Tradition(props) {
   return (
     <div>
       <label className="font-Roboto font-bold">{label}</label>
-      <div className="mr-5 flex flex-row w-[216px] items-center h-[52px] gap-5 rounded-md border-solid border-white-700 border-[1px] bg-slate-50 px-[0.75rem]">
-        <FaMapMarkerAlt className="w-[20px] h-[20px]" />
+      <div className="mr-5 flex items-center h-[52px] gap-4 rounded-md border border-gray-300 bg-white px-4 shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out">
+        <FaMapMarkerAlt className="w-5 h-5 text-gray-600"></FaMapMarkerAlt>
         <input
-          id="start-input"
-          className="rounded-md w-[200px] h-[40px] border-vien"
+          className="w-full h-[40px] p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder={placeholder}
           onChange={handleChange}
         />
       </div>
+
     </div>
   );
 }

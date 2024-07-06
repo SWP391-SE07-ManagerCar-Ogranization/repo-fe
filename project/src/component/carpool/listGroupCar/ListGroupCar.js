@@ -13,13 +13,40 @@ import LeafletGeocoder from '../map/LeafletGeocoder';
 import LeafletRoutingMachine from '../map/LeafletRoutingMachine';
 import * as TransactionService from '../../../service/TransactionService'
 import * as PaymentService from '../../../service/PaymentService'
+import  DriverCard  from '../card/DriverCard';
+import { Modal } from 'antd';
 
 function ListGroupCar() {
+  const [modal, contextHolder] = Modal.useModal();
+  const [driverDetail, setDriverDetail] = useState({name: "Nguyen Duc Thinh", phone: "0703224025"});
+  const [accounts, setAccounts] = useState([]); 
   const [userObject, setUserObject] = useState({});
   const [groupCars, setGroupCars] = useState([]);
   const [groupCarDetail, setGroupCarDetail] = useState({});
-  const [check, setCheck] = useState(false);
+  const [checkMap, setCheckMap] = useState(false);
+  const [checkMembers, setCheckMembers] = useState(false);
+  const [checkDriverDetail, setCheckDriverDetail] = useState(true);
   const { groupCarAndUserString } = useParams();
+  console.log("account >>> ", accounts)
+
+  // start show driverdetail
+  const countDown =async (id) => {
+    let result;
+    try {
+      result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`)
+      setDriverDetail(result.data);
+      const instance = modal.success({  
+      
+        title: `Name : ${driverDetail.name}`,
+        content: `Phone : ${driverDetail.phone}`,
+      });  
+    } catch (error) {
+      alert("The group does not have a driver yet");
+    }
+    
+    
+  };
+  // end show driverdetail
   // map start //
   const UpdateMapCenter = ({ position }) => {
     const map = useMap();
@@ -34,11 +61,13 @@ function ListGroupCar() {
     popupAnchor: [2, -40],
   });
   L.Marker.prototype.options.icon = DefaultIcon;
+  
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
   const [routeInfo, setRouteInfo] = useState("");
   const [position, setPosition] = useState([16.047079, 108.20623]); // initial map center
   const mapRef = useRef();
+  const [reload, setReload] = useState(false);
   const [distance, setDistance] = useState(0);
   const [resrep, setResrep] = useState({
     startPoint: startPoint,
@@ -94,7 +123,7 @@ function ListGroupCar() {
       const map = mapRef.current;
 
       // Initialize the routing machine to find the route and update the info
-      const routingControl = L.Routing.control({
+      let routingControl = L.Routing.control({
         waypoints: [L.latLng(startPoint), L.latLng(endPoint)],
         lineOptions: {
           styles: [
@@ -141,9 +170,6 @@ function ListGroupCar() {
       console.error('Failed to parse combinedDataString:', error);
     }
   }, [groupCarAndUserString]);
-
- 
-
   // useEffect(()=>{
   //   try{
   //     axios.post(`http://localhost:8080/public/addCustomer/${userObject.id}/${groupCarDetail.groupId}`);
@@ -152,7 +178,6 @@ function ListGroupCar() {
   //     console.log("fail add owner >>> ", error)
   //   }
   // }, [])
-
   useEffect(() => {
     loadGroupCar();
   }, []);
@@ -171,7 +196,6 @@ function ListGroupCar() {
       console.error('Failed to fetch group cars:', error);
     }
   };
-
   const loadGroupCarByGroupId = async (groupId) => {
     try {
       const result = await axios.get(`http://localhost:8080/public/groupCarById/${groupId}`);
@@ -181,6 +205,7 @@ function ListGroupCar() {
     }
   };
   const handleShowMap = (groupCar) => {
+    setCheckMap(!checkMap)
     geocodeAddress(groupCar.startPoint, (start) => {
       setStartPoint(start);
       geocodeAddress(groupCar.endPoint, (end) => {
@@ -190,29 +215,37 @@ function ListGroupCar() {
       });
     });
   };
-  
   useEffect(() => {
     if (startPoint && endPoint) {
       handleSearchClick();
     }
   }, [startPoint, endPoint]);
-  
   const formatDate = (dateString) => {
     const newDate = new Date(dateString);
     return newDate.toLocaleString();
   };
 
-  const handleMembers = (id) => {
-    setCheck(!check);
-    setGroupCarDetail({ ...groupCarDetail, groupId: id }); // Ensure groupCarDetail is updated
+  const handleMembers = async (id) => {
+    setCheckMembers(!checkMembers);
+    const listAccount = await axios.get(`http://localhost:8080/public/getAccountsByGroupId/${id}`)
+    setAccounts(listAccount.data);
+     // Ensure groupCarDetail is updated
   };
 
   const handleJoin = async (groupId) => {
     try {
+      const groupCar = groupCars.find((car) => car.groupId === groupId);
+  
+      if (groupCar.customers.length >= groupCar.capacity) {
+        alert('Group is full');
+        return;
+      }
+  
       console.log(resrep);
-      // await axios.post(`http://localhost:8080/public/addCustomer/${userObject.accountId}/${groupId}`);
-      // // Alert join successful
-      // alert('Join successfully');
+      // Replace 11 with userObject.accountId
+      await axios.post(`http://localhost:8080/public/addCustomer/10/${groupId}`);
+  
+      // Alert join successful
       // Update quantity of the joined groupCar
       const updatedGroupCars = groupCars.map((car) => {
         if (car.groupId === groupId) {
@@ -223,20 +256,26 @@ function ListGroupCar() {
         }
         return car;
       });
+  
       // Set updated groupCars state
       handleSubmit();
       handlePayment();
       setGroupCars(updatedGroupCars);
+      setReload(!reload);
     } catch (error) {
       // Alert join fail
       alert('Join fail');
     }
   };
   
+  // render lại khi click join
+  useEffect(() => {
+    loadGroupCar();
+  }, [reload]);
 
   return (
     <div className='block'>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full sm:w-[90%] md:w-[80%] lg:w-[70%] mx-auto">
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full sm:w-[90%] md:w-[80%] lg:w-[90%] mx-auto">
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
           <div></div>
           <label htmlFor="table-search" className="sr-only">Search</label>
@@ -269,14 +308,15 @@ function ListGroupCar() {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => handleMembers(groupCar.groupId)}
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-orange-500 text-white-500"
+                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-orange-700 text-white"
                       >
                         Members
                       </button>
                     </td>
                     <td className="px-6 py-4">
                       <Link
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-500 text-white-500"
+                        onClick={() => countDown(groupCar.groupId)}
+                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-green-700 text-white"
                       >
                         Driver
                       </Link>
@@ -287,7 +327,7 @@ function ListGroupCar() {
                     
                     <td className="px-6 py-4">
                     <button
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-red-500 text-white-500"
+                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-700 text-white"
                         onClick={()=>handleJoin(groupCar.groupId)}
                       >
                         Join
@@ -295,7 +335,7 @@ function ListGroupCar() {
                     </td>
                     <td className="px-6 py-4">
                       <button
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white-500"
+                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
                         onClick={()=>handleShowMap(groupCar)}
                       >
                         Show Map
@@ -334,15 +374,15 @@ function ListGroupCar() {
       </div> */}
       {/* start map */}
 
-      <div className=" flex items-center justify-center z-50 mt-5 mb-5">
-      
+      {checkMap && <div className=" flex items-center justify-center z-50 mt-5 mb-5">
+      <button onClick={() => setCheckMap(!checkMap)} className="mb-5 p-2 bg-blue-500 text-white rounded"></button>
       
       <MapContainer
         center={position}
         zoom={13}
         scrollWheelZoom={false}
         ref={mapRef}
-        className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2"
+        className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -377,17 +417,18 @@ function ListGroupCar() {
           onRouteFound={handleRouteFound}
         />
       </MapContainer>
-    </div>
+    </div>}
 
       {/* end map */}
-      {check && <div className="fixed inset-0 flex items-center justify-center z-50 text-center ">
+      {/* start card members */}
+      {checkMembers && <div className="fixed inset-0 flex items-center justify-center z-40 text-center">
         <Card
           title="Members"
-          extra={<IoIosCloseCircle onClick={()=>setCheck(!check)}  style={{width: 20, height: 20}}/>}
+          extra={<IoIosCloseCircle onClick={()=>setCheckMembers(!checkMembers)}  style={{width: 20, height: 20}}/>}
           style={{ width: 500, maxWidth: '80%', height: 400 }}
         >
           <div className="overflow-auto h-full">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <table className="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
             <thead className="bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3 w-1/3 text-center">Customer Id</th>
@@ -396,12 +437,12 @@ function ListGroupCar() {
               </tr>
             </thead>
             <tbody>
-              {groupCarDetail.customers?.map((customer)=>
+              {accounts.map((account)=>
                 (
-                  <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-6 py-4 w-1/3 text-center">{customer.id}</td>
-                <td className="px-6 py-4 w-1/3 text-center">{customer.account.name}</td>
-                <td className="px-6 py-4 w-1/3 text-center">{customer.account.phone}</td>
+                  <tr key={account.accountId} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td className="px-6 py-4 w-1/3 text-center">{account.accountId}</td>
+                <td className="px-6 py-4 w-1/3 text-center">{account.name}</td>
+                <td className="px-6 py-4 w-1/3 text-center">{account.phone}</td>
                 </tr>
               )
                 
@@ -413,6 +454,10 @@ function ListGroupCar() {
         </div>
         </Card>
       </div>}
+      {/* end card members */}
+            
+      {/* start card driver */}
+              {checkDriverDetail && contextHolder}
     </div>
     // card 
     

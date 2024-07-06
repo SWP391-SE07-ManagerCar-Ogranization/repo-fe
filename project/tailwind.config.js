@@ -13,6 +13,9 @@ module.exports = withMT({
       casanova: ["Casanova Scotia"],
     },
     extend: {
+      backgroundImage:{
+        'parallax': 'url("D:/fpt/SWP/fcar/front-end/project/src/assets/images/car1.png")'
+      },
       screens: {
         mobile: "400px",
         // => @media (min-width: 640px) { ... }
