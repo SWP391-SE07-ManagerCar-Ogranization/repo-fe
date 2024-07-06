@@ -41,6 +41,7 @@ function HomePage() {
       const token = localStorage.getItem("token");
       const response = await UserService.getYourProfile(token);
       setProfileInfo(response.account);
+    console.log(response);
     } catch (error) {
       console.error("Error fetching profile information:", error);
     }
