@@ -15,7 +15,7 @@ const DateTimeDriver = () => {
   return (
     <div className="flex flex-col">
       <label className="font-Roboto font-bold">Time</label>
-      <div className=" flex flex-col w-[216px] items-center h-[52px] gap-5 rounded-md border-solid border-white-700 border-[1px] bg-slate-50 px-[0.75rem]">
+      <div className=" flex flex-col w-[216px] items-center h-[52px] gap-5 rounded-md border-solid border-white-700 border-[1px] bg-slate-50 px-[0.75rem] border-[#D9D9D9]">
         <input
           className="rounded-md w-[200px] h-[52px] border-black border-1px"
           id="party"

@@ -31,6 +31,7 @@ module.exports = withMT({
         "white-500": "#FFFFFF",
         "white-700": "rgba(201, 201, 207, 1)",
       },
+      border: {},
       fontSize: {
         13: "13px",
         14: "14px",

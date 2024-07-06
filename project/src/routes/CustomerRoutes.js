@@ -5,13 +5,16 @@ import UpdateProfile from "../component/userspage/UpdateProfile";
 import ProfilePage from "../component/userspage/ProfilePage";
 import HomeCarPool from "../component/carpool/HomeCarpool/Home";
 import WalletPage from "../component/userspage/WalletPage";
+import TradePointPage from "../component/userspage/TradePointPage";
 import SystemCharge from "../component/payment/SystemCharge";
 import SearchGroupCar from "../component/carpool/searchGroupCar/SearchGroupCar";
 import Mytrip from "../component/carpool/Mytrip";
 import ListGroupCar from "../component/carpool/listGroupCar/ListGroupCar";
 import Success from "../layouts/payment/Success";
 import Booking from "../pages/BookingDriverInvoice/Car";
-import BookingTraditionnel from "../pages/BookingDriverInvoice/Car";
+import BookingTraditional from "../pages/BookingDriverInvoice/Car";
+import ViewTripBooking from "../pages/BookingDriverInvoice/ViewTripBooking";
+import CurrentPosition from "../pages/BookingDriverInvoice/CurrentPosition";
 
 const CustomerRoutes = () => {
   return {
@@ -19,7 +22,7 @@ const CustomerRoutes = () => {
       {
         path: "/update-user/:userId",
         element: (
-          <ProtectedRoute roles={["CUSTOMER","DRIVER"]}>
+          <ProtectedRoute roles={["CUSTOMER", "DRIVER"]}>
             <UpdateProfile />
           </ProtectedRoute>
         ),
@@ -27,7 +30,7 @@ const CustomerRoutes = () => {
       {
         path: "/profile",
         element: (
-          <ProtectedRoute roles={["CUSTOMER","DRIVER"]}>
+          <ProtectedRoute roles={["CUSTOMER", "DRIVER"]}>
             <ProfilePage />
           </ProtectedRoute>
         ),
@@ -45,6 +48,14 @@ const CustomerRoutes = () => {
         element: (
           <ProtectedRoute roles={["CUSTOMER"]}>
             <WalletPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/point/trade-point",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+            <TradePointPage />
           </ProtectedRoute>
         ),
       },
@@ -92,7 +103,15 @@ const CustomerRoutes = () => {
         path: "/booking-driver",
         element: (
           <ProtectedRoute roles={["CUSTOMER"]}>
-            <BookingTraditionnel />
+            <BookingTraditional />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/view-trip",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+            <ViewTripBooking />
           </ProtectedRoute>
         ),
       },

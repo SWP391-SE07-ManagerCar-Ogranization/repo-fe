@@ -54,7 +54,7 @@ const RevenueTripChart = () => {
         series: [
             {
                 name: 'Revenue',
-                type: 'line',
+                type: 'bar',
                 data: revenue.map((rev, index) => ({ x: categories[index], y: rev }))
             },
             {
