@@ -7,6 +7,7 @@ import FooterWithSocialLinks from "../../layouts/Footer";
 import * as UserService from "../../service/UserService";
 import * as DriverService from "../../service/DriverService";
 import { toast } from "react-toastify";
+import { getCurrentLocation } from "../../service/PositionService";
 
 const WorkingPage = () => {
   const {
@@ -14,6 +15,7 @@ const WorkingPage = () => {
   } = theme.useToken();
 
   const [status, setStatus] = useState(false);
+  const [location, setLocation] = useState({ lat: "", lon: "" });
   useEffect(() => {
     const fetchStatusDriver = async () => {
       try {
@@ -25,17 +27,28 @@ const WorkingPage = () => {
       }
     };
     fetchStatusDriver();
+    showCurrentLocation();
   }, []);
+
+  const showCurrentLocation = async () => {
+    try {
+        const location = await getCurrentLocation();
+        setLocation({lat: location[0], lon: location[1]});
+        return location;
+    } catch (error) {
+        console.error('Error getting location:', error);
+    }
+  };
 
   const handleStatusChange = async (checked) => {
     setStatus(checked);
-    if(checked) {
-      console.log("handle input location");
-    }
     try {
+      console.log("lat: " + location.lat);
       await DriverService.setWorkingStatus(
         localStorage.getItem("token"),
-        checked
+        checked,
+        location.lat,
+        location.lon
       );
     toast.success("Update your working status !!");
     } catch (error) {
