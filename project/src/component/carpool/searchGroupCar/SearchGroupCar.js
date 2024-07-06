@@ -174,7 +174,7 @@ function SearchGroupCar () {
         // addOwnerTrip(user, groupCarData
         // axios.post(`http://localhost:8080/public/addCustomer/${user.id}/${groupCarData.groupId}`);
         console.log("groupCardata >>> ", groupCar)
-        console.log("userId >>>> ", user.id)
+        console.log("userId >>>> ", user.accountId)
         setGroupCarObject(groupCar)
         setUserObject(user)
 
