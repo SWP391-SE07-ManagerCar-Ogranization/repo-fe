@@ -243,7 +243,7 @@ function ListGroupCar() {
   
       console.log(resrep);
       // Replace 11 with userObject.accountId
-      await axios.post(`http://localhost:8080/public/addCustomer/10/${groupId}`);
+      await axios.post(`http://localhost:8080/public/addCustomer/${userObject.accountId}/${groupId}`);
   
       // Alert join successful
       // Update quantity of the joined groupCar
