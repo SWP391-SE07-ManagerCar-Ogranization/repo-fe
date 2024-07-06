@@ -16,6 +16,7 @@ import {
 } from "@material-tailwind/react";
 import { freeCouponView, getCoupon, getTakenCoupon } from "../../service/CouponService";
 import * as UserService from "../../service/UserService";
+import Swal from "sweetalert2";
 
 function HomePage() {
 
@@ -67,6 +68,23 @@ function HomePage() {
       setChange(!change);
     } catch (error) {
       console.error('Error getting coupon:', error);
+    }
+  };
+
+  const confirmGetCoupon = async (coupon) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to get this coupon: ${coupon.couponName}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, get it!'
+    });
+
+    if (result.isConfirmed) {
+      handleGetClick(coupon);
+      Swal.fire('Got it!', 'You have successfully taken the coupon.', 'success');
     }
   };
 
@@ -142,7 +160,7 @@ function HomePage() {
                               <Button
                                 as="a"
                                 className="text-xs font-semibold text-orange-500"
-                                onClick={() => handleGetClick(coupon)}
+                                onClick={() => confirmGetCoupon(coupon)}
                               >
                                 Get
                               </Button>
