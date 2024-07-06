@@ -28,7 +28,7 @@ function ListGroupCar() {
   const [checkDriverDetail, setCheckDriverDetail] = useState(true);
   const { groupCarAndUserString } = useParams();
   console.log("account >>> ", accounts)
-
+  console.log("id >>>> ", userObject.accountId)
   // start show driverdetail
   const countDown =async (id) => {
     let result;
