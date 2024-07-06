@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
-import L from "leaflet";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-// import "leaflet-control-geocoder/dist/Control.Geocoder.js";
-import tradition2 from "../../assets/images/bg_tradition2.png";
 import Input_Tradition from "../../component/layouts/components/Input_Tradition";
-import DriverType from "../../component/layouts/components/driverType";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Select from "react-dropdown-select";
 import { FaCar } from "react-icons/fa";
 import * as UserService from "../../service/UserService";
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
-function Bookingcarpool(props) {
-
+function Bookingcarpool() {
+  let groupCarData = {}
+  let navigate = useNavigate();
+  const [suggestions, setSuggestions] = useState([]);
+  const provider = new OpenStreetMapProvider();
+  const [timeoutId, setTimeoutId] = useState(null);
+  const [currentInput, setCurrentInput] = useState('');
+  const [user, setUser] = useState({});
   const options = [
     { label: "4 seater Car", value: 4, icon: <FaCar /> },
     { label: "6 Seater Car", value: 6, icon: <FaCar /> },
@@ -31,14 +32,9 @@ function Bookingcarpool(props) {
       {item.label}
     </div>
   );
-  let groupCarData = {}
-  let navigate = useNavigate();
-  const [user, setUser] = useState({});
+  
   // gợi ý search start
-  const [suggestions, setSuggestions] = useState([]);
-  const provider = new OpenStreetMapProvider();
-  const [timeoutId, setTimeoutId] = useState(null);
-  const [currentInput, setCurrentInput] = useState('');
+  
   const handleSearch = async (value, inputField) => {
     setCurrentInput(inputField); // Cập nhật trường hiện tại đang nhập
     if (value.length > 3) {
@@ -91,43 +87,39 @@ function Bookingcarpool(props) {
     setGroupCar({ ...groupCar, capacity: values[0].value });
   }
 
-  const onInputChange = (e) => {
+  const onInputChange =async (e) => {
     const { name, value } = e.target;
-    setGroupCar(prevState => ({ ...prevState, [name]: value }));
+    await setGroupCar(prevState => ({ ...prevState, [name]: value }));
     handleSearch(value, name);
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("UserId >>>>> ", user.accountId)
     const { startPoint, endPoint, timeStart, capacity } = groupCar;
 
     if (!startPoint || !endPoint || capacity === 0) {
       alert("Please fill in all required fields.");
       return;
     }
-
+    
     let request = await axios.post("http://localhost:8080/public/addGroupCar", groupCar);
     groupCarData = request.data
-    console.log("groupCarData >>> ", groupCarData)
+    // thay 11 bằng user.accountId
+    await axios.post(`http://localhost:8080/public/addCustomer/11/${groupCarData.groupId}`)
+    console.log("groupCarDataId >>> ", groupCarData.groupId)
     setGroupCar(groupCarData)
 
-    // const userString = encodeURIComponent(JSON.stringify(user));
-    navigate(`/listGroupCar/${encodeURIComponent(JSON.stringify({ groupCarData, user }))}`);
+    navigate(`/mytrip/${user.accountId}`);
   };
-
   return (
     <div
       className="flex items-center h-[600px] flex-col"
-
     >
       <div>
         <div className="flex flex-col items-center rounded-[20px] w-[1750px] h-[350px] bg-orange-300 justify-center pl-4 pr-4 mt-8">
-
-
           <div className="flex flex-row gap-5 relative">
-
-            <div className="w-full relative">
+            <div className="w-full relative pt-11">
               <Input_Tradition
                 label={"Start Point"}
                 placeholder={"Nhập nơi đi"}
@@ -150,7 +142,7 @@ function Bookingcarpool(props) {
                 </ul>
               )}
             </div>
-            <div className="w-full relative">
+            <div className="w-full relative pt-11">
               <Input_Tradition
                 label={"End Point"}
                 placeholder={"Nhập nơi đến"}
@@ -173,7 +165,7 @@ function Bookingcarpool(props) {
                 </ul>
               )}
             </div>
-            <div className="flex flex-row gap-10">
+            <div className="flex flex-row gap-10 pt-11">
               <Input_Tradition
                 label={"Time Start"}
                 name="timeStart"
@@ -183,7 +175,7 @@ function Bookingcarpool(props) {
               />
             </div>
             <div className="flex items-center">
-              <div className="w-[199px] border-white-700 border-solid ">
+              <div className="w-[199px] border-white-700 border-solid pb-1">
                 <label className="font-Roboto font-bold">Select an Item</label>
                 <Select
                   options={options}
@@ -200,20 +192,31 @@ function Bookingcarpool(props) {
             </div>
 
 
-            <div className="flex mt-8 flex-col justify-center">
-              <Link to={`/SearchGroupCar/${encodeURIComponent(JSON.stringify({ groupCar, user }))}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-purple-300 text-white-500">
-                Search
-              </Link>
-            </div>
-            <div className="flex mt-8 flex-col justify-center">
-              <Link to={`/listGroupCar/${encodeURIComponent(JSON.stringify({ groupCarData, user }))}`} onClick={onSubmit} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-300 text-white-500">
-                Create
-              </Link>
-            </div>
-            <div className="flex mt-8 flex-col justify-center">
-              <Link to={`/mytrip/${user.accountId}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-red-300 text-white-500">
-                My trip
-              </Link>
+            <div className="block">
+              <div className="flex">
+                <div className="flex mt-8 flex-col justify-center mx-2">
+                  <Link to={`/SearchGroupCar/${encodeURIComponent(JSON.stringify({ groupCar, user }))}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-purple-300 text-white-500">
+                    Search
+                  </Link>
+                </div>
+                <div className="flex mt-8 flex-col justify-center mx-2">
+                  <Link to={`/mytrip/${user.accountId}`} onClick={onSubmit} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-300 text-white-500">
+                    Create
+                  </Link>
+                </div>
+              </div>
+              <div className="flex">
+                <div className="flex mt-8 flex-col justify-center mx-2">
+                  <Link to={`/mytrip/${user.accountId}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-red-300 text-white-500">
+                    My trip
+                  </Link>              
+                </div>
+                <div className="flex mt-8 flex-col justify-center mx-2">
+                  <Link to={`/listGroupCar/${encodeURIComponent(JSON.stringify(user))}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-green-300 text-white-500">
+                    View trips
+                  </Link>              
+                </div>
+              </div>
             </div>
 
           </div>
