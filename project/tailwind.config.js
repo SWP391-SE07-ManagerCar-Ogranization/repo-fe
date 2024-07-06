@@ -4,17 +4,17 @@ const withMT = require("@material-tailwind/react/utils/withMT");
 module.exports = withMT({
   content: ["./src/**/*.{html,js,jsx}"],
   theme: {
+    letterSpacing: {
+      tightest: "1.8px",
+    },
+    fontFamily: {
+      sora: ["Sora"],
+      volkhov: ["Volkhov"],
+      casanova: ["Casanova Scotia"],
+    },
     extend: {
       backgroundImage:{
         'parallax': 'url("../src/assets/images/car1.png")'
-      },
-      letterSpacing: {
-        tightest: "1.8px",
-      },
-      fontFamily: {
-        sora: ["Sora"],
-        volkhov: ["Volkhov"],
-        casanova: ["Casanova Scotia"],
       },
       screens: {
         mobile: "400px",

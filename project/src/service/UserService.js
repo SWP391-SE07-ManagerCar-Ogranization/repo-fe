@@ -132,8 +132,6 @@ export const getRole = async () => {
 export const isTokenExpire = () => {
   const timeExpire = new Date().getTime() + convertHoursToMilliseconds(localStorage.getItem("expire"));
   const currentTime = new Date().getTime();
-  console.log("currentTime: "+currentTime);
-  console.log("time expire: "+timeExpire);
     if (currentTime > timeExpire) {
         return true; 
     }

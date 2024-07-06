@@ -11,7 +11,6 @@ import AdminRoutes from "./AdminRoutes";
 import DriverRoutes from "./DriverRoutes";
 import CustomerRoutes from "./CustomerRoutes";
 
-import BookingTraditionnel from "../pages/BookingDriverInvoice/Car";
 import CurrentPosition from "../pages/BookingDriverInvoice/CurrentPosition";
 
 const appRoutes = createBrowserRouter([
