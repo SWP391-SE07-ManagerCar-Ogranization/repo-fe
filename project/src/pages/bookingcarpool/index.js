@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-import Input_Tradition from "../../component/layouts/components/Input_Tradition";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Select from "react-dropdown-select";
@@ -9,6 +8,7 @@ import * as UserService from "../../service/UserService";
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import InputTradition from "../../component/layouts/components/InputTradition";
 
 function Bookingcarpool() {
   let groupCarData = {}
@@ -42,8 +42,10 @@ function Bookingcarpool() {
         clearTimeout(timeoutId);
       }
       const newTimeoutId = setTimeout(async () => {
+        console.log("suggesst" + await provider.search({ query: "quang", countrycodes: 'vn' }));
         const results = await provider.search({ query: value, countrycodes: 'vn' });
         setSuggestions(results);
+        console.log("result >>> ", results)
       }, 200); // Đợi 200 ms sau khi người dùng dừng nhập liệu
       setTimeoutId(newTimeoutId);
     } else {
@@ -120,7 +122,7 @@ function Bookingcarpool() {
         <div className="flex flex-col items-center rounded-[20px] w-[1750px] h-[350px] bg-orange-300 justify-center pl-4 pr-4 mt-8">
           <div className="flex flex-row gap-5 relative">
             <div className="w-full relative pt-11">
-              <Input_Tradition
+              <InputTradition
                 label={"Start Point"}
                 placeholder={"Nhập nơi đi"}
                 setPickup={(value) => setGroupCar({ ...groupCar, startPoint: value })}
@@ -143,7 +145,7 @@ function Bookingcarpool() {
               )}
             </div>
             <div className="w-full relative pt-11">
-              <Input_Tradition
+              <InputTradition
                 label={"End Point"}
                 placeholder={"Nhập nơi đến"}
                 setEnd={(value) => setGroupCar({ ...groupCar, endPoint: value })}
@@ -166,7 +168,7 @@ function Bookingcarpool() {
               )}
             </div>
             <div className="flex flex-row gap-10 pt-11">
-              <Input_Tradition
+              <InputTradition
                 label={"Time Start"}
                 name="timeStart"
                 value={groupCar.timeStart}

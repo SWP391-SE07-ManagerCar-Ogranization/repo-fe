@@ -14,7 +14,7 @@ module.exports = withMT({
     },
     extend: {
       backgroundImage:{
-        'parallax': 'url("D:/fpt/SWP/fcar/front-end/project/src/assets/images/car1.png")'
+        'parallax': 'url("../src/assets/images/car1.png")'
       },
       screens: {
         mobile: "400px",
