@@ -11,3 +11,12 @@ export const getAllMessageByGroupCarId = async (id) => {
     }
    
 }
+
+export const getAllPrivateMessagesByDriverAndCustomer = async (customerId, driverDetailId) => {
+    try {
+        const res = await axios.get(`${API_BASE_URL}/get-all-private-message/by-driver-and-customer/${customerId}/${driverDetailId}`)
+        return res.data
+    } catch (error) {
+        console.error(error)
+    }
+}

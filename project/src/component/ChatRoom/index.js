@@ -49,6 +49,7 @@ export default function ChatRoom({group, role}) {
             ...prev,
            groupData,
            setGroupData,
+        
         })
         )
     }, [setTheme, groupData, setGroupData])

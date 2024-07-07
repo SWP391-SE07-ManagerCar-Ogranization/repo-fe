@@ -18,7 +18,7 @@ import {
 
 const ChatRoomPage = () => {
   const {theme, setTheme} = useContext(ChatRoomContext)
-  const {userData, setRole, role} = theme
+  const {userData, setRoleCheck, roleCheck} = theme
 //   const {
 //     token: { colorBgContainer, borderRadiusLG },
 //   } = theme.useToken();

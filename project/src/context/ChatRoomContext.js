@@ -26,7 +26,7 @@ export function ThemeChatRoomProvider( { children } ) {
     {
       invoiceId : 3,
       driverDetailId: 3,
-      customerId: 8,
+      customerId: 7,
       bookingData: "bookingDate",
       startPoint: "City Center",
       endPoint: "Airport",
@@ -37,8 +37,8 @@ export function ThemeChatRoomProvider( { children } ) {
 
 
     const [privateChats, setPrivateChats] = useState(dataInvoiceFake)
-    const [role, setRole] = useState('')
-    const [theme, setTheme] = useState({ hello: 'hello world', userDataFull: null , privateChats, setPrivateChats, role, setRole})
+    const [roleCheck, setRoleCheck] = useState()
+    const [theme, setTheme] = useState({ hello: 'hello world', userDataFull: null , privateChats, setPrivateChats, roleCheck, setRoleCheck})
     const {userData} = theme
 
     const getAccountById_ = async () => {

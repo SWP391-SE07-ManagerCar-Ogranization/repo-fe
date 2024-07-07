@@ -46,19 +46,28 @@ export default function RoomList() {
         role
     } = theme
 
-    console.log("ROLEEEEEEEEEEEEEEEEEEEEEE",role);
+    console.log("ROLEEEEEEEEEEEEEEEEEEEEEE", role);
 
     const handleOnClick = (group) => {
         setGroupData(group)
         setUserData((prev) => ({
             ...prev,
-            groupCarId: group?.groupId
+            groupCarId: group?.groupId,
+            type: "PUBLIC"
         })
         )
     }
 
     const handleOnClickPrivate = (item) => {
-        console.log('handleOnClickPrivate- Data:',item);
+        console.log('handleOnClickPrivate- Data:', item);
+        setUserData((prev) => (
+            {
+                ...prev,
+                driverDetailId: item.driverDetailId,
+                customerId: item.customerId,
+                type: "PRIVATE"
+            }
+        ))
     }
 
     return (
@@ -70,8 +79,10 @@ export default function RoomList() {
                 >
                     {groupCars?.map((item, index) => {
                         console.log("ITEMS: ", item);
-
-                        const className = `flex-1 w-[130%] relative p-1 ${item?.groupId == userData.groupCarId ? " rounded-lg font-bold bg-white z-20" : ""}`
+                        let className = `flex-1 w-[130%] relative p-1`
+                        if (userData?.type != "PRIVATE") {
+                            className = `flex-1 w-[130%] relative p-1 ${item?.groupId == userData?.groupCarId ? " rounded-lg font-bold bg-white z-20" : ""}`
+                        }
 
                         return (
                             <LinkStyled
@@ -96,15 +107,19 @@ export default function RoomList() {
                     key={1}
                 >
                     {privateChats?.map((item, index) => {
-
+                         let className = `flex-1 w-[130%] relative p-1`
+                         if (userData?.type == "PRIVATE") {
+                             className = `flex-1 w-[130%] relative p-1 ${item?.customerId == userData?.customerId ? " rounded-lg font-bold bg-white z-20" : ""}`
+                         }
                         return (
-                            <LinkStyled 
+                            <LinkStyled
                                 key={index}
                                 onClick={() => {
                                     handleOnClickPrivate(item)
-                                }}    
+                                }}
+                                className={className}
                             >
-                               Customer-{item.customerId}
+                                Customer-{item.customerId}
                             </LinkStyled>
                         )
                     })}
