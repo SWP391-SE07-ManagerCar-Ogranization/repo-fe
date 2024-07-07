@@ -4,6 +4,7 @@ import Dashboard from "../layouts/dashboard";
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoutes";
 
+
 const AdminRoutes = () => {
   return {
     children: [
@@ -15,6 +16,7 @@ const AdminRoutes = () => {
           </ProtectedRoute>
         ),
       },
+     
       {
         path: "/dashboard/*",
         element: (

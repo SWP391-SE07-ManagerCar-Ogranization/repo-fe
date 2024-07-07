@@ -1,11 +1,13 @@
 import axios from "axios";
 
-export const getName = async (userTransaction) => {
+const API_BASE_URL = 'http://localhost:8080/public';
+
+export const getAllCustomersByGroupCarId = async (id) => {
     try {
-        const  temp = await axios.get("http://localhost:8080/public/customer/get",userTransaction);
-        return temp.data;
-    }catch (e) {
-        console.log(e);
-        throw e;
+        const res = await axios.get(`${API_BASE_URL}/get-all-customer/group-car-id/${id}`)
+        return res.data;
+    } catch (error) {
+        console.error(error)
     }
-}
+
+} 

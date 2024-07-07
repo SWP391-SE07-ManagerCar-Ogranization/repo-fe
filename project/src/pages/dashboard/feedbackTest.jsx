@@ -16,6 +16,10 @@ import {
     deleteFeedbackById
 
 } from "../../service/FeedbackService";
+
+import {
+    getAccountById
+} from "../../service/AccountService"
 //   
 import { motion } from 'framer-motion';
 
@@ -23,6 +27,8 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import avatarDefault from "../../assets/images/avatarDefault.jpg"
+
+var accountName = ""
 
 export const FeedbackTest = () => {
     const [driverFeedbacks, setDriverFeedbacks] = useState([])
@@ -36,7 +42,9 @@ export const FeedbackTest = () => {
     const [showFeedBack, setShowFeedBack] = useState(false);
     const [deleteChange, setDeleteChange] = useState(false);
 
-    console.log("FeedbackByDriverId: ",feedbacksDriverId);
+    const [nameCustomers, setNameCustomers] = useState([])
+
+    console.log("FeedbackByDriverId: ", feedbacksDriverId);
     //
     const fetchDriverFeedbacks = async () => {
 
@@ -50,15 +58,94 @@ export const FeedbackTest = () => {
         }
     }
 
-    const getAccountId = async (id) => {
+// FIX NAME EMAIL BUG ->>
 
+    const updateDriverFeedbacksByDriverId_ = async () => {
         try {
-            const data = await getAccountId(id)
-            return data
+            let nameList = []; 
+            
+            if (feedbacksDriverId.length !== 0) {
+                const promises = feedbacksDriverId.map(async (feedback) => {
+                    const data = await getAccountById(feedback.customer.id?feedback.customer.id:feedback.customer);
+                    let name = data?.name;
+                    let email = data?.email
+                    console.log(feedback);
+                    console.log(name);
+                    console.log(feedback.customer.id);
+                    return {...feedback,
+                            name: name,
+                            email: email    
+                        }
+                });
+                console.log("PRO: ",promises);
+    
+                nameList = await Promise.all(promises);
+            }
+            
+            console.log("NAME LIST", nameList);
+            setFeedbackDriverId(nameList)
+           
         } catch (error) {
             console.error(error);
         }
     }
+
+    const updateNameEmail_FillterFeedback = async (filteredFeedbacks) => {
+        try {
+           let nameList = [];
+            
+            if (filteredFeedbacks.length !== 0) {
+                const promises = filteredFeedbacks.map(async (feedback) => {
+                    const data = await getAccountById(feedback.driverDetail.id);
+                    let name = data?.name;
+                    let email = data?.email
+                    console.log(feedback);
+                    console.log(name);
+                    console.log(feedback.customer.id);
+                    return {...feedback,
+                            name: name,
+                            email: email    
+                        }
+                });
+                console.log("PRO: ",promises);
+    
+                nameList = await Promise.all(promises);
+            }
+            
+            console.log("NAME LIST", nameList);
+            setFilterFeedback(nameList);
+           
+        } catch (error) {
+            console.error(error);
+        }
+    
+        
+    }
+
+    
+        
+    useEffect(() => {
+        try {
+            updateDriverFeedbacksByDriverId_();
+        } catch (error) {
+            console.error(error);
+        }
+    }, [showListByDriverId]);
+
+    // FIX NAME EMAIL BUG - end
+    
+ 
+
+    // const test = async (id) => {
+
+    //     try {
+    //         const data = await getAccountById(id)
+    //         console.log(data);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
+    // test(11)
 
     const getAllFeedbacksByDriver = async (driverDetailId) => {
 
@@ -77,22 +164,24 @@ export const FeedbackTest = () => {
 
     }
 
+
     const handleShowFeedbacks = async (id) => {
         await getAllFeedbacksByDriver(id)
+
         if (id === showListByDriverId) {
             setShowListByDriverId(-1)
         } else {
             setShowListByDriverId(id)
         }
 
-        console.log(feedbacksDriverId, " + " , showListByDriverId);
+        console.log(feedbacksDriverId, " + ", showListByDriverId);
     }
 
     const handleDeleteFeeback = async (id, feedback) => {
         await deleteFeeback(id)
         const updatedFeedbacks = feedbacksDriverId.filter((el) => el !== feedback)
         console.log("updated-Feedbacks: ", updatedFeedbacks);
-        setFeedbackDriverId(updatedFeedbacks) 
+        setFeedbackDriverId(updatedFeedbacks)
         setDeleteChange(!deleteChange)
         console.log('delete')
     }
@@ -112,17 +201,21 @@ export const FeedbackTest = () => {
 
     useEffect(() => {
         driverIds.map((id) => {
-            const filter = driverFeedbacks.filter((feedback) => feedback?.driverDetail.id === id)
+            const filter = driverFeedbacks.filter((feedback) => feedback?.driverDetail.id == id)
             setFilterFeedback(prev => [...prev, ...filter])
         })
 
     }, [])
 
-    useEffect(() => {
+    useEffect( () => {
         const filteredFeedbacks = driverIds.map(id =>
             driverFeedbacks.filter(feedback => feedback?.driverDetail?.id === id)
         ).flat();
-        setFilterFeedback(filteredFeedbacks);
+
+        updateNameEmail_FillterFeedback(filteredFeedbacks)
+
+        console.log("AAAAAAAAAAAAAAAAAAAA: ", filteredFeedbacks);
+    
     }, [driverIds, driverFeedbacks]);
 
     useEffect(() => {
@@ -135,7 +228,7 @@ export const FeedbackTest = () => {
         const date = new Date(string)
         console.log(date);
         return date.toLocaleString()
-      }
+    }
 
     return (
         <div className="mt-12 mb-8 flex flex-col gap-12">
@@ -165,26 +258,33 @@ export const FeedbackTest = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filterFeedback?.map((feedback, key) => {
+                            {filterFeedback?.map( (feedback, key) => {
                                 const className = `py-3 px-5 ${key === filterFeedback.length - 1 ? "" : "border-b border-blue-gray-50"
                                     }`;
 
+                                //getAccountIn4ByDriverDetailId
+                                const accountId = feedback?.driverDetail?.id
+                             
+                           
+                            
                                 return (
                                     <>
                                         <tr className={showListByDriverId === feedback?.driverDetail.id ? `glow` : ``}>
                                             <td className={className}>
                                                 <div className="flex items-center gap-4">
-                                                    <Avatar src={feedback?.driverDetail?.account?.image?feedback?.driverDetail?.account?.image:avatarDefault} alt={feedback?.driverDetail?.account?.name} size="sm" variant="rounded" />
+                                                    <Avatar src={feedback?.driverDetail?.account?.image ? feedback?.driverDetail?.account?.image : avatarDefault} alt={feedback?.driverDetail?.account?.name} size="sm" variant="rounded" />
                                                     <div>
                                                         <Typography
                                                             variant="small"
                                                             color="blue-gray"
                                                             className="font-semibold"
                                                         >
-                                                            {feedback?.driverDetail?.account?.name}
+                                                            {feedback?.name}
+
                                                         </Typography>
                                                         <Typography className="text-xs font-normal text-blue-gray-500">
-                                                            {feedback?.driverDetail?.account?.email}
+                                                            {feedback?.email}
+                                                        
                                                         </Typography>
                                                     </div>
                                                 </div>
@@ -198,7 +298,7 @@ export const FeedbackTest = () => {
                                                             className="font-semibold"
                                                         >
                                                             {feedback?.driverDetail?.rating}
-                                                            <span class="star-icon full">☆</span>
+                                                            <span className="text-orange-400">☆</span>
                                                         </Typography>
                                                     </div>
                                                 </div>
@@ -275,6 +375,7 @@ export const FeedbackTest = () => {
                                                                                             className="font-semibold text-[12px]"
                                                                                         >
                                                                                             {el?.feedbackId}
+                                                                                        
                                                                                         </Typography>
                                                                                     </div>
                                                                                 </div>
@@ -283,7 +384,7 @@ export const FeedbackTest = () => {
                                                                             <td className={className}>
                                                                                 <div className="flex items-center gap-4">
                                                                                     <Avatar
-                                                                                        src={el?.customer?.account?.image?el?.customer?.account?.image:avatarDefault}
+                                                                                        src={el?.customer?.account?.image ? el?.customer?.account?.image : avatarDefault}
                                                                                         alt={el?.customer?.account?.name}
                                                                                         size="sm"
                                                                                         variant="rounded"
@@ -294,10 +395,11 @@ export const FeedbackTest = () => {
                                                                                             color="blue-gray"
                                                                                             className="font-semibold"
                                                                                         >
-                                                                                            {el?.customer?.account?.name}
+                                                                                            {el?.name}
                                                                                         </Typography>
                                                                                         <Typography className="text-xs font-normal text-blue-gray-500">
                                                                                             {el?.customer?.email}
+                                                                                            {el?.email}
                                                                                         </Typography>
                                                                                     </div>
                                                                                 </div>
@@ -341,7 +443,7 @@ export const FeedbackTest = () => {
                                                                                                     text: "Your file has been deleted.",
                                                                                                     icon: "success",
                                                                                                 });
-                                                                                                console.log(el?.feedbackId)                                                                          
+                                                                                                console.log(el?.feedbackId)
                                                                                                 handleDeleteFeeback(el?.feedbackId, el)
                                                                                             }
                                                                                         });

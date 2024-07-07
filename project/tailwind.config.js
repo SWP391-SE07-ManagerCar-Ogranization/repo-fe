@@ -18,13 +18,18 @@ module.exports = withMT({
       },
       screens: {
         mobile: "400px",
-        // => @media (min-width: 640px) { ... }
-
         ipad: "768px",
-        // => @media (min-width: 1024px) { ... }
-
         desktop: "1100px",
-        // => @media (min-width: 1280px) { ... }
+      },
+      colors: {
+        "orange-300": "#FF5F00",
+        "purple-300": "#CAACFF",
+        "gray-300": "#999999",
+        "white-700": "#F7F8FC",
+        "gray-900": "#D9D9D9",
+        "orange-500": "#FA7436",
+        "white-500": "#FFFFFF",
+        "white-700": "rgba(201, 201, 207, 1)",
       },
       border: {},
       fontSize: {
@@ -45,6 +50,5 @@ module.exports = withMT({
       },
     },
   },
-
   plugins: [],
 });

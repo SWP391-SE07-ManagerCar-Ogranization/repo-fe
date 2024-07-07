@@ -15,10 +15,45 @@ import Booking from "../pages/BookingDriverInvoice/Car";
 import BookingTraditional from "../pages/BookingDriverInvoice/Car";
 import ViewTripBooking from "../pages/BookingDriverInvoice/ViewTripBooking";
 import CurrentPosition from "../pages/BookingDriverInvoice/CurrentPosition";
+import ChatRoom from "../component/ChatRoom"
+import Rooms from "../component/ChatRoom/Rooms";
+import ChatRoomPage from "../component/driver/ChatRoomPage";
 
 const CustomerRoutes = () => {
   return {
     children: [
+      {
+        path: "/room",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+            <Rooms />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "/triplist",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+            <Rooms />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "/driverchat",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+            <ChatRoomPage />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "/room/chatroom/*",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+           <ChatRoom/>
+          </ProtectedRoute>
+        )
+      },
       {
         path: "/update-user/:userId",
         element: (
