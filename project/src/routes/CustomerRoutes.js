@@ -46,7 +46,7 @@ const CustomerRoutes = () => {
       {
         path: "/wallet/your-wallet",
         element: (
-          <ProtectedRoute roles={["CUSTOMER"]}>
+          <ProtectedRoute roles={["CUSTOMER", "DRIVER"]}>
             <WalletPage />
           </ProtectedRoute>
         ),

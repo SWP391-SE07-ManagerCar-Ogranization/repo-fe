@@ -20,3 +20,26 @@ export const getAllTransactionByAccount = async (token) =>{
         throw e;
     }
 }
+export const getUserTransactionByDriverInfo = async (token) => {
+    try {
+        const  temp = await axios.get("http://localhost:8080/public/driver/get-invoice",  {
+            headers: {Authorization: `Bearer ${token}`}
+        });
+        return temp.data;
+    }catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+export const addInvoiceAndTransaction = async(invoice,token) => {
+    // in invoice provide only 3 values: startPoint, endPoint, timeStart
+    try {
+        const  temp = await axios.post("http://localhost:8080/public/invoice/add/new-trip",invoice,  {
+            headers: {Authorization: `Bearer ${token}`}
+        });
+        return temp.data;
+    }catch (e) {
+        console.log(e);
+        throw e;
+    }
+}

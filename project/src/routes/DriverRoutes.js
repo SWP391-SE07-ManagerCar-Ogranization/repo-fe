@@ -1,6 +1,7 @@
 import React from "react";
 import ProtectedRoute from "./ProtectedRoutes";
 import WorkingPage from "../component/driver/WorkingPage";
+import TrackRevenuePage from "../component/driver/TrackRevenuePage";
 
 const DriverRoutes = () => {
   return {
@@ -17,7 +18,7 @@ const DriverRoutes = () => {
         path: "/track-revenue",
         element: (
           <ProtectedRoute roles={["DRIVER"]}>
-            <WorkingPage />
+            <TrackRevenuePage />
           </ProtectedRoute>
         ),
       },
