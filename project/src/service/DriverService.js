@@ -13,10 +13,18 @@ export const setWorkingStatus = async (token, workingStatus,latitude,longitude) 
 }
 export const updateTripFinished = async(token, invoiceId) => {
     try {
-        console.log("invoice id: "+ invoiceId);
-        const  temp = await axios.post("http://localhost:8080/public/driver/confirm-invoice", {invoiceId}, {
+        const temp = await axios.post("http://localhost:8080/public/driver/confirm-invoice", {invoiceId}, {
             headers: {Authorization: `Bearer ${token}`}
         });
+        return temp.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+export const getAllDriverType = async() => {
+    try {
+        const temp = await axios.get("http://localhost:8080/public/driver/list/driver-type/car");
         return temp.data;
     } catch (error) {
         console.log(error);
