@@ -22,6 +22,17 @@ export const updateTripFinished = async(token, invoiceId) => {
         throw error;
     }
 }
+export const updateGroupCarFinished = async(token, groupId) => {
+    try {
+        const temp = await axios.post("http://localhost:8080/public/driver/confirm-group", {groupId}, {
+            headers: {Authorization: `Bearer ${token}`}
+        });
+        return temp.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
 export const getAllDriverType = async() => {
     try {
         const temp = await axios.get("http://localhost:8080/public/driver/list/driver-type/car");

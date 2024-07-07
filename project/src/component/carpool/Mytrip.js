@@ -15,6 +15,7 @@ import LeafletRoutingMachine from "./map/LeafletRoutingMachine";
 import { Modal } from "antd";
 import { toast } from "react-toastify";
 import { getAccountDriverByGroupCarJoin } from "../../service/DriverService";
+import { getUserTransactionByCustomerAndGroupCar, paymentTransaction } from "../../service/TransactionService";
 
 function ListGroupCar() {
   const [groupCars, setGroupCars] = useState([]);
@@ -28,7 +29,11 @@ function ListGroupCar() {
   const [driverDetail, setDriverDetail] = useState({ name: "", phone: "" });
   const [accounts, setAccounts] = useState([]);
   const [checkDriverDetail, setCheckDriverDetail] = useState(true);
-
+  const [transaction, setTransaction] = useState({
+    transactionId: "",
+    amount: "",
+    nameDriver: "",
+  });
   // start map
   const toggleMapVisibility = () => {
     setCheckMap(!checkMap);
@@ -158,8 +163,14 @@ function ListGroupCar() {
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleOk = async() => {
+    try {
+      const response = await paymentTransaction(transaction, localStorage.getItem('token'));
+      toast.success(response);
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error(error);
+    }
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -168,7 +179,8 @@ function ListGroupCar() {
   const handlePayment = (groupCar) => {
     try {
       showModal();
-      toast.success("Pay success");
+      loadTransactionByCustomerAndGroupCar(groupCar);
+      // toast.success("Pay success");
     } catch (error) {
       toast.error("Payment Error");
     }
@@ -177,7 +189,6 @@ function ListGroupCar() {
     try {
       const result = await getAccountDriverByGroupCarJoin(id);
       setDriverDetail(result);
-      console.log("nammm: " + driverDetail.name);
       modal.success({
         title: `Name : ${driverDetail.name}`,
         content: `Phone : ${driverDetail.phone}`,
@@ -232,6 +243,24 @@ function ListGroupCar() {
       setGroupCarDetail(result.data);
     } catch (error) {
       console.error("Error loading group car by ID:", error);
+    }
+  };
+
+  const loadTransactionByCustomerAndGroupCar = async (groupCar) => {
+    try {
+      console.log("Geroup Car: " + groupCar);
+      const response = await getUserTransactionByCustomerAndGroupCar(
+        localStorage.getItem("token"),
+        groupCar.groupId
+      );
+      setTransaction({
+        transactionId: response.userTransaction.transactionId,
+        amount: response.userTransaction.amount,
+        nameDriver: response.nameDriver,
+      });
+      console.log(response);
+    } catch (error) {
+      toast.error("Can't load transaction");
     }
   };
 
@@ -321,19 +350,30 @@ function ListGroupCar() {
                   </button>
                 </td>
                 <td className="px-6 py-4">
-                  <button
-                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
-                    onClick={() => handlePayment(groupCar)}
-                  >
-                    Pay
-                  </button>
+                  {checkDriverDetail ? (
+                    <button
+                      className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
+                      onClick={() => handlePayment(groupCar)}
+                    >
+                      Pay
+                    </button>
+                  ) : (
+                    <button
+                      className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
+                      onClick={() => handlePayment(groupCar)}
+                      disabled
+                    >
+                      Pay
+                    </button>
+                  )}
                   <Modal
                     title="Payment"
                     open={isModalOpen}
                     onOk={handleOk}
                     onCancel={handleCancel}
                   >
-                    <p>TransactionService</p>
+                    <p>Amount: {transaction.amount}</p>
+                    <p>Name Driver: {transaction.nameDriver}</p>
                   </Modal>
                 </td>
               </tr>
