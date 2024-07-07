@@ -1,5 +1,5 @@
 import { Breadcrumb, Layout, Space, Switch, theme } from "antd";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState} from "react";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import Header from "../../layouts/Header";
 import { Content, Footer } from "antd/es/layout/layout";
@@ -7,28 +7,12 @@ import FooterWithSocialLinks from "../../layouts/Footer";
 import * as UserService from "../../service/UserService";
 import * as DriverService from "../../service/DriverService";
 import { toast } from "react-toastify";
-import { Link } from 'react-router-dom';
 import { getCurrentLocation } from "../../service/PositionService";
 import { getUserTransactionByDriverInfo } from "../../service/TransactionService";
 import { Button } from "@material-tailwind/react";
-import axios from "axios";
-import { Modal } from 'antd';
 import { Card } from 'antd';
-import { IoIosCloseCircle } from "react-icons/io";
-import L from "leaflet";
-import LeafletGeocoder from "../carpool/map/LeafletGeocoder";
-import LeafletRoutingMachine from "../carpool/map/LeafletRoutingMachine";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-import "leaflet-control-geocoder/dist/Control.Geocoder.js";
-import * as TransactionService from '../../service/TransactionService'
-import * as PaymentService from '../../service/PaymentService'
 
 const WorkingPage = () => {
-  const formatDate = (dateString) => {
-    const newDate = new Date(dateString);
-    return newDate.toLocaleString();
-  };
 
   const {
     token: { colorBgContainer, borderRadiusLG },

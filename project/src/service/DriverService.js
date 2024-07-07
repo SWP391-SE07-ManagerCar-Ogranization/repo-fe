@@ -31,3 +31,23 @@ export const getAllDriverType = async() => {
         throw error;
     }
 }
+export const joinGroupCar = async(token, groupId) => {
+    try {
+        const temp = await axios.post("http://localhost:8080/public/driver/join-group", {groupId}, {
+            headers: {Authorization: `Bearer ${token}`}
+        });
+        return temp.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+export const getAccountDriverByGroupCarJoin = async(id) => {
+    try {
+        const temp = await axios.get(`http://localhost:8080/public/driver/list/group-had-join/${id}`);
+        return temp.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}

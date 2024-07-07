@@ -132,6 +132,7 @@ function Bookingcarpool() {
       const response = await addGroupCar(localStorage.getItem('token'),groupCar);
       console.log(response);
       toast.success("Create Group Success");
+      navigate(`/mytrip/${user.accountId}`);
     } catch (error) {
       toast.error(error);
     }
@@ -143,7 +144,6 @@ function Bookingcarpool() {
     // console.log("groupCarDataId >>> ", groupCarData.groupId)
     // setGroupCar(groupCarData)
 
-    // navigate(`/mytrip/${user.accountId}`);
   };
   return (
     <div

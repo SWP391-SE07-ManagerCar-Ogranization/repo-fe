@@ -18,6 +18,8 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import * as TransactionService from '../../service/TransactionService'
 import * as PaymentService from '../../service/PaymentService'
+import { toast } from "react-toastify";
+import { joinGroupCar } from "../../service/DriverService";
 
 const GroupWorkingPage = () => {
   // load groupCar start
@@ -70,10 +72,9 @@ const GroupWorkingPage = () => {
   // join
   const handleJoin = async (groupId) => {
     try {
-
-      await axios.post(`http://localhost:8080/public/addDriverDetailOfGroup/${groupId}/${user.accountId}`);
-
-      alert('Join successfully')
+        const response = await joinGroupCar(localStorage.getItem("token"),groupId);
+        console.log(response);
+        toast.success('Join successfully');
       // Update quantity of the joined groupCar
       // Set updated groupCars state
       // handleSubmit();
@@ -82,7 +83,7 @@ const GroupWorkingPage = () => {
       setReload(!reload);
     } catch (error) {
       // Alert join fail
-      alert('Join fail');
+      toast.error('Join fail');
     }
   };
   // start show driverdetail
@@ -97,10 +98,8 @@ const GroupWorkingPage = () => {
         content: `Phone : ${driverDetail.phone}`,
       });
     } catch (error) {
-      alert("The group does not have a driver yet");
+      toast.error("Group not have a driver");
     }
-
-
   };
   // map start //
   const [checkMap, setCheckMap] = useState(false);
@@ -132,7 +131,6 @@ const GroupWorkingPage = () => {
     map.setView(position);
     return null;
   };
-  let groupCarData = {};
   let DefaultIcon = L.icon({
     iconUrl: "/marker-icon.png",
     iconSize: [25, 41],
@@ -144,7 +142,7 @@ const GroupWorkingPage = () => {
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
   const [routeInfo, setRouteInfo] = useState("");
-  const [position, setPosition] = useState([16.047079, 108.20623]); // initial map center
+  const [position, setPosition] = useState([16.047079, 108.20623]); 
   const mapRef = useRef();
   const [reload, setReload] = useState(false);
   const [distance, setDistance] = useState(0);
@@ -163,22 +161,6 @@ const GroupWorkingPage = () => {
     const time = (summary.totalTime / 60).toFixed(2) + " minutes";
     setRouteInfo(`Distance: ${distance}, time: ${time}`);
   };
-
-  const handleSubmit = async (e) => {
-    try {
-      await TransactionService.addTrans(resrep);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handlePayment = async (e) => {
-    try {
-      await PaymentService.charge(resrep.amount);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
 
   const geocodeAddress = (address, callback) => {
     const geocoder = L.Control.Geocoder.nominatim();
