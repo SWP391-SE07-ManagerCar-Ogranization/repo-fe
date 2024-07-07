@@ -122,15 +122,19 @@ function Bookingcarpool() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log("UserId >>>>> ", user.accountId)
     const { startPoint, endPoint, timeStart, capacity } = groupCar;
 
     if (!startPoint || !endPoint || capacity === 0) {
       toast.error("Please fill in all required fields.");
       return;
     }
-    const response = await addGroupCar(localStorage.getItem('token'),groupCar);
-    console.log(response);
+    try {
+      const response = await addGroupCar(localStorage.getItem('token'),groupCar);
+      console.log(response);
+      toast.success("Create Group Success");
+    } catch (error) {
+      toast.error(error);
+    }
     
     // let request = await axios.post("http://localhost:8080/public/group-car/add", groupCar);
     // groupCarData = request.data
