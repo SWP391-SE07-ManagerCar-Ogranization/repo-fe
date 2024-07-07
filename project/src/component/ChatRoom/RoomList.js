@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import {
     Button,
     Collapse,
@@ -10,7 +10,7 @@ import {
 } from '../../context/ChatRoomContext'
 import { useNavigate } from 'react-router-dom';
 
-const {Panel} = Collapse
+const { Panel } = Collapse
 
 const PanelStyled = styled(Panel)`
     &&&{
@@ -31,55 +31,89 @@ const LinkStyled = styled(Typography.Link)`
 `;
 
 export default function RoomList() {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const { theme, setTheme } = useContext(ChatRoomContext)
-    const { groupCars, setGroupCars, groupData, setGroupData, userData, setUserData } = theme
-    console.log("GROUPPPP>>", groupCars);
+    const {
+        groupCars,
+        setGroupCars,
+        groupData,
+        setGroupData,
+        userData,
+        setUserData,
+        setDriverDetail,
+        privateChats,
+        setPrivateChats,
+        role
+    } = theme
+
+    console.log("ROLEEEEEEEEEEEEEEEEEEEEEE",role);
 
     const handleOnClick = (group) => {
-        console.log(group);
-
         setGroupData(group)
-        setUserData({
-            ...userData,
-            groupCarId: group?.groupCarId
+        setUserData((prev) => ({
+            ...prev,
+            groupCarId: group?.groupId
         })
+        )
     }
 
-    return(
-        <>
-          <Collapse ghost defaultActiveKey={['1']}>
-            <PanelStyled
-                header="Public Chat"
-                key={1}      
-            >
-                {groupCars?.map((item)=>{
+    const handleOnClickPrivate = (item) => {
+        console.log('handleOnClickPrivate- Data:',item);
+    }
 
-                    return(
-                        <LinkStyled onClick={()=>{
-                            handleOnClick(item)
-                        }}>
-                            {item?.groupName}
-                        </LinkStyled>
-                    )
-                })}
-               
-               
-            </PanelStyled>
-        </Collapse>
-        <Collapse ghost defaultActiveKey={['1']}>
-            <PanelStyled
-                header="Privte Chat"
-                key={1}      
-            >
-                <LinkStyled>Tom</LinkStyled>
-                <LinkStyled>Jerry</LinkStyled>
-                <LinkStyled>Quan</LinkStyled>
-                <LinkStyled>Kiệt</LinkStyled>
-            </PanelStyled>
-        </Collapse>
+    return (
+        <>
+            <Collapse className="" ghost defaultActiveKey={['1']}>
+                <PanelStyled
+                    header="Public Chat"
+                    key={1}
+                >
+                    {groupCars?.map((item, index) => {
+                        console.log("ITEMS: ", item);
+
+                        const className = `flex-1 w-[130%] relative p-1 ${item?.groupId == userData.groupCarId ? " rounded-lg font-bold bg-white z-20" : ""}`
+
+                        return (
+                            <LinkStyled
+                                key={index}
+                                onClick={() => {
+                                    handleOnClick(item)
+                                }}
+                                className={className}
+
+                            >
+                                {`GroupCar-${item?.groupId}`}
+                            </LinkStyled>
+                        )
+                    })}
+
+
+                </PanelStyled>
+            </Collapse>
+            <Collapse ghost defaultActiveKey={['1']}>
+                <PanelStyled
+                    header="Privte Chat"
+                    key={1}
+                >
+                    {privateChats?.map((item, index) => {
+
+                        return (
+                            <LinkStyled 
+                                key={index}
+                                onClick={() => {
+                                    handleOnClickPrivate(item)
+                                }}    
+                            >
+                               Customer-{item.customerId}
+                            </LinkStyled>
+                        )
+                    })}
+
+
+                </PanelStyled>
+            </Collapse>
         </>
-      
-        
+
+
     )
 }

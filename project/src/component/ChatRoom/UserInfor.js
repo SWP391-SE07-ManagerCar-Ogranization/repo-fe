@@ -18,12 +18,12 @@ import {
 export default function UserInfor() {
     const navigate = useNavigate()
     const { theme, setTheme } = useContext(ChatRoomContext)
-    const { userDataFull, groupData, setGroupData, groupCars, setGroupCars } = theme
+    const { userDataFull, groupData, setGroupData, groupCars, setGroupCars ,setDisplayChatRoom} = theme
 
     const handleOutGroup = (customerId, groupCarId) => {
         try {
             outGroup_(customerId, groupCarId)
-            navigate(`/room/`)
+            setDisplayChatRoom(null)
         } catch (error) {
             
         }

@@ -3,8 +3,7 @@ import FeedbackDriver from "../pages/Customer/feedbackDriver";
 import Dashboard from "../layouts/dashboard";
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoutes";
-import ChatRoom from "../component/ChatRoom"
-import Rooms from "../component/ChatRoom/Rooms";
+
 
 const AdminRoutes = () => {
   return {
@@ -17,22 +16,7 @@ const AdminRoutes = () => {
           </ProtectedRoute>
         ),
       },
-      {
-        path: "/room",
-        element: (
-          <ProtectedRoute roles={["ADMIN"]}>
-            <Rooms />
-          </ProtectedRoute>
-        )
-      },
-      {
-        path: "/room/chatroom/*",
-        element: (
-          <ProtectedRoute roles={["ADMIN"]}>
-           <ChatRoom/>
-          </ProtectedRoute>
-        )
-      },
+     
       {
         path: "/dashboard/*",
         element: (

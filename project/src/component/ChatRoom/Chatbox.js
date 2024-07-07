@@ -25,18 +25,22 @@
     import {
         ChatRoomContext
     } from '../../context/ChatRoomContext'
+    import axios from 'axios';
 
 
 
     let stompClient = null;
 
 
-    export default function Chatbox({ group }) {
+    export default function Chatbox({ group, role }) {
+        console.log("FUKKKK", role);
+    
         
         const {theme, setTheme} = useContext(ChatRoomContext)
 
         const [messages, setMessages] = useState([])
         const [customers, setCustomers] = useState([])
+        const [driverDetail, setDriverDetail] = useState(null)
 
         const [userData, setUserData] = useState({
             userId: group.customerId,
@@ -47,6 +51,17 @@
             createdAt: ""
         });
 
+        // useEffect(()=>{
+        //     if (role=="DRIVER") {
+        //         const newUserData ={
+        //             ...userData,
+        //             userId: group?.driverDetailId
+        //         }
+        //         console.log("NEWUSERDATADRIVER>>>",newUserData);
+        //         setUserData(newUserData)
+        //     }
+        // },[])
+
         const chatMessagesRef = useRef(null); // Ref for chat-messages element
         const inputMess = useRef()
 
@@ -56,10 +71,12 @@
                 customers,
                 setCustomers,
                 userData,
-                setUserData
+                setUserData,
+                driverDetail,
+                setDriverDetail
             })
             )
-        }, [setTheme, customers, userData, setCustomers, setUserData])
+        }, [setTheme, customers, userData, setCustomers, setUserData, driverDetail, setDriverDetail])
 
         const getAllMessagesByGroupCarId_ = async (id) => {
             try {
@@ -81,6 +98,23 @@
 
         }
 
+        const getDriverDetailDataByGroupId = async () => {
+            
+            try {
+              const result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${userData.groupCarId}`)
+              console.log("RESULT:>>",result.data);
+              setDriverDetail(result.data);
+              
+            } catch (error) {
+                setDriverDetail(null)
+              console.error(error);
+            }}
+
+        useEffect(()=>{
+            getDriverDetailDataByGroupId()
+        }, [userData])
+        
+
         useEffect(() => {
             // Call registerUser() immediately on component mount
             registerUser();
@@ -89,12 +123,22 @@
 
 
         useEffect(() => {
-            getAllMessagesByGroupCarId_(group.groupCarId)
-        }, [group])
+            if(group.groupCarId){
+                getAllMessagesByGroupCarId_(group.groupCarId)
+            }else{
+                getAllMessagesByGroupCarId_(userData.groupCarId)
+            }
+            
+        }, [group, userData])
 
         useEffect(() => {
-            getAllCustomersByGroupCarId_(group.groupCarId)
-        }, [group])
+            if(group.groupCarId){
+                getAllCustomersByGroupCarId_(group.groupCarId)
+            }else{
+                getAllCustomersByGroupCarId_(userData.groupCarId)
+            }
+         
+        }, [group, userData])
 
         useEffect(() => {
             // Scroll chat-messages to bottom when publicChats or privateChats change
@@ -166,7 +210,7 @@
         
         const onPublicMessageReceived = (payload) => {
         console.log("Payload:",payload);
-        getAllMessagesByGroupCarId_(group.groupCarId)
+        getAllMessagesByGroupCarId_(userData?.groupCarId)
         inputMess?.current?.focus()
         };
 
@@ -177,10 +221,12 @@
             if (stompClient && stompClient.connected) {
                 let chatMessage = {
                     userId: userData.userId,
+                    role: role,
                     message: userData.message,
                     groupCarId: userData.groupCarId,
                     status: "MESSAGE"
                 };
+                console.log("CHATMESSAGE:>>", chatMessage);
                 stompClient.send('/app/message', {}, JSON.stringify(chatMessage));
                 setUserData({ ...userData, "message": "" });
                 // console.log("UserData", userData);
@@ -189,8 +235,9 @@
             }
         }
 
-        // console.log("All_Message>>>>", messages)
-        // console.log("All_Customer>>>>", customers)
+        console.log("All_Message>>>>", messages)
+        console.log("All_Customer>>>>", customers)
+        console.log("Driver_Detail>>>>", driverDetail)
         // console.log("Theme>>>>:", theme);
 
         return (
@@ -230,14 +277,31 @@
                             {messages?.map((message, index) => {
 
                                 const customer = customers.find(customer => customer.accountId === message.customer || (message.customer && customer.accountId === message.customer.id));
-                                const customerName = customer ? customer.name : 'Unknown Customer';
+                                let customerName = customer ? customer.name : 'Unknown';
+                                let roleChat = 'CUSTOMER'
+                                if(message.driverDetail != null && (message.driverDetail.id == driverDetail.accountId || message.driverDetail == driverDetail.accountId)) {
+                                    customerName = driverDetail.name
+                                    roleChat = 'DRIVER'
+                                }
+
                                 let isTargetUser = false
+                             
+                                    if(role=="DRIVER" && (userData?.userId == message?.driverDetail || userData?.userId == message?.driverDetail?.id)){
+                                        isTargetUser = true
+                                        console.log(`IDMESS= ${index} + ROLE = ${role} + userData?.userId= ${userData?.userId} + message?.driverDetail?.id= ${message?.driverDetail}`);
+    
+                                    }
+            
+                               
                                 if(typeof message.customer == 'object' && message.customer !== null){
-                                    if (message?.customer?.id == group.customerId){
+                                    
+                                    if (message?.customer?.id == userData.userId ){
                                         isTargetUser = true
                                     }
+                                   
+                                   
                                 }else{
-                                    if (message?.customer == group?.customerId) {
+                                    if (message?.customer ==userData.userId) {
                                         isTargetUser = true
                                     }
                                 }
@@ -264,6 +328,7 @@
                                             text={message.content}
                                             avatar={customerName == 'Do Lar' ? avt : null}
                                             name={customerName}
+                                            role={roleChat}
                                             createdAt={formatDate(message.createdAt).split(",")[1]} />
                                     </div>
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import axios from "axios";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { IoIosCloseCircle } from "react-icons/io";
 import { Link } from 'react-router-dom';
 import { Card } from 'antd';
@@ -13,10 +13,13 @@ import LeafletGeocoder from './map/LeafletGeocoder';
 import LeafletRoutingMachine from './map/LeafletRoutingMachine';
 import * as TransactionService from './../../service/TransactionService'
 import * as PaymentService from './../../service/PaymentService'
+import { ChatRoomContext } from "../../context/ChatRoomContext"
 
 import { Modal } from 'antd';
+import ChatRoom from '../ChatRoom';
 
 function ListGroupCar() {
+  const navigate = useNavigate();
   const [groupCars, setGroupCars] = useState([]);
   const { accountId: userId } = useParams();
   const [checkMap, setCheckMap] = useState(false);
@@ -29,13 +32,28 @@ function ListGroupCar() {
   const [accounts, setAccounts] = useState([]);
   const [checkDriverDetail, setCheckDriverDetail] = useState(true);
 
+
+  const {theme, setTheme} = useContext(ChatRoomContext)
+  const [displayChatRoom, setDisplayChatRoom] = useState(null)
+
+  useEffect(()=> {
+      setTheme((prev)=> ({
+          ...prev,
+          groupCars,
+          setGroupCars,
+          displayChatRoom,
+          setDisplayChatRoom
+      })
+      )
+  }, [setTheme, groupCars, setGroupCars, displayChatRoom, setDisplayChatRoom])
+
   // start map
   const UpdateMapCenter = ({ position }) => {
     const map = useMap();
     map.setView(position);
     return null;
   };
-  let groupCarData={};
+  let groupCarData = {};
   let DefaultIcon = L.icon({
     iconUrl: "/marker-icon.png",
     iconSize: [25, 41],
@@ -43,7 +61,7 @@ function ListGroupCar() {
     popupAnchor: [2, -40],
   });
   L.Marker.prototype.options.icon = DefaultIcon;
-  
+
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
   const [routeInfo, setRouteInfo] = useState("");
@@ -62,7 +80,7 @@ function ListGroupCar() {
   });
   const handleRouteFound = (summary) => {
     setDistance((summary.totalDistance / 1000).toFixed(2));
-    setResrep({ ...resrep, amount: (summary.totalDistance / 1000).toFixed(2)*10000 });
+    setResrep({ ...resrep, amount: (summary.totalDistance / 1000).toFixed(2) * 10000 });
     const time = (summary.totalTime / 60).toFixed(2) + " minutes";
     setRouteInfo(`Distance: ${distance}, time: ${time}`);
   };
@@ -71,14 +89,14 @@ function ListGroupCar() {
     try {
       await TransactionService.addTrans(resrep);
     } catch (error) {
-      console.error( error);
+      console.error(error);
     }
   };
   const handlePayment = async (e) => {
     try {
       await PaymentService.charge(resrep.amount);
     } catch (error) {
-      console.error( error);
+      console.error(error);
     }
   };
 
@@ -128,9 +146,9 @@ function ListGroupCar() {
       alert("Please enter both start and end addresses.");
     }
   };
-  useEffect(()=>{
-    console.log("routeInfo >>>> ",routeInfo)
-  },[routeInfo])
+  useEffect(() => {
+    console.log("routeInfo >>>> ", routeInfo)
+  }, [routeInfo])
   useEffect(() => {
     if (startPoint && endPoint) {
       handleSearchClick();
@@ -142,39 +160,41 @@ function ListGroupCar() {
       setStartPoint(start);
       geocodeAddress(groupCar.endPoint, (end) => {
         setEndPoint(end);
-      setResrep({ ...resrep, startPoint: start.lat, endPoint: end.lat});
+        setResrep({ ...resrep, startPoint: start.lat, endPoint: end.lat });
 
       });
     });
   };
   // end map 
   // start show driverdetail
-  const countDown =async (id) => {
+  const countDown = async (id) => {
     let result;
     try {
       result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`)
       setDriverDetail(result.data);
-      const instance = modal.success({  
-      
+      const instance = modal.success({
+
         title: `Name : ${driverDetail.name}`,
         content: `Phone : ${driverDetail.phone}`,
-      });  
+      });
     } catch (error) {
       alert("The group does not have a driver yet");
     }
-    
-    
+
+
   };
   // end show driverdetail
   useEffect(() => {
     loadGroupCar();
-  }, []);
+  }, [displayChatRoom, setDisplayChatRoom]);
 
   useEffect(() => {
+    console.log(groupIdDetail);
     if (groupIdDetail !== null) {
       loadGroupCarByGroupId(groupIdDetail);
     }
   }, [groupIdDetail]);
+
 
   useEffect(() => {
     if (groupCarDetail.customers) {
@@ -208,12 +228,37 @@ function ListGroupCar() {
     }
   };
 
+  //CHATROOM HANDLE
+  const handleShowChatRoom = (group) => {
+    console.log(group);
+    const {
+      groupId,
+      startPoint,
+      endPoint,
+    } = group
+
+    const newGroup = {
+      groupCarId: groupId,
+      customerId: userId,
+      driverDetailId: 3,
+      groupName: `GroupCar-${groupId}`,
+      startPoint: startPoint,
+      endPoint: endPoint,
+
+    }
+    console.log("HHHHH",newGroup);
+    setCheckMap(false)
+    setDisplayChatRoom(newGroup)
+  }
+
+  //CHATROOM END
+
   const formatDate = (date) => {
     return new Date(date).toLocaleString();
   };
 
 
-
+  console.log(groupCars);
   return (
     <div className='flex'>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full sm:w-[90%] md:w-[80%] lg:w-[90%] mx-auto">
@@ -233,6 +278,7 @@ function ListGroupCar() {
               <th scope="col" className="px-6 py-3">Capacity</th>
               <th scope="col" className="px-6 py-3">Quantity</th>
               <th scope="col" className="px-6 py-3">Show Map</th>
+              <th scope="col" className="px-6 py-3">Detail</th>
 
             </tr>
           </thead>
@@ -259,71 +305,82 @@ function ListGroupCar() {
                     Driver
                   </Link>
                 </td>
-                
+
                 <td className="px-6 py-4">{groupCar.capacity}</td>
                 <td className="px-6 py-4">{groupCar.customers?.length ?? 0}</td>
                 <td className="px-6 py-4">
-                      <button
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
-                        onClick={()=>handleShowMap(groupCar)}
-                      >
-                        Show Map
-                      </button>
-                    </td>
+                  <button
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
+                    onClick={() => handleShowMap(groupCar)}
+                  >
+                    Show Map
+                  </button>
+                </td>
+                <td className="px-6 py-4">
+                  <button
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-gray-500 text-white"
+                    onClick={() => handleShowChatRoom(groupCar)}
+                  >
+                    Detail
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
         {/* start map */}
 
-      {checkMap && <div className=" flex items-center justify-center z-50 mt-5 mb-5">
-      <button onClick={() => setCheckMap(!checkMap)} className="mb-5 p-2 bg-blue-500 text-white rounded"></button>
-      
-      <MapContainer
-        center={position}
-        zoom={13}
-        scrollWheelZoom={false}
-        ref={mapRef}
-        className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <div className="absolute top-4 right-4 z-50">
-          <IoIosCloseCircle size={30} className="text-red-500 cursor-pointer" />
-        </div>
-        {startPoint && (
-          <>
-            <Marker position={startPoint}>
-              <Popup>Start Point</Popup>
-            </Marker>
-            <UpdateMapCenter position={startPoint} />
-          </>
-        )}
-        {endPoint && (
-          <>
-            <Marker position={endPoint}>
-              <Popup>End Point</Popup>
-            </Marker>
-            <UpdateMapCenter position={endPoint} />
-          </>
-        )}
-        <LeafletGeocoder
-          setStartPoint={setStartPoint}
-          setEndPoint={setEndPoint}
-        />
-        <LeafletRoutingMachine
-          startPoint={startPoint}
-          endPoint={endPoint}
-          onRouteFound={handleRouteFound}
-        />
-      </MapContainer>
-    </div>}
+        {checkMap && <div className=" flex items-center justify-center z-50 mt-5 mb-5">
+          <button onClick={() => setCheckMap(!checkMap)} className="mb-5 p-2 bg-blue-500 text-white rounded"></button>
 
-      {/* end map */}
+          <MapContainer
+            center={position}
+            zoom={13}
+            scrollWheelZoom={false}
+            ref={mapRef}
+            className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <div className="absolute top-4 right-4 z-50">
+              <IoIosCloseCircle size={30} className="text-red-500 cursor-pointer" />
+            </div>
+            {startPoint && (
+              <>
+                <Marker position={startPoint}>
+                  <Popup>Start Point</Popup>
+                </Marker>
+                <UpdateMapCenter position={startPoint} />
+              </>
+            )}
+            {endPoint && (
+              <>
+                <Marker position={endPoint}>
+                  <Popup>End Point</Popup>
+                </Marker>
+                <UpdateMapCenter position={endPoint} />
+              </>
+            )}
+            <LeafletGeocoder
+              setStartPoint={setStartPoint}
+              setEndPoint={setEndPoint}
+            />
+            <LeafletRoutingMachine
+              startPoint={startPoint}
+              endPoint={endPoint}
+              onRouteFound={handleRouteFound}
+            />
+          </MapContainer>
+        </div>}
+
+        {/* end map */}
       </div>
+
+{displayChatRoom != null && <ChatRoom group={displayChatRoom} role="CUTOMER"/> }
       
+
       {checkMembers && <div className="fixed inset-0 flex items-center justify-center z-40 text-center">
         <Card
           title="Members"
