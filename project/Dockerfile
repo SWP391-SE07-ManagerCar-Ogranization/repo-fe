@@ -1,6 +1,7 @@
 FROM node:20-alpine AS builder
 ENV NODE_ENV production
-
+ENV GENERATE_SOURCEMAP=false
+ENV NODE_OPTIONS=--max-old-space-size=16384
 # Add a work directory
 WORKDIR /app
 
