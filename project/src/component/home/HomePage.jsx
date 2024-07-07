@@ -15,7 +15,6 @@ import {
   Typography
 } from "@material-tailwind/react";
 import { freeCouponView, getCoupon, getTakenCoupon } from "../../service/CouponService";
-import * as UserService from "../../service/UserService";
 import Swal from "sweetalert2";
 
 function HomePage() {

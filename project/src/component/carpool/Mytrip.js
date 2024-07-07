@@ -112,20 +112,6 @@ function ListGroupCar() {
     setRouteInfo(`Distance: ${distance}, time: ${time}`);
   };
 
-  const handleSubmit = async (e) => {
-    try {
-      await TransactionService.addTrans(resrep);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handlePayment = async (e) => {
-    try {
-      await PaymentService.charge(resrep.amount);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
 
   const geocodeAddress = (address, callback) => {
