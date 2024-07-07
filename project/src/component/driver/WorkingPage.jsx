@@ -1,5 +1,5 @@
 import { Breadcrumb, Layout, Space, Switch, theme } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import Header from "../../layouts/Header";
 import { Content, Footer } from "antd/es/layout/layout";
@@ -7,9 +7,29 @@ import FooterWithSocialLinks from "../../layouts/Footer";
 import * as UserService from "../../service/UserService";
 import * as DriverService from "../../service/DriverService";
 import { toast } from "react-toastify";
+import { Link } from 'react-router-dom';
 import { getCurrentLocation } from "../../service/PositionService";
+import { getUserTransactionByDriverInfo } from "../../service/TransactionService";
+import { Button } from "@material-tailwind/react";
+import axios from "axios";
+import { Modal } from 'antd';
+import { Card } from 'antd';
+import { IoIosCloseCircle } from "react-icons/io";
+import L from "leaflet";
+import LeafletGeocoder from "../carpool/map/LeafletGeocoder";
+import LeafletRoutingMachine from "../carpool/map/LeafletRoutingMachine";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import "leaflet-control-geocoder/dist/Control.Geocoder.css";
+import "leaflet-control-geocoder/dist/Control.Geocoder.js";
+import * as TransactionService from '../../service/TransactionService'
+import * as PaymentService from '../../service/PaymentService'
 
 const WorkingPage = () => {
+  const formatDate = (dateString) => {
+    const newDate = new Date(dateString);
+    return newDate.toLocaleString();
+  };
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -17,44 +37,149 @@ const WorkingPage = () => {
   const [status, setStatus] = useState(false);
   const [location, setLocation] = useState({ lat: "", lon: "" });
   useEffect(() => {
-    const fetchStatusDriver = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await UserService.getYourProfile(token);
-        setStatus(response.account.driverDetail.workingStatus);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
     fetchStatusDriver();
     showCurrentLocation();
+    fetchInfoUserTransaction();
   }, []);
 
+  const fetchStatusDriver = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await UserService.getYourProfile(token);
+      setStatus(response.account.driverDetail.workingStatus);
+    } catch (error) {
+      toast.error("Error fetching user data:", error);
+    }
+  };
   const showCurrentLocation = async () => {
     try {
-        const location = await getCurrentLocation();
-        setLocation({lat: location[0], lon: location[1]});
-        return location;
+      const location = await getCurrentLocation();
+      setLocation({ lat: location[0], lon: location[1] });
+      return location;
     } catch (error) {
-        console.error('Error getting location:', error);
+      toast.error("Error getting location:", error);
     }
   };
 
   const handleStatusChange = async (checked) => {
     setStatus(checked);
     try {
-      console.log("lat: " + location.lat);
       await DriverService.setWorkingStatus(
         localStorage.getItem("token"),
         checked,
         location.lat,
         location.lon
       );
-    toast.success("Update your working status !!");
+      toast.success("Update your working status !!");
     } catch (error) {
       toast.error("Error updating working status");
       setStatus(!checked);
     }
+  };
+
+  const [infoTransactions, setInfoTransactions] = useState([
+    { invoice: {}, userTransaction: {}, nameCustomer: "" },
+  ]);
+  const fetchInfoUserTransaction = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await getUserTransactionByDriverInfo(token);
+      setInfoTransactions(response);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const tabList = [
+    {
+      key: "Invoice",
+      tab: "Invoice",
+    },
+    {
+      key: "Transaction",
+      tab: "Transaction",
+    },
+  ];
+
+  let optionFormatDateTime = {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  };
+
+  const handleConfirmInvoice = async (id) => {
+    try {
+        const response = await DriverService.updateTripFinished(localStorage.getItem("token"), id);
+        if (response.toLowerCase().includes("Finished".toLowerCase())) {
+          fetchInfoUserTransaction();
+          toast.success(response);
+        }
+        else {
+          toast.error(response);
+        }
+    } catch (error) {
+      toast.error("Error checkin invoice");
+    }
+  };
+
+  const contentList = (infoTransaction) => {
+    console.log(infoTransaction);
+    return {
+      Invoice: (
+        <div className="flex justify-between">
+          <div>
+            <p>Start Point: {infoTransaction.invoice.startPoint}</p>
+            <p>End Point: {infoTransaction.invoice.endPoint}</p>
+            <p>
+              Time Start:{" "}
+              {new Date(
+                infoTransaction?.invoice?.timeStart
+              )?.toLocaleDateString("en-GB", optionFormatDateTime)}
+            </p>
+          </div>
+          <div>
+            <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => handleConfirmInvoice(infoTransaction.invoice.invoiceId)}>
+              <CheckOutlined />
+              Confirm
+            </Button>
+          </div>
+        </div>
+      ),
+      Transaction: (
+        <div>
+          <p>
+            Amount:{" "}
+            {`${infoTransaction?.userTransaction?.amount?.toLocaleString(
+              "en-US"
+            )}₫`}
+          </p>
+          <p>
+            Status:{" "}
+            {infoTransaction.userTransaction.transactionStatus ? (
+              <span className="text-green-500 font-semibold">Paid</span>
+            ) : (
+              <span className="text-red-500 font-semibold">Unpaid</span>
+            )}
+          </p>
+          <p>
+            Create At:{" "}
+            {new Date(
+              infoTransaction.userTransaction.createAt
+            ).toLocaleDateString("en-GB", optionFormatDateTime)}
+          </p>
+          <p>Payment Method: {infoTransaction.userTransaction.paymentMethod}</p>
+        </div>
+      ),
+    };
+  };
+
+  const [activeTabKey, setActiveTabKey] = useState("Invoice");
+  const onTabChange = (key) => {
+    setActiveTabKey(key);
   };
 
   return (
@@ -92,6 +217,22 @@ const WorkingPage = () => {
                 onChange={handleStatusChange}
               />
             </Space>
+            {infoTransactions.map((infoTransaction, index) => (
+              (!infoTransaction.invoice.finish) && (<div key={index}>
+                <Card
+                  style={{
+                    width: "100%",
+                  }}
+                  title={`Customer: ` + infoTransaction.nameCustomer}
+                  extra={<a href="#">Show Map</a>}
+                  tabList={tabList}
+                  activeTabKey={activeTabKey}
+                  onTabChange={onTabChange}
+                >
+                  {contentList(infoTransaction)[activeTabKey]}
+                </Card>
+              </div>)
+            ))}
           </div>
         </Content>
         <Footer>

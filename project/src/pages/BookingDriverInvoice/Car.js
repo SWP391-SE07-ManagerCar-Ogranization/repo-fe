@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import images from "../../assets/icons/logo.svg";
-import { BsPersonCircle } from "react-icons/bs";
 import CarType from "../../component/layouts/components/carType";
 import tradition2 from "../../assets/images/bg_tradition2.png";
 import DriverType from "../../component/layouts/components/driverType";
@@ -14,8 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosCloseCircle } from "react-icons/io";
 import LeafletGeocoder from "../../component/layouts/Map/LeafletGeocoder";
 import LeafletRoutingMachine from "../../component/layouts/Map/LeafletRoutingMachine";
-import Swal from "sweetalert2";
-import { createInvoice } from "../../service/InvoiceService";
+import { addInvoiceAndTransaction } from "../../service/TransactionService";
 
 const UpdateMapCenter = ({ position }) => {
   const map = useMap();
@@ -118,31 +116,13 @@ const BookingTraditional = () => {
   const handleSummit = async (e) => {
     e.preventDefault();
     const newInvoice = {
-      endPoint: end,
       startPoint: pickup,
-      driverType: {
-        driverTypeId: 1,
-        driverTypeName: "motobile",
-      },
-      account: {
-        accountId: 7,
-      },
-      driverDetail: {
-        id: 4,
-        driverLicence: "LIC12345",
-        vehicleNumber: "MOTOR123",
-        rating: 4.5,
-        workingStatus: false,
-      },
-      amount: 20000,
-      paymentMethod: {
-        paymentMethodId: 1,
-        methodName: "Cash",
-      },
-      timeStart: timeCar,
+      endPoint: end,
+      timeStart: timeCar
     };
     try {
-      const data = await createInvoice(newInvoice);
+      console.log("add invoice"+ newInvoice);
+      const data = await addInvoiceAndTransaction(newInvoice,localStorage.getItem("token"));
       return data;
     } catch (error) {
       console.error(error);

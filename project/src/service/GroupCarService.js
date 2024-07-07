@@ -1,7 +1,19 @@
 import axios from "axios";
-
-
 const API_BASE_URL = 'http://localhost:8080/public';
+
+export const addGroupCar = async (token, groupCar) => {
+    try {
+        const temp = await axios.post("http://localhost:8080/public/group-car/add", groupCar, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return temp.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+
+ 
+}
 
 export const outGroup = async (customerId, groupCarId) => {
     try {
