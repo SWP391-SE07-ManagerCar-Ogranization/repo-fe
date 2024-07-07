@@ -18,7 +18,6 @@ function Bookingcarpool() {
   const [timeoutId, setTimeoutId] = useState(null);
   const [currentInput, setCurrentInput] = useState('');
   const [user, setUser] = useState({});
-  
   const options = [
     { label: "4 seater Car", value: 4, icon: <FaCar /> },
     { label: "6 Seater Car", value: 6, icon: <FaCar /> },

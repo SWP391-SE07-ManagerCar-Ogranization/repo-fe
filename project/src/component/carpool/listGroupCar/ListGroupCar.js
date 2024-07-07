@@ -47,6 +47,22 @@ function ListGroupCar() {
   };
   // end show driverdetail
   // map start //
+  const [startPoint, setStartPoint] = useState(null);
+  const [endPoint, setEndPoint] = useState(null);
+  const [routeInfo, setRouteInfo] = useState("");
+  const [position, setPosition] = useState([16.047079, 108.20623]); // initial map center
+  const mapRef = useRef();
+  const [reload, setReload] = useState(false);
+  const [distance, setDistance] = useState(0);
+  const [resrep, setResrep] = useState({
+    startPoint: startPoint,
+    endPoint: endPoint,
+    timeStart: '',
+    accountId: '',
+    driverDetailId: '',
+    amount: "",
+    paymentMethod: '2'
+  });
   const handleShowMap = (groupCar) => {
     setCheckMap(true)
     geocodeAddress(groupCar.startPoint, (start) => {
@@ -100,22 +116,7 @@ function ListGroupCar() {
   });
   L.Marker.prototype.options.icon = DefaultIcon;
 
-  const [startPoint, setStartPoint] = useState(null);
-  const [endPoint, setEndPoint] = useState(null);
-  const [routeInfo, setRouteInfo] = useState("");
-  const [position, setPosition] = useState([16.047079, 108.20623]); // initial map center
-  const mapRef = useRef();
-  const [reload, setReload] = useState(false);
-  const [distance, setDistance] = useState(0);
-  const [resrep, setResrep] = useState({
-    startPoint: startPoint,
-    endPoint: endPoint,
-    timeStart: '',
-    accountId: '',
-    driverDetailId: '',
-    amount: "",
-    paymentMethod: '2'
-  });
+  
   const handleRouteFound = (summary) => {
     setDistance((summary.totalDistance / 1000).toFixed(2));
     setResrep({ ...resrep, amount: (summary.totalDistance / 1000).toFixed(2) * 10000 });
@@ -378,6 +379,57 @@ function ListGroupCar() {
             ))}
           </tbody>
         </table>
+        {/* start map */}
+
+    {checkMap && <div className=" fixed flex flex-col inset-0 items-center justify-center z-50 mt-5 mb-5 bg-black bg-opacity-50 backdrop-blur">
+        <button onClick={toggleMapVisibility} className="mb-0 p-2 bg-blue-500 text-white rounded">
+          {checkMap ? "Hide Map" : "Show Map"}
+        </button>
+
+        <MapContainer
+          center={position}
+          zoom={13}
+          scrollWheelZoom={false}
+          ref={mapRef}
+          className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <div className="absolute top-4 right-4 z-50">
+            <IoIosCloseCircle size={30} className="text-red-500 cursor-pointer" />
+          </div>
+          {startPoint && (
+            <>
+              <Marker position={startPoint}>
+                <Popup>Start Point</Popup>
+              </Marker>
+              <UpdateMapCenter position={startPoint} />
+            </>
+          )}
+          {endPoint && (
+            <>
+              <Marker position={endPoint}>
+                <Popup>End Point</Popup>
+              </Marker>
+              <UpdateMapCenter position={endPoint} />
+            </>
+          )}
+          <LeafletGeocoder
+            setStartPoint={setStartPoint}
+            setEndPoint={setEndPoint}
+          />
+          <LeafletRoutingMachine
+            startPoint={startPoint}
+            endPoint={endPoint}
+            onRouteFound={handleRouteFound}
+          />
+        </MapContainer>
+      </div>}
+
+      {/* end map */}
+
       </div>
       
       {/* start card members */}
