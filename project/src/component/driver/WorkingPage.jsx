@@ -11,7 +11,6 @@ import { getCurrentLocation } from "../../service/PositionService";
 import { getUserTransactionByDriverInfo, getUserTransactionGroupCarByDriverInfo } from "../../service/TransactionService";
 import { Button } from "@material-tailwind/react";
 import { Card } from 'antd';
-import { getName } from "../../service/CustomerService";
 
 const WorkingPage = () => {
 

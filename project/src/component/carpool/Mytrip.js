@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from 'react'
 import axios from "axios";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { IoIosCloseCircle } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { Card } from "antd";
@@ -20,7 +20,6 @@ import { ChatRoomContext } from "../../context/ChatRoomContext"
 import ChatRoom from '../ChatRoom';
 
 function ListGroupCar() {
-  const navigate = useNavigate();
   const [groupCars, setGroupCars] = useState([]);
   const { accountId: userId } = useParams();
   const [checkMap, setCheckMap] = useState(false);
@@ -289,7 +288,7 @@ function ListGroupCar() {
 
   //CHATROOM HANDLE
   const handleShowChatRoom = (group) => {
-    console.log(group);
+    console.log("add chat room"+group);
     const {
       groupId,
       startPoint,
