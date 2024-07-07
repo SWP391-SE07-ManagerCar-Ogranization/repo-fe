@@ -47,6 +47,22 @@ function ListGroupCar() {
   };
   // end show driverdetail
   // map start //
+  const handleShowMap = (groupCar) => {
+    setCheckMap(true)
+    geocodeAddress(groupCar.startPoint, (start) => {
+      setStartPoint(start);
+      geocodeAddress(groupCar.endPoint, (end) => {
+        setEndPoint(end);
+        setResrep({ ...resrep, startPoint: start.lat, endPoint: end.lat });
+
+      });
+    });
+  };
+  useEffect(() => {
+    if (startPoint && endPoint) {
+      handleSearchClick();
+    }
+  }, [startPoint, endPoint]);
   const toggleMapVisibility = () => {
     setCheckMap(!checkMap);
 
@@ -235,22 +251,7 @@ function ListGroupCar() {
       console.error(`Failed to fetch group car with groupId ${groupId}:`, error);
     }
   };
-  const handleShowMap = (groupCar) => {
-    setCheckMap(true)
-    geocodeAddress(groupCar.startPoint, (start) => {
-      setStartPoint(start);
-      geocodeAddress(groupCar.endPoint, (end) => {
-        setEndPoint(end);
-        setResrep({ ...resrep, startPoint: start.lat, endPoint: end.lat });
-
-      });
-    });
-  };
-  useEffect(() => {
-    if (startPoint && endPoint) {
-      handleSearchClick();
-    }
-  }, [startPoint, endPoint]);
+ 
   const formatDate = (dateString) => {
     const newDate = new Date(dateString);
     return newDate.toLocaleString();
@@ -378,54 +379,7 @@ function ListGroupCar() {
           </tbody>
         </table>
       </div>
-      {checkMap && <div className=" flex items-center justify-center z-50 mt-5 mb-5">
-        <button onClick={toggleMapVisibility} className="mb-5 p-2 bg-blue-500 text-white rounded">
-          {checkMap ? "Hide Map" : "Show Map"}
-        </button>
-
-        <MapContainer
-          center={position}
-          zoom={13}
-          scrollWheelZoom={false}
-          ref={mapRef}
-          className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <div className="absolute top-4 right-4 z-50">
-            <IoIosCloseCircle size={30} className="text-red-500 cursor-pointer" />
-          </div>
-          {startPoint && (
-            <>
-              <Marker position={startPoint}>
-                <Popup>Start Point</Popup>
-              </Marker>
-              <UpdateMapCenter position={startPoint} />
-            </>
-          )}
-          {endPoint && (
-            <>
-              <Marker position={endPoint}>
-                <Popup>End Point</Popup>
-              </Marker>
-              <UpdateMapCenter position={endPoint} />
-            </>
-          )}
-          <LeafletGeocoder
-            setStartPoint={setStartPoint}
-            setEndPoint={setEndPoint}
-          />
-          <LeafletRoutingMachine
-            startPoint={startPoint}
-            endPoint={endPoint}
-            onRouteFound={handleRouteFound}
-          />
-        </MapContainer>
-      </div>}
-
-      {/* end map */}
+      
       {/* start card members */}
       {checkMembers && <div className="fixed inset-0 flex items-center justify-center z-40 text-center">
         <Card
