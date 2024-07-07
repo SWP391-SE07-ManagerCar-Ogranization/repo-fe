@@ -51,7 +51,7 @@ function ProfileMenu() {
       path: "/wallet/your-wallet",
     },
     {
-      label: "Trade Coupon",
+      label: "Coupon",
       icon: GiftIcon,
       path: "/point/trade-point",
     },
