@@ -3,28 +3,24 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-
-import { ThemeProviderConfig } from "./component/ConText/CartContext";
-
 import { ThemeProvider } from "@material-tailwind/react";
-
 import { MaterialTailwindControllerProvider } from "./context";
-import { ThemeProviderDo } from "./context/accountData";
-// import GlobalStyles from "./component/GlobalStyles";
+import { ThemeProviderConfig } from "./component/ConText/CartContext";
+import { ThemeChatRoomProvider }  from './context/ChatRoomContext'
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ThemeProviderConfig>
-    <ThemeProvider>
-      <ThemeProviderDo>
-      <MaterialTailwindControllerProvider>
-      <App />
-      </MaterialTailwindControllerProvider>
-      </ThemeProviderDo>
-    </ThemeProvider>
-    </ThemeProviderConfig>
+    <ThemeChatRoomProvider>
+      <ThemeProvider>
+        <MaterialTailwindControllerProvider>
+          <ThemeProviderConfig>
+            <App />
+          </ThemeProviderConfig>
+        </MaterialTailwindControllerProvider>
+      </ThemeProvider>
+    </ThemeChatRoomProvider>
   </React.StrictMode>
 );
 

@@ -13,9 +13,10 @@ import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Button, Dropdown, Space } from 'antd';
 
-import {AccountData} from '../../context/accountData'
+// import {AccountData} from '../../context/accountData'
 import RejectDriver from "../../component/AdminManager/RejectDriver";
 import avatarDefault from "../../assets/images/avatarDefault.jpg"
+import AccountProfile from "../../component/AdminManager/AccountProfile";
 
 
 export function Driver() {
@@ -25,7 +26,7 @@ export function Driver() {
   const [activeDrivers, setActiveDrivers] = useState([])
   const [inactiveDrivers, setInactiveDrivers] = useState([])
 
-  const {theme} = useContext(AccountData)
+  // const {theme} = useContext(AccountData)
 
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export function Driver() {
       try {
         const data = await getAllDrivers();
         setDrivers(data);
-        console.log(data) 
+        
 
       } catch (error) {
         console.error('Error')
@@ -55,26 +56,26 @@ export function Driver() {
 
   const handleUpdateStatus = async (driver) => {
     try {
-      await updateStatus(driver.accountId, null, !driver.status)
+      await updateStatus(driver?.accountId, null, !driver?.status)
       setDriver(driver)
-      // console.log("quan");
+      // 
     } catch (error) {
       throw error
     }
-    // console.log('handleUpdateStatus: ',id, " + " ,status)
+    // 
   }
 
   const activeDriverFilter = (list) => {
-    return list.filter((driver) => driver.status)
+    return list.filter((driver) => driver?.status)
   }
 
   const inactiveDriverFilter = (list) => {
-    return list.filter((driver) => !driver.status)
+    return list.filter((driver) => !driver?.status)
   }
     
   const formatDate = (string) => {
     const date = new Date(string)
-    console.log(date);
+    
     return date.toLocaleString()
   }
 
@@ -115,20 +116,20 @@ export function Driver() {
                     }`;
 
                   return (
-                    <tr key={driver.accountId}>
+                    <tr key={driver?.accountId}>
                       <td className={className}>
                         <div className="flex items-center gap-4">
-                          <Avatar src={driver.image?driver.image:avatarDefault} alt={driver.name} size="sm" variant="rounded" />
+                          <Avatar src={driver?.image?driver?.image:avatarDefault} alt={driver?.name} size="sm" variant="rounded" />
                           <div>
                             <Typography
                               variant="small"
                               color="blue-gray"
                               className="font-semibold"
                             >
-                              {driver.name}
+                              {driver?.name}
                             </Typography>
                             <Typography className="text-xs font-normal text-blue-gray-500">
-                              {driver.email}
+                              {driver?.email}
                             </Typography>
                           </div>
                         </div>
@@ -141,14 +142,14 @@ export function Driver() {
                               color="blue-gray"
                               className="font-semibold"
                             >
-                              {driver.idCard}
+                              {driver?.idCard}
                             </Typography>
                           </div>
                         </div>
                       </td>
                       <td className={className}>
                         <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {driver.address}
+                          {driver?.address}
                         </Typography>
                         <Typography className="text-xs font-normal text-blue-gray-500">
                           { }
@@ -156,12 +157,12 @@ export function Driver() {
                       </td>
                       <td className={className}>
                         <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {formatDate(driver.createdAt)}
+                          {formatDate(driver?.createdAt)}
                         </Typography>
                       </td>
                       <td className={className}>
                         <Chip
-                          key={driver.accountId}
+                          key={driver?.accountId}
                           onClick={
                             () => {
                               Swal.fire({
@@ -186,9 +187,9 @@ export function Driver() {
                             }
                           }
                           variant="gradient"
-                          color={driver.status ? "green" : "blue-gray"}
+                          color={driver?.status ? "green" : "blue-gray"}
 
-                          value={driver.status ? "Active" : "Inactive"}
+                          value={driver?.status ? "Active" : "Inactive"}
                           className="py-0.5 px-2 text-[11px] font-medium w-fit cursor-pointer"
                         />
                       </td>
@@ -216,12 +217,12 @@ export function Driver() {
                                                   showCancelButton: true,
                                                   confirmButtonColor: "#3085d6",
                                                   cancelButtonColor: "#d33",
-                                                  confirmButtonText: `Yes, ${driver.status?'':"UNBAN"} it!`
+                                                  confirmButtonText: `Yes, ${driver?.status?'':"UNBAN"} it!`
                                                 }).then((result) => {
                                                   if (result.isConfirmed) {
                                                     Swal.fire({
-                                                      title: `${driver.status?'Banned':"Unbanned"} !`,
-                                                      text: `This cutomer has been ${driver.status?'BANNED':"UNBANNED"}.`,
+                                                      title: `${driver?.status?'Banned':"Unbanned"} !`,
+                                                      text: `This cutomer has been ${driver?.status?'BANNED':"UNBANNED"}.`,
                                                       icon: "success"
                                                     });
                                                     handleUpdateStatus(driver)
@@ -230,7 +231,7 @@ export function Driver() {
                                 
                                               }
                                             } target="_blank" rel="noopener noreferrer" href="">
-                                                {driver.status?'BAN':'UNBAN'}
+                                                {driver?.status?'BAN':'UNBAN'}
                                             </div>
                                         ),
                                     },
@@ -238,7 +239,7 @@ export function Driver() {
                                         key: '2',
                                         label: (
                                             <div target="_blank" rel="noopener noreferrer" href="">
-                                                DETAIL
+                                                <AccountProfile customer={driver}/>
                                             </div>
                                         ),
                                     },
@@ -298,20 +299,20 @@ export function Driver() {
                     }`;
 
                   return (
-                    <tr key={driver.accountId}>
+                    <tr key={driver?.accountId}>
                       <td className={className}>
                         <div className="flex items-center gap-4">
-                          <Avatar src={driver.image?driver.image:avatarDefault} alt={driver.name} size="sm" variant="rounded" />
+                          <Avatar src={driver?.image?driver?.image:avatarDefault} alt={driver?.name} size="sm" variant="rounded" />
                           <div>
                             <Typography
                               variant="small"
                               color="blue-gray"
                               className="font-semibold"
                             >
-                              {driver.name}
+                              {driver?.name}
                             </Typography>
                             <Typography className="text-xs font-normal text-blue-gray-500">
-                              {driver.email}
+                              {driver?.email}
                             </Typography>
                           </div>
                         </div>
@@ -324,14 +325,14 @@ export function Driver() {
                               color="blue-gray"
                               className="font-semibold"
                             >
-                              {driver.idCard}
+                              {driver?.idCard}
                             </Typography>
                           </div>
                         </div>
                       </td>
                       <td className={className}>
                         <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {driver.address}
+                          {driver?.address}
                         </Typography>
                         <Typography className="text-xs font-normal text-blue-gray-500">
                           { }
@@ -339,12 +340,12 @@ export function Driver() {
                       </td>
                       <td className={className}>
                         <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {driver.createdAt}
+                        {formatDate(driver?.createdAt)}
                         </Typography>
                       </td>
                       <td className={className}>
                         <Chip
-                          key={driver.accountId}
+                          key={driver?.accountId}
                           onClick={
                             () => {
                               Swal.fire({
@@ -369,9 +370,9 @@ export function Driver() {
                             }
                           }
                           variant="gradient"
-                          color={driver.status ? "green" : "blue-gray"}
+                          color={driver?.status ? "green" : "blue-gray"}
 
-                          value={driver.status ? "Active" : "Inactive"}
+                          value={driver?.status ? "Active" : "Inactive"}
                           className="py-0.5 px-2 text-[11px] font-medium w-fit cursor-pointer"
                         />
                       </td>
@@ -393,17 +394,17 @@ export function Driver() {
                                               () => {
                                                 Swal.fire({
                                                   title: "Are you sure?",
-                                                  text: `Approve ${driver.name}?`,
+                                                  text: `Approve ${driver?.name}?`,
                                                   icon: "warning",
                                                   showCancelButton: true,
                                                   confirmButtonColor: "#3085d6",
                                                   cancelButtonColor: "#d33",
-                                                  confirmButtonText: `Yes, ${driver.status?'':"Approve"}!`
+                                                  confirmButtonText: `Yes, ${driver?.status?'':"Approve"}!`
                                                 }).then((result) => {
                                                   if (result.isConfirmed) {
                                                     Swal.fire({
-                                                      title: `${driver.status?'':"Approved"} !`,
-                                                      text: `This cutomer has been ${driver.status?'':"Approved"}.`,
+                                                      title: `${driver?.status?'':"Approved"} !`,
+                                                      text: `This cutomer has been ${driver?.status?'':"Approved"}.`,
                                                       icon: "success"
                                                     });
                                                     handleUpdateStatus(driver)
@@ -412,7 +413,7 @@ export function Driver() {
                                 
                                               }
                                             } target="_blank" rel="noopener noreferrer" href="">
-                                                {driver.status?'BAN':'Approve'}
+                                                {driver?.status?'BAN':'Approve'}
                                             </div>
                                         ),
                                     },
@@ -420,7 +421,7 @@ export function Driver() {
                                         key: '2',
                                         label: (
                                             <div target="_blank" rel="noopener noreferrer" href="">
-                                                DETAIL
+                                                <AccountProfile customer={driver}/>
                                             </div>
                                         ),
                                     },

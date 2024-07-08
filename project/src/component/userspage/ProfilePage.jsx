@@ -28,7 +28,7 @@ function ProfilePage() {
         profileInfo.accountId
       );
       setFeedback(response);
-      console.log(response);
+    console.log(profileInfo);
     } catch (error) {
       console.error("Error fetching feedback:", error);
     }
@@ -76,7 +76,7 @@ function ProfilePage() {
             </div>
             <div>Name: {profileInfo?.name}</div>
             <div>Email: {profileInfo?.email}</div>
-            <div>Balance: {profileInfo?.accountBalance}đ</div>
+            <div>Balance: {profileInfo?.accountBalance?.toLocaleString("en-US")}đ</div>
             <div>Address: {profileInfo?.address}</div>
             <div>Date of birth: {profileInfo?.dob}</div>
             <div className="sm:w-10/12 md:w-8/12 lg:w-6/12 xl:w-4/12 sm:px-6 text-gray-400 flex justify-normal">

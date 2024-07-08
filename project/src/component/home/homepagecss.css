@@ -1,0 +1,25 @@
+.custom-underline {
+    text-decoration: none;
+    position: relative;
+  }
+  
+  .custom-underline::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    background-color: currentColor; 
+    bottom: 0;
+    left: 0;
+    transition: width 0.3s ease-in-out;
+  }
+  
+  .custom-underline:hover::after {
+    width: 100%;
+  }
+  
+  .custom-underline:focus::after {
+    width: 100%;
+    transition: width 0.3s ease-in-out;
+  }
+  

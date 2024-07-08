@@ -18,13 +18,10 @@ const UpdateMapCenter = ({ position }) => {
   map.setView(position);
   return null;
 };
-
 function MapBoxMap(props) {
   const {
     setIsEdit,
     isEdit,
-    pickup,
-    end,
     startPoint,
     setStartPoint,
     endPoint,
@@ -57,10 +54,8 @@ function MapBoxMap(props) {
   };
   const handleSearchClick = () => {
     if (startPoint && endPoint) {
-      // Get the map instance from the ref
       const map = mapRef.current;
 
-      // Initialize the routing machine to find the route and update the info
       const routingControl = L.Routing.control({
         waypoints: [L.latLng(startPoint), L.latLng(endPoint)],
         lineOptions: {
@@ -181,12 +176,9 @@ function MapBoxMap(props) {
 
         <div className="flex flex-col w-[800px] h-[300px] ">
           <div className="App">
-            {/* <button className="text-white-500" onClick={handleSearchClick}>
-              Tìm kiếm
-            </button> */}
             <MapContainer
               center={position}
-              zoom={10}
+              zoom={12}
               scrollWheelZoom={false}
               ref={mapRef}
             >
@@ -228,13 +220,5 @@ function MapBoxMap(props) {
     </div>
   );
 }
-
-let DefaultIcon = L.icon({
-  iconUrl: "/marker-icon.png",
-  iconSize: [25, 41],
-  iconAnchor: [10, 41],
-  popupAnchor: [2, -40],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
 
 export default MapBoxMap;

@@ -11,7 +11,6 @@ const LeafletGeocoder = ({ setStartPoint, setEndPoint }) => {
     })
       .on("markgeocode", function (e) {
         const latlng = e.geocode.center;
-
         const isStart = document.activeElement.id === "start-input";
         if (isStart) {
           setStartPoint(latlng);

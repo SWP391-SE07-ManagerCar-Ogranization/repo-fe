@@ -5,7 +5,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Button, Input } from "@material-tailwind/react";
 
-function LoginPage() {
+function ForgotPass() {
   const [otp, setOtp] = useState("");
   const [formSent, setFormSent] = useState(false);
   const [error, setError] = useState("");
@@ -96,4 +96,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default ForgotPass;
