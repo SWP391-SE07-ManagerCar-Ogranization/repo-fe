@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { SignupValidation } from "../../config/signupValidation";
+import { SignupValidation } from "../../config/SignupValidation";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "../../service/UserService";

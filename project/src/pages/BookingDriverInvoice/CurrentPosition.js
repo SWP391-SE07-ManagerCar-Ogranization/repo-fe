@@ -6,11 +6,11 @@ const CurrentPosition = () => {
 
   const showCurrentLocation = async () => {
     try {
-        const location = await getCurrentLocation();
-        setLocation({lat: location[0], lon: location[1]});
-        return location;
+      const location = await getCurrentLocation();
+      setLocation({ lat: location[0], lon: location[1] });
+      return location;
     } catch (error) {
-        console.error('Error getting location:', error);
+      console.error("Error getting location:", error);
     }
   };
 
