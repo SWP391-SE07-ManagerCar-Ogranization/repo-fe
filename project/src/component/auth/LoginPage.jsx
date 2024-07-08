@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
-import { SignupValidation } from "../../config/SignupValidation";
+import { SignupValidation } from "../../config/signupValidation";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "../../service/UserService";
@@ -28,10 +28,9 @@ function LoginPage() {
         toast.success("Login Sucessfully !");
         const evt = new CustomEvent("storage", {});
         window.dispatchEvent(evt);
-        if('ADMIN' === (userData.role.roleName)) {
-          navigate('/dashboard');
-        }
-        else {
+        if ("ADMIN" === userData.role.roleName) {
+          navigate("/dashboard");
+        } else {
           navigate("/");
         }
       } else {
