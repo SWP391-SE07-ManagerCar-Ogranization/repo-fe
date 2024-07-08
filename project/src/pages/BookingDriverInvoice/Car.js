@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { IoIosCloseCircle } from "react-icons/io";
 import LeafletGeocoder from "../../component/layouts/Map/LeafletGeocoder";
 import LeafletRoutingMachine from "../../component/layouts/Map/LeafletRoutingMachine";
-import { addInvoiceAndTransaction } from "../../service/TransactionService";
+import { addInvoiceAndTransaction, paymentTransaction } from "../../service/TransactionService";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 
 import { Popover, Button } from "antd";
@@ -86,32 +86,7 @@ const BookingTraditional = () => {
   };
   // gợi ý search end
 
-  const content = (
-    <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
-      <table className="w-full h-full flex flex-row justify-center items-center">
-        <thead className="">
-          <tr className="flex flex-col">
-            <th className="py-4 px-5 bg-gray-200 text-left">Name Customer</th>
-            <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
-            <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
-          </tr>
-        </thead>
-        <tbody className="">
-          <tr className="flex flex-col">
-            <td className="py-4 px-5 border-b">John Doe</td>
-            <td className="py-4 px-5 border-b">Jane Smith</td>
-            <td className="py-4 px-5 border-b">$50.00</td>
-          </tr>
-        </tbody>
-      </table>
-      <Button
-        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
-        onClick={() => handlePayment()}
-      >
-        Payment
-      </Button>
-    </div>
-  );
+  
 
   const searchLocation = async () => {
     if (!query) return;
@@ -242,6 +217,8 @@ const BookingTraditional = () => {
     setActivePage(pageId);
   };
 
+  const [infoBooking, setInfoBooking] = useState();
+
   const handleSummit = async (e) => {
     e.preventDefault();
     setPopup(!popup);
@@ -251,12 +228,12 @@ const BookingTraditional = () => {
       timeStart: timeCar,
     };
     try {
-      console.log("add invoice" + newInvoice);
-      const data = await addInvoiceAndTransaction(
+      const response = await addInvoiceAndTransaction(
         newInvoice,
         localStorage.getItem("token")
       );
-      return data;
+      setInfoBooking(response);
+      console.log(response);
     } catch (error) {
       console.error(error);
     }
@@ -266,10 +243,38 @@ const BookingTraditional = () => {
     setQuery(e.target.value);
   };
   //TODO
-  const handlePayment = () => {
-    console.log("dkslmk");
+  const handlePayment = async () => {
+    const response = await paymentTransaction(infoBooking.userTransaction,localStorage.getItem("token"));
+    toast.success(response);
   };
   //TODO
+
+  const content = (
+    <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
+      <table className="w-full h-full flex flex-row justify-center items-center">
+        <thead className="">
+          <tr className="flex flex-col">
+            <th className="py-4 px-5 bg-gray-200 text-left">Name Customer</th>
+            <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
+            <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
+          </tr>
+        </thead>
+        <tbody className="">
+          <tr className="flex flex-col">
+            <td className="py-4 px-5 border-b">{infoBooking?.nameCustomer}</td>
+            <td className="py-4 px-5 border-b">{infoBooking?.nameDriver}</td>
+            <td className="py-4 px-5 border-b">{infoBooking?.userTransaction.amount}đ</td>
+          </tr>
+        </tbody>
+      </table>
+      <Button
+        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
+        onClick={() => handlePayment()}
+      >
+        Payment
+      </Button>
+    </div>
+  );
 
   return (
     <>
