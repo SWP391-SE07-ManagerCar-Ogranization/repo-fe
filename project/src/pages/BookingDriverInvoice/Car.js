@@ -13,11 +13,10 @@ import { useNavigate } from "react-router-dom";
 import { IoIosCloseCircle } from "react-icons/io";
 import LeafletGeocoder from "../../component/layouts/Map/LeafletGeocoder";
 import LeafletRoutingMachine from "../../component/layouts/Map/LeafletRoutingMachine";
-import { addInvoiceAndTransaction, paymentTransaction } from "../../service/TransactionService";
+import { addInvoiceAndTransaction } from "../../service/TransactionService";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 
 import { Popover, Button } from "antd";
-import { toast } from "react-toastify";
 
 const UpdateMapCenter = ({ position }) => {
   const map = useMap();
@@ -86,7 +85,32 @@ const BookingTraditional = () => {
   };
   // gợi ý search end
 
-  
+  const content = (
+    <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
+      <table className="w-full h-full flex flex-row justify-center items-center">
+        <thead className="">
+          <tr className="flex flex-col">
+            <th className="py-4 px-5 bg-gray-200 text-left">Name Customer</th>
+            <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
+            <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
+          </tr>
+        </thead>
+        <tbody className="">
+          <tr className="flex flex-col">
+            <td className="py-4 px-5 border-b">John Doe</td>
+            <td className="py-4 px-5 border-b">Jane Smith</td>
+            <td className="py-4 px-5 border-b">$50.00</td>
+          </tr>
+        </tbody>
+      </table>
+      <Button
+        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
+        onClick={() => handlePayment()}
+      >
+        Payment
+      </Button>
+    </div>
+  );
 
   const searchLocation = async () => {
     if (!query) return;
@@ -98,7 +122,7 @@ const BookingTraditional = () => {
       console.log("Fetching location data from URL:", url);
       let response = await fetch(url);
       if (!response.ok) {
-        toast.error("Can't Fetching location data");
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       let data = await response.json();
       console.log("Received data:", data);
@@ -131,7 +155,7 @@ const BookingTraditional = () => {
     try {
       let response = await fetch(url);
       if (!response.ok) {
-        toast.error("cant not fetching image");
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       let data = await response.json();
       console.log("Received image data:", data);
@@ -191,7 +215,7 @@ const BookingTraditional = () => {
   const handleRouteFound = (summary) => {
     const distance = (summary.totalDistance / 1000).toFixed(2) + " km";
     const time = (summary.totalTime / 60).toFixed(2) + " minutes";
-    setRouteInfo({Distance: distance, Time: time});
+    setRouteInfo(`Distance: ${distance}, Time: ${time}`);
   };
 
   const handleBooking = (e) => {
@@ -217,8 +241,6 @@ const BookingTraditional = () => {
     setActivePage(pageId);
   };
 
-  const [infoBooking, setInfoBooking] = useState();
-
   const handleSummit = async (e) => {
     e.preventDefault();
     setPopup(!popup);
@@ -228,12 +250,12 @@ const BookingTraditional = () => {
       timeStart: timeCar,
     };
     try {
-      const response = await addInvoiceAndTransaction(
+      console.log("add invoice" + newInvoice);
+      const data = await addInvoiceAndTransaction(
         newInvoice,
         localStorage.getItem("token")
       );
-      setInfoBooking(response);
-      console.log(response);
+      return data;
     } catch (error) {
       console.error(error);
     }
@@ -243,38 +265,10 @@ const BookingTraditional = () => {
     setQuery(e.target.value);
   };
   //TODO
-  const handlePayment = async () => {
-    const response = await paymentTransaction(infoBooking.userTransaction,localStorage.getItem("token"));
-    toast.success(response);
+  const handlePayment = () => {
+    console.log("dkslmk");
   };
   //TODO
-
-  const content = (
-    <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
-      <table className="w-full h-full flex flex-row justify-center items-center">
-        <thead className="">
-          <tr className="flex flex-col">
-            <th className="py-4 px-5 bg-gray-200 text-left">Name Customer</th>
-            <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
-            <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
-          </tr>
-        </thead>
-        <tbody className="">
-          <tr className="flex flex-col">
-            <td className="py-4 px-5 border-b">{infoBooking?.nameCustomer}</td>
-            <td className="py-4 px-5 border-b">{infoBooking?.nameDriver}</td>
-            <td className="py-4 px-5 border-b">{infoBooking?.userTransaction.amount}đ</td>
-          </tr>
-        </tbody>
-      </table>
-      <Button
-        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
-        onClick={() => handlePayment()}
-      >
-        Payment
-      </Button>
-    </div>
-  );
 
   return (
     <>
