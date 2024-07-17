@@ -13,8 +13,8 @@ import LeafletGeocoder from '../map/LeafletGeocoder';
 import LeafletRoutingMachine from '../map/LeafletRoutingMachine';
 import * as TransactionService from '../../../service/TransactionService'
 import * as PaymentService from '../../../service/PaymentService'
-import DriverCard from '../card/DriverCard';
 import { Modal } from 'antd';
+import Header from "../../layouts/Header";
 
 function ListGroupCar() {
   const [modal, contextHolder] = Modal.useModal();
@@ -308,11 +308,14 @@ function ListGroupCar() {
 
   return (
     <div className='block'>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full sm:w-[90%] md:w-[80%] lg:w-[90%] mx-auto">
+      <div>
+      </div>
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full sm:w-[90%] md:w-[80%] lg:w-[100%] mx-auto">
         <div className="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
           <div></div>
           <label htmlFor="table-search" className="sr-only">Search</label>
         </div>
+        
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:text-gray-400">
             <tr>
@@ -391,7 +394,11 @@ function ListGroupCar() {
           zoom={13}
           scrollWheelZoom={false}
           ref={mapRef}
+<<<<<<< HEAD
           className="w-full h-full md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
+=======
+          className="w-[90%] h-[90%] md:w-3/4 md:h-3/4 lg:w-1/2 lg:h-1/2 z-10"
+>>>>>>> origin/dev
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

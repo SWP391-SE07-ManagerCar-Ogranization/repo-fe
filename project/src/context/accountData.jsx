@@ -1,17 +1,17 @@
-import {
-    useState, createContext,
-} from 'react'
+// import {
+//     useState, createContext,
+// } from 'react'
 
-export const AccountData = createContext()
+// // export const AccountData = createContext()
 
-export const ThemeProviderDo = ( { children } ) => {
+// // export const ThemeProviderDo = ( { children } ) => {
 
-    const [theme, setTheme] = useState({})
+// //     const [theme, setTheme] = useState({})
 
-    return(
-        <AccountData.Provider value={{ theme, setTheme }}>
-            {children}
-        </AccountData.Provider>
-    )
+// //     return(
+// //         <AccountData.Provider value={{ theme, setTheme }}>
+// //             {children}
+// //         </AccountData.Provider>
+// //     )
 
-}
+// // }

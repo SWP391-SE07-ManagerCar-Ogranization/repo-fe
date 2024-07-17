@@ -18,13 +18,8 @@ module.exports = withMT({
       },
       screens: {
         mobile: "400px",
-        // => @media (min-width: 640px) { ... }
-
         ipad: "768px",
-        // => @media (min-width: 1024px) { ... }
-
         desktop: "1100px",
-        // => @media (min-width: 1280px) { ... }
       },
       border: {},
       fontSize: {
@@ -45,6 +40,5 @@ module.exports = withMT({
       },
     },
   },
-
   plugins: [],
 });

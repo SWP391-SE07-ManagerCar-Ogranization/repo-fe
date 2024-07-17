@@ -51,7 +51,7 @@ function ProfileMenu() {
       path: "/wallet/your-wallet",
     },
     {
-      label: "Trade Coupon",
+      label: "Coupon",
       icon: GiftIcon,
       path: "/point/trade-point",
     },
@@ -165,9 +165,9 @@ export default function StickyNavbar() {
         color="blue-gray"
         className="p-1 font-normal"
       >
-        <a href="#" className="flex items-center">
-          Pages
-        </a>
+        <Link to="/group-working-page" className="flex items-center">
+          Group Working
+        </Link>
       </Typography>
       <Typography
         as="li"

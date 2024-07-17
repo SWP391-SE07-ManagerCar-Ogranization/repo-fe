@@ -9,6 +9,9 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import InputTradition from "../../component/layouts/components/InputTradition";
+import { getAllDriverType } from "../../service/DriverService";
+import { toast } from "react-toastify";
+import { addGroupCar } from "../../service/GroupCarService";
 
 function Bookingcarpool() {
   let groupCarData = {}
@@ -18,6 +21,11 @@ function Bookingcarpool() {
   const [timeoutId, setTimeoutId] = useState(null);
   const [currentInput, setCurrentInput] = useState('');
   const [user, setUser] = useState({});
+
+  
+
+  // fix get data from be
+  const [optionCar, setOptionCar] = useState([]);
   const options = [
     { label: "4 seater Car", value: 4, icon: <FaCar /> },
     { label: "6 Seater Car", value: 6, icon: <FaCar /> },
@@ -71,15 +79,28 @@ function Bookingcarpool() {
     try {
       const token = localStorage.getItem("token");
       const response = await UserService.getYourProfile(token);
-      console.log(response);
       setUser(response.account);
     } catch (error) {
       console.error("Error fetching profile information:", error);
     }
   };
-
+  const fetchDriverTypeCar = async () => {
+    try {
+      const response = await getAllDriverType();
+      const formattedData = response.map(item => ({
+        label: item.driverTypeName, 
+        value: item.capacity,
+        icon: <FaCar />
+      }));
+      setOptionCar(formattedData);
+    } catch (error) {
+      console.error("Error fetching driver type", error);
+    }
+  };
   useEffect(() => {
     fetchProfileInfo();
+    fetchDriverTypeCar();
+    console.log(optionCar);
   }, []);
 
 
@@ -102,22 +123,28 @@ function Bookingcarpool() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log("UserId >>>>> ", user.accountId)
     const { startPoint, endPoint, timeStart, capacity } = groupCar;
 
     if (!startPoint || !endPoint || capacity === 0) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
+    try {
+      const response = await addGroupCar(localStorage.getItem('token'),groupCar);
+      console.log(response);
+      toast.success("Create Group Success");
+      navigate(`/mytrip/${user.accountId}`);
+    } catch (error) {
+      toast.error(error);
+    }
+    
+    // let request = await axios.post("http://localhost:8080/public/group-car/add", groupCar);
+    // groupCarData = request.data
+    // // kiet update path apis
+    // await axios.post(`http://localhost:8080/public/group-car/add-customer/${user.accountId}/${groupCarData.groupId}`)
+    // console.log("groupCarDataId >>> ", groupCarData.groupId)
+    // setGroupCar(groupCarData)
 
-    let request = await axios.post("http://localhost:8080/public/addGroupCar", groupCar);
-    groupCarData = request.data
-    // thay 11 bằng user.accountId
-    await axios.post(`http://localhost:8080/public/addCustomer/${user.accountId}/${groupCarData.groupId}`)
-    console.log("groupCarDataId >>> ", groupCarData.groupId)
-    setGroupCar(groupCarData)
-
-    navigate(`/mytrip/${user.accountId}`);
   };
   return (
     <div
@@ -185,7 +212,7 @@ function Bookingcarpool() {
               <div className="w-[199px] border-white-700 border-solid pb-1">
                 <label className="font-Roboto font-bold">Select an Item</label>
                 <Select
-                  options={options}
+                  options={optionCar}
                   labelField="label"
                   valueField="value"
                   name="capacity"
@@ -229,9 +256,6 @@ function Bookingcarpool() {
           </div>
         </div>
       </div>
-
-
-
     </div>
   );
 }

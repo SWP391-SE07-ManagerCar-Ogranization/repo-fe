@@ -12,20 +12,16 @@ import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Button, Dropdown, Space } from 'antd';
 import AccountProfile from "../../component/AdminManager/AccountProfile";
-
-import {
-  AccountData
-} from '../../context/accountData'
 import avatarDefault from "../../assets/images/avatarDefault.jpg"
 
 export function Customer() {
   const [customers, setCustomers] = useState([])
   const [customer, setCustomer] = useState(null)
 
-  const { setTheme } = useContext(AccountData)
-  useEffect(() => {
-    setTheme((prev) => ({...prev, customers, customer}))
-  },[customer, customers])
+  // const { setTheme } = useContext(AccountData)
+  // useEffect(() => {
+  //   setTheme((prev) => ({...prev, customers, customer}))
+  // },[customer, customers])
   
 
   let items ;
@@ -34,7 +30,6 @@ export function Customer() {
   useEffect(() => {
 
     fetchCustomers();
-    console.log(customers);
   }, [customer])
 
   const fetchCustomers = async () => {
@@ -43,7 +38,7 @@ export function Customer() {
       setCustomers(data);
 
     } catch (error) {
-      console.error('Error')
+    console.error('Error')
     }
   }
 
@@ -51,16 +46,15 @@ export function Customer() {
     try {
       await updateStatus(customer.accountId, null, !customer.status)
       setCustomer(customer)
-      // console.log("quan");
+      //console.log("quan");
     } catch (error) {
       throw error
     }
-    // console.log('handleUpdateStatus: ',id, " + " ,status)
+    //console.log('handleUpdateStatus: ',id, " + " ,status)
   }
 
   const formatDate = (string) => {
     const date = new Date(string)
-    console.log(date);
     return date.toLocaleString()
   }
 

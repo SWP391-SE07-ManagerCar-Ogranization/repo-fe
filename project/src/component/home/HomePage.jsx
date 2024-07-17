@@ -14,66 +14,64 @@ import {
   CardBody,
   Typography
 } from "@material-tailwind/react";
-import { couponView, getCoupon, myCoupon } from "../../service/CouponService";
-import * as UserService from "../../service/UserService";
+import { freeCouponView, getCoupon, getTakenCoupon } from "../../service/CouponService";
+import Swal from "sweetalert2";
 
 function HomePage() {
 
+  const [change, setChange] = useState(false);
   const [coupons, setCoupons] = useState([]);
-  const [profileInfo, setProfileInfo] = useState({});
+  const [takenCoupon, setTakenCoupon] = useState([]);
 
   useEffect(() => {
     fetchCoupons();
-    fetchProfileInfo();
-  }, []);
+    fetchTakenCoupons();
+  }, [change]);
 
   const fetchCoupons = async () => {
     try {
-      const response = await couponView();
+      const response = await freeCouponView();
       setCoupons(response);
+      console.log(response);
     } catch (error) {
       console.error('Error fetching coupons:', error);
     }
   };
 
-  const fetchProfileInfo = async () => {
+  const fetchTakenCoupons = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await UserService.getYourProfile(token);
-      setProfileInfo(response.account);
-    console.log(response);
+      const response = await getTakenCoupon(localStorage.getItem('token'));
+      setTakenCoupon(response);
+      console.log(response);
     } catch (error) {
-      console.error("Error fetching profile information:", error);
+      console.error('Error fetching coupons:', error);
     }
   };
 
   const handleGetClick = async (coupon) => {
     try {
-      const token = localStorage.getItem("token");
-      console.log(coupon);
       console.log(localStorage.getItem('token'));
-      await getCoupon(token,coupon);
-      
+      await getCoupon(coupon, localStorage.getItem('token'));
+      setChange(!change);
     } catch (error) {
       console.error('Error getting coupon:', error);
     }
   };
 
-  const fetchMyCoupons = async () => {
-    try {
-      const response = await myCoupon();
-      setCoupons(response);
-    } catch (error) {
-      console.error('Error fetching coupons:', error);
-    }
-  };
+  const confirmGetCoupon = async (coupon) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to get this coupon: ${coupon.couponName}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, get it!'
+    });
 
-  const handleMyCouponClick = async () => {
-    try {
-      await fetchMyCoupons();
-      
-    } catch (error) {
-      console.error('Error getting coupon:', error);
+    if (result.isConfirmed) {
+      handleGetClick(coupon);
+      Swal.fire('Got it!', 'You have successfully taken the coupon.', 'success');
     }
   };
 
@@ -100,14 +98,14 @@ function HomePage() {
           </div>
           {/* Get coupon */}
           <div>
-            <Card>
+            {localStorage.getItem('token') && <Card>
               <CardHeader variant="gradient" className="mb-8 p-6 text-orange-500 bg-white rounded">
                 <Typography variant="h6">
                   COUPONS FOR YOU
                 </Typography>
               </CardHeader>
               <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
-                <div className="mx-6">
+                {/* <div className="mx-6">
                   <Typography
                     as="a"
                     className="text-xs font-semibold text-orange-500"
@@ -115,7 +113,7 @@ function HomePage() {
                   >
                     My coupons
                   </Typography>
-                </div>
+                </div> */}
                 <table className="w-full min-w-[250px] table-auto">
                   <tbody>
                     {coupons?.map((coupon, key) => {
@@ -130,25 +128,39 @@ function HomePage() {
                                 <Typography className="text-xs font-normal text-blue-gray-500">
                                   {coupon.couponName}
                                 </Typography>
+                                <Typography className="text-xs font-normal text-blue-gray-500">
+                                  {"Quantity : " + coupon.couponQuantity}
+                                </Typography>
                               </div>
                             </div>
                           </td>
                           <td className={className}>
-                            <Typography
-                              as="a"
-                              className="text-xs font-semibold text-orange-500"
-                            onClick={() => handleGetClick(coupon)}
-                            >
-                              Get
-                            </Typography>
+                            {takenCoupon.map(c => c.couponName).includes(coupon.couponName) ? (
+                              <Button
+                                as="a"
+                                className="text-xs font-semibold text-orange-500"
+                                disabled
+                              >
+                                Get
+                              </Button>
+                            ) : (
+                              <Button
+                                as="a"
+                                className="text-xs font-semibold text-orange-500"
+                                onClick={() => confirmGetCoupon(coupon)}
+                              >
+                                Get
+                              </Button>
+                            )}
                           </td>
+
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
               </CardBody>
-            </Card>
+            </Card> }
           </div>
         </div>
       </div>

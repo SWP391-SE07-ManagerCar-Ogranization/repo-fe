@@ -1,0 +1,32 @@
+FROM node:20-alpine AS builder
+ENV NODE_ENV production
+ENV GENERATE_SOURCEMAP=false
+ENV NODE_OPTIONS=--max-old-space-size=16384
+# Add a work directory
+WORKDIR /app
+
+# Cache and Install dependencies
+COPY package.json .
+COPY package-lock.json .
+RUN npm i --legacy-peer-deps
+
+# Copy app files
+COPY . .
+
+# Build the app
+RUN npm run build
+
+# Bundle static assets with nginx
+FROM nginx:1.21.0-alpine as production
+
+
+# Copy built assets from builder
+COPY --from=builder /app/build /usr/share/nginx/html
+
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Expose port
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
