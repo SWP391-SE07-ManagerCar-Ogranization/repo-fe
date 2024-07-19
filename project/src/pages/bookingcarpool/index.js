@@ -1,31 +1,22 @@
-import React, { useEffect, useState } from "react";
-import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import Select from "react-dropdown-select";
-import { FaCar } from "react-icons/fa";
-import * as UserService from "../../service/UserService";
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-geosearch/dist/geosearch.css';
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-import InputTradition from "../../component/layouts/components/InputTradition";
-import { getAllDriverType } from "../../service/DriverService";
-import { toast } from "react-toastify";
-import { addGroupCar } from "../../service/GroupCarService";
-
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Select from 'react-dropdown-select';
+import { FaCar } from 'react-icons/fa';
+import * as UserService from '../../service/UserService';
+import InputTradition from '../../component/layouts/components/InputTradition';
+import { getAllDriverType } from '../../service/DriverService';
+import { toast } from 'react-toastify';
+import { addGroupCar } from '../../service/GroupCarService';
 function Bookingcarpool() {
-  let groupCarData = {}
+  let groupCarData = {};
   let navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
-  const provider = new OpenStreetMapProvider();
   const [timeoutId, setTimeoutId] = useState(null);
   const [currentInput, setCurrentInput] = useState('');
   const [user, setUser] = useState({});
-
-  
-
-  // fix get data from be
   const [optionCar, setOptionCar] = useState([]);
+  
   const options = [
     { label: "4 seater Car", value: 4, icon: <FaCar /> },
     { label: "6 Seater Car", value: 6, icon: <FaCar /> },
@@ -41,8 +32,6 @@ function Bookingcarpool() {
     </div>
   );
 
-  // gợi ý search start
-
   const handleSearch = async (value, inputField) => {
     setCurrentInput(inputField);
 
@@ -51,12 +40,18 @@ function Bookingcarpool() {
         clearTimeout(timeoutId);
       }
       const newTimeoutId = setTimeout(async () => {
+        console.log("key >>>> ", process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
         try {
-          const results = await provider.search({ query: value });
-          console.log("Results:", results);
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${value}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`
+          );
+          const results = response.data.predictions.map((prediction) => ({
+            label: prediction.description,
+            placeId: prediction.place_id,
+          }));
           setSuggestions(results);
         } catch (error) {
-          console.log("error >>> ", error)
+          console.log('error >>> ', error);
         }
       }, 500);
       setTimeoutId(newTimeoutId);
@@ -65,59 +60,58 @@ function Bookingcarpool() {
     }
   };
 
-
-
   const selectSuggestion = (result) => {
-    setGroupCar(prevState => ({
+    setGroupCar((prevState) => ({
       ...prevState,
-      [currentInput]: result.label // Sử dụng currentInput để biết trường nào cần được cập nhật
+      [currentInput]: result.label, // Sử dụng currentInput để biết trường nào cần được cập nhật
     }));
     setSuggestions([]); // Xóa danh sách gợi ý sau khi chọn
   };
-  // gợi ý search end
+
   const fetchProfileInfo = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await UserService.getYourProfile(token);
       setUser(response.account);
     } catch (error) {
-      console.error("Error fetching profile information:", error);
+      console.error('Error fetching profile information:', error);
     }
   };
+
   const fetchDriverTypeCar = async () => {
     try {
       const response = await getAllDriverType();
-      const formattedData = response.map(item => ({
-        label: item.driverTypeName, 
+      const formattedData = response.map((item) => ({
+        label: item.driverTypeName,
         value: item.capacity,
-        icon: <FaCar />
+        icon: <FaCar />,
       }));
       setOptionCar(formattedData);
     } catch (error) {
-      console.error("Error fetching driver type", error);
+      console.error('Error fetching driver type', error);
     }
   };
+
   useEffect(() => {
     fetchProfileInfo();
     fetchDriverTypeCar();
     console.log(optionCar);
   }, []);
 
-
   const [groupCar, setGroupCar] = useState({
-    startPoint: "",
-    endPoint: "",
-    timeStart: "",
-    capacity: 0
+    startPoint: '',
+    endPoint: '',
+    timeStart: '',
+    capacity: 0,
   });
 
   const handleChangeCapacity = (values) => {
     setGroupCar({ ...groupCar, capacity: values[0].value });
-  }
+  };
 
   const onInputChange = async (e) => {
     const { name, value } = e.target;
-    await setGroupCar(prevState => ({ ...prevState, [name]: value }));
+    await setGroupCar((prevState) => ({ ...prevState, [name]: value }));
     handleSearch(value, name);
   };
 
@@ -126,37 +120,28 @@ function Bookingcarpool() {
     const { startPoint, endPoint, timeStart, capacity } = groupCar;
 
     if (!startPoint || !endPoint || capacity === 0) {
-      toast.error("Please fill in all required fields.");
+      toast.error('Please fill in all required fields.');
       return;
     }
     try {
-      const response = await addGroupCar(localStorage.getItem('token'),groupCar);
+      const response = await addGroupCar(localStorage.getItem('token'), groupCar);
       console.log(response);
-      toast.success("Create Group Success");
+      toast.success('Create Group Success');
       navigate(`/mytrip/${user.accountId}`);
     } catch (error) {
       toast.error(error);
     }
-    
-    // let request = await axios.post("http://localhost:8080/public/group-car/add", groupCar);
-    // groupCarData = request.data
-    // // kiet update path apis
-    // await axios.post(`http://localhost:8080/public/group-car/add-customer/${user.accountId}/${groupCarData.groupId}`)
-    // console.log("groupCarDataId >>> ", groupCarData.groupId)
-    // setGroupCar(groupCarData)
-
   };
+
   return (
-    <div
-      className="flex items-center h-[600px] flex-col"
-    >
+    <div className="flex items-center h-[600px] flex-col">
       <div>
         <div className="flex flex-col items-center rounded-[20px] w-[1750px] h-[350px] bg-orange-300 justify-center pl-4 pr-4 mt-8">
           <div className="flex flex-row gap-5 relative">
             <div className="w-full relative pt-11">
               <InputTradition
-                label={"Start Point"}
-                placeholder={"Nhập nơi đi"}
+                label={'Start Point'}
+                placeholder={'Nhập nơi đi'}
                 setPickup={(value) => setGroupCar({ ...groupCar, startPoint: value })}
                 name="startPoint"
                 value={groupCar.startPoint}
@@ -164,9 +149,9 @@ function Bookingcarpool() {
               />
               {suggestions.length > 0 && currentInput === 'startPoint' && (
                 <ul className="absolute top-full left-0 mt-1 w-[600px] bg-white shadow-lg max-h-60 overflow-auto z-30 rounded-md">
-                  {suggestions.map(result => (
+                  {suggestions.map((result) => (
                     <li
-                      key={result.x + result.y}
+                      key={result.placeId}
                       onClick={() => selectSuggestion(result)}
                       className="p-2 hover:bg-gray-100 cursor-pointer"
                     >
@@ -178,8 +163,8 @@ function Bookingcarpool() {
             </div>
             <div className="w-full relative pt-11">
               <InputTradition
-                label={"End Point"}
-                placeholder={"Nhập nơi đến"}
+                label={'End Point'}
+                placeholder={'Nhập nơi đến'}
                 setEnd={(value) => setGroupCar({ ...groupCar, endPoint: value })}
                 name="endPoint"
                 value={groupCar.endPoint}
@@ -187,9 +172,9 @@ function Bookingcarpool() {
               />
               {suggestions.length > 0 && currentInput === 'endPoint' && (
                 <ul className="absolute top-full left-0 mt-1 w-[600px] bg-white shadow-lg max-h-60 overflow-auto z-30 rounded-md">
-                  {suggestions.map(result => (
+                  {suggestions.map((result) => (
                     <li
-                      key={result.x + result.y}
+                      key={result.placeId}
                       onClick={() => selectSuggestion(result)}
                       className="p-2 hover:bg-gray-100 cursor-pointer"
                     >
@@ -201,7 +186,7 @@ function Bookingcarpool() {
             </div>
             <div className="flex flex-row gap-10 pt-11">
               <InputTradition
-                label={"Time Start"}
+                label={'Time Start'}
                 name="timeStart"
                 value={groupCar.timeStart}
                 onChange={onInputChange}
@@ -224,35 +209,45 @@ function Bookingcarpool() {
                 />
               </div>
             </div>
-
-
             <div className="block">
               <div className="flex">
                 <div className="flex mt-8 flex-col justify-center mx-2">
-                  <Link to={`/SearchGroupCar/${encodeURIComponent(JSON.stringify({ groupCar, user }))}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-purple-300 text-white-500">
+                  <Link
+                    to={`/SearchGroupCar/${encodeURIComponent(JSON.stringify({ groupCar, user }))}`}
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-purple-300 text-white-500"
+                  >
                     Search
                   </Link>
                 </div>
                 <div className="flex mt-8 flex-col justify-center mx-2">
-                  <Link to={`/mytrip/${user.accountId}`} onClick={onSubmit} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-300 text-white-500">
+                  <Link
+                    to={`/mytrip/${user.accountId}`}
+                    onClick={onSubmit}
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-300 text-white-500"
+                  >
                     Create
                   </Link>
                 </div>
               </div>
               <div className="flex">
                 <div className="flex mt-8 flex-col justify-center mx-2">
-                  <Link to={`/mytrip/${user.accountId}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-red-300 text-white-500">
+                  <Link
+                    to={`/mytrip/${user.accountId}`}
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-red-300 text-white-500"
+                  >
                     My trip
                   </Link>
                 </div>
                 <div className="flex mt-8 flex-col justify-center mx-2">
-                  <Link to={`/listGroupCar/${encodeURIComponent(JSON.stringify(user))}`} className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-green-300 text-white-500">
+                  <Link
+                    to={`/listGroupCar/${encodeURIComponent(JSON.stringify(user))}`}
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-green-300 text-white-500"
+                  >
                     View trips
                   </Link>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>

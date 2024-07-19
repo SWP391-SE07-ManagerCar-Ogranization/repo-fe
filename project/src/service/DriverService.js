@@ -44,9 +44,11 @@ export const getAllDriverType = async() => {
 }
 export const joinGroupCar = async(token, groupId) => {
     try {
+        console.log("token >>> ", token);
         const temp = await axios.post("http://localhost:8080/public/driver/join-group", {groupId}, {
             headers: {Authorization: `Bearer ${token}`}
         });
+        console.log("temp >>> ", temp.data);
         return temp.data;
     } catch (error) {
         console.log(error);
