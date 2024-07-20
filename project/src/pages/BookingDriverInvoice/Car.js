@@ -13,10 +13,14 @@ import { useNavigate } from "react-router-dom";
 import { IoIosCloseCircle } from "react-icons/io";
 import LeafletGeocoder from "../../component/layouts/Map/LeafletGeocoder";
 import LeafletRoutingMachine from "../../component/layouts/Map/LeafletRoutingMachine";
-import { addInvoiceAndTransaction } from "../../service/TransactionService";
+import {
+  addInvoiceAndTransaction,
+  paymentTransaction,
+} from "../../service/TransactionService";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 
 import { Popover, Button } from "antd";
+import { toast } from "react-toastify";
 
 const UpdateMapCenter = ({ position }) => {
   const map = useMap();
@@ -25,11 +29,6 @@ const UpdateMapCenter = ({ position }) => {
 };
 
 const BookingTraditional = () => {
-  const [suggestions, setSuggestions] = useState([]);
-  const provider = new OpenStreetMapProvider();
-  const [timeoutId, setTimeoutId] = useState(null);
-  const [currentInput, setCurrentInput] = useState("");
-
   const [activePage, setActivePage] = useState("carsPage");
   const [pickup, setPickup] = useState("");
   const [end, setEnd] = useState("");
@@ -53,65 +52,6 @@ const BookingTraditional = () => {
 
   const [popup, setPopup] = useState(false);
 
-  // gợi ý search start
-
-  const handleSearch = async (value, inputField) => {
-    setCurrentInput(inputField); // Cập nhật trường hiện tại đang nhập
-    if (value.length > 3) {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      const newTimeoutId = setTimeout(async () => {
-        try {
-          const results = await provider.search({ query: value });
-          console.log("Results:", results);
-          setSuggestions(results);
-        } catch (error) {
-          console.log("error >>> ", error);
-        }
-      }, 500);
-      setTimeoutId(newTimeoutId);
-    } else {
-      setSuggestions([]);
-    }
-  };
-
-  const selectSuggestion = (result) => {
-    setPickup((prevState) => ({
-      ...prevState,
-      [currentInput]: result.label, // Sử dụng currentInput để biết trường nào cần được cập nhật
-    }));
-    setSuggestions([]); // Xóa danh sách gợi ý sau khi chọn
-  };
-  // gợi ý search end
-
-  const content = (
-    <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
-      <table className="w-full h-full flex flex-row justify-center items-center">
-        <thead className="">
-          <tr className="flex flex-col">
-            <th className="py-4 px-5 bg-gray-200 text-left">Name Customer</th>
-            <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
-            <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
-          </tr>
-        </thead>
-        <tbody className="">
-          <tr className="flex flex-col">
-            <td className="py-4 px-5 border-b">John Doe</td>
-            <td className="py-4 px-5 border-b">Jane Smith</td>
-            <td className="py-4 px-5 border-b">$50.00</td>
-          </tr>
-        </tbody>
-      </table>
-      <Button
-        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
-        onClick={() => handlePayment()}
-      >
-        Payment
-      </Button>
-    </div>
-  );
-
   const searchLocation = async () => {
     if (!query) return;
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
@@ -122,7 +62,7 @@ const BookingTraditional = () => {
       console.log("Fetching location data from URL:", url);
       let response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        toast.error("Can't Fetching location data");
       }
       let data = await response.json();
       console.log("Received data:", data);
@@ -155,7 +95,7 @@ const BookingTraditional = () => {
     try {
       let response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        toast.error("cant not fetching image");
       }
       let data = await response.json();
       console.log("Received image data:", data);
@@ -215,7 +155,7 @@ const BookingTraditional = () => {
   const handleRouteFound = (summary) => {
     const distance = (summary.totalDistance / 1000).toFixed(2) + " km";
     const time = (summary.totalTime / 60).toFixed(2) + " minutes";
-    setRouteInfo(`Distance: ${distance}, Time: ${time}`);
+    setRouteInfo({ Distance: distance, Time: time });
   };
 
   const handleBooking = (e) => {
@@ -241,6 +181,8 @@ const BookingTraditional = () => {
     setActivePage(pageId);
   };
 
+  const [infoBooking, setInfoBooking] = useState();
+
   const handleSummit = async (e) => {
     e.preventDefault();
     setPopup(!popup);
@@ -250,12 +192,12 @@ const BookingTraditional = () => {
       timeStart: timeCar,
     };
     try {
-      console.log("add invoice" + newInvoice);
-      const data = await addInvoiceAndTransaction(
+      const response = await addInvoiceAndTransaction(
         newInvoice,
         localStorage.getItem("token")
       );
-      return data;
+      setInfoBooking(response);
+      console.log(response);
     } catch (error) {
       console.error(error);
     }
@@ -265,10 +207,43 @@ const BookingTraditional = () => {
     setQuery(e.target.value);
   };
   //TODO
-  const handlePayment = () => {
-    console.log("dkslmk");
+  const handlePayment = async () => {
+    const response = await paymentTransaction(
+      infoBooking.userTransaction,
+      localStorage.getItem("token")
+    );
+    toast.success(response);
   };
   //TODO
+
+  const content = (
+    <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
+      <table className="w-full h-full flex flex-row justify-center items-center">
+        <thead className="">
+          <tr className="flex flex-col">
+            <th className="py-4 px-5 bg-gray-200 text-left">Name Customer</th>
+            <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
+            <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
+          </tr>
+        </thead>
+        <tbody className="">
+          <tr className="flex flex-col">
+            <td className="py-4 px-5 border-b">{infoBooking?.nameCustomer}</td>
+            <td className="py-4 px-5 border-b">{infoBooking?.nameDriver}</td>
+            <td className="py-4 px-5 border-b">
+              {infoBooking?.userTransaction.amount}đ
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <Button
+        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
+        onClick={() => handlePayment()}
+      >
+        Payment
+      </Button>
+    </div>
+  );
 
   return (
     <>
@@ -325,19 +300,6 @@ const BookingTraditional = () => {
                         geocodeAddress(address, setStartPoint);
                       }}
                     />
-                    {suggestions.length > 0 && currentInput === "pickup" && (
-                      <ul className="absolute top-full left-0 mt-1 w-[600px] bg-white shadow-lg max-h-60 overflow-auto z-30 rounded-md">
-                        {suggestions.map((result) => (
-                          <li
-                            key={result.x + result.y}
-                            onClick={() => selectSuggestion(result)}
-                            className="p-2 hover:bg-gray-100 cursor-pointer"
-                          >
-                            {result.label}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
                   </div>
                 </div>
                 <div className="flex flex-col">
@@ -396,15 +358,12 @@ const BookingTraditional = () => {
           </div>
         </div>
 
-        <div className="h-[307px] mt-[400px] w-full flex flex-col bg-[#FF5F00] text-center tightest">
-          <span className="text-[72px] font-Roboto font-black pt-[1.5rem] pb-[1.5rem] leading-[72px] tightest">
+        <div className="h-[207px] mt-[400px] w-full flex flex-col bg-[#FF5F00] text-center tightest">
+          <span className="text-[60px] font-Roboto font-black pt-[0.5rem] pb-[1.5rem] leading-[72px] tightest">
             Don't rent a car.
           </span>
           <br />
-          <span className="text-[72px] font-Roboto font-black leading-[72px] tightest">
-            Rent THE Car.
-          </span>
-          <h1 className="font-Roboto font-bold text-3xl">
+          <h1 className="font-Roboto font-bold text-3xl ">
             Premium car rental at affordable rates. Worldwide.
           </h1>
         </div>

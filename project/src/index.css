@@ -8,13 +8,15 @@
   }
 
 }
+
 .glow {
   box-shadow: 0 0 10px 3px rgba(0, 123, 255, 0.5);
 }
 
 .gg-more-alt {
-  transform: scale(var(--ggs,1))
+  transform: scale(var(--ggs, 1))
 }
+
 .gg-more-alt,
 .gg-more-alt::after,
 .gg-more-alt::before {
@@ -26,48 +28,55 @@
   background: currentColor;
   border-radius: 100%
 }
+
 .gg-more-alt::after,
 .gg-more-alt::before {
   content: "";
   position: absolute;
   top: 0
 }
+
 .gg-more-alt::after {
   left: -6px
 }
+
 .gg-more-alt::before {
   right: -6px
 }
 
 .star-icon {
   color: #ddd;
-  font-size: 1.2  em;
+  font-size: 1.2 em;
   position: relative;
 }
 
 .star-icon.full:before {
-  text-shadow: 0 0 2px rgba(0,0,0,0.7);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
   color: #FDE16D;
-  content: '\2605'; /* Full star in UTF-8 */
+  content: '\2605';
+  /* Full star in UTF-8 */
   position: absolute;
   left: 0;
 }
 
 .star-icon.half:before {
-  text-shadow: 0 0 2px rgba(0,0,0,0.7);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
   color: #FDE16D;
-  content: '\2605'; /* Full star in UTF-8 */
+  content: '\2605';
+  /* Full star in UTF-8 */
   position: absolute;
   left: 0;
   width: 50%;
   overflow: hidden;
 }
 
-@-moz-document url-prefix() { /* Firefox Hack :( */
-.star-icon {
-  font-size: 2px;
-  line-height: 20px;
-}
+@-moz-document url-prefix() {
+
+  /* Firefox Hack :( */
+  .star-icon {
+    font-size: 2px;
+    line-height: 20px;
+  }
 }
 
 
@@ -94,7 +103,83 @@
 .star-rating button.off .star {
   color: #ccc;
 }
+
 @font-face {
   font-family: "Casanova Scotia";
   src: url("assets/fonts/Casanova\ Scotia.otf");
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  /* Vị trí của tooltip */
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.truncated-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  /* Đặt chiều rộng tối đa cho văn bản */
+}
+
+/* --------view trip */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  /* Vị trí của tooltip */
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.truncated-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  /* Đặt chiều rộng tối đa cho văn bản */
 }
