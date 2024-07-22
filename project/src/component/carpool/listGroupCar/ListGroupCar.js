@@ -252,11 +252,8 @@ function ListGroupCar() {
         toast.warning('Group is full');
         return;
       }
-
-      console.log(resrep);
-      // Replace 11 with userObject.accountId
-      await axios.post(`http://localhost:8080/public/addCustomer/${userObject.accountId}/${groupId}`);
-
+      await axios.post(`http://localhost:8080/public/group-car/add-customer/${userObject.accountId}/${groupId}`);
+      toast.success('Join successfully');
       // Alert join successful
       // Update quantity of the joined groupCar
       const updatedGroupCars = groupCars.map((car) => {
