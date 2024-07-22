@@ -1,40 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Button } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import Swal from "sweetalert2";
-import { Breadcrumb, Card, Layout } from "antd";
-import { Link } from "react-router-dom";
+import { Card, Layout, Table, Space, Tabs, Spin, Alert } from "antd";
 import Header from "../../layouts/Header";
 import { Content } from "antd/es/layout/layout";
 import { loadPoint, tradeCouponMinusPoint } from "../../service/CustomerPointService";
-import { myCoupon, tradeCouponView } from "../../service/CouponService";
+import { getMyTradeCoupon, myCoupon, tradeCouponView } from "../../service/CouponService";
+
+const { Column } = Table;
+const { TabPane } = Tabs;
 
 function TradePointPage() {
     const [point, setPoint] = useState(0);
     const [change, setChange] = useState(false);
     const [myCoupons, setMyCoupons] = useState([]);
     const [tradeCoupons, setTradeCoupons] = useState([]);
+    const [tradeCouponHistory, setTradeCouponHistory] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchMyCoupons();
-        fetchPoint();
-        fetchTradeCoupons();
+        setLoading(true);
+        Promise.all([fetchMyCoupons(), fetchPoint(), fetchTradeCoupons(), fetchMyTradeCoupon()])
+            .then(() => setLoading(false))
+            .catch((err) => {
+                setLoading(false);
+                setError(err.message);
+            });
     }, [change]);
+
+    const fetchMyTradeCoupon = async () => {
+        try {
+            const response = await getMyTradeCoupon(localStorage.getItem('token'));
+            const sortedHistory = response.sort((a, b) => new Date(b.takenDate) - new Date(a.takenDate));
+            setTradeCouponHistory(sortedHistory);
+        } catch (error) {
+            console.error('Error fetching coupons:', error);
+            setError(error.message);
+        }
+    };
 
     const fetchMyCoupons = async () => {
         try {
             const response = await myCoupon(localStorage.getItem('token'));
-            setMyCoupons(response);
+            const sortedCoupons = response.sort((a, b) => b.couponValue - a.couponValue);
+            setMyCoupons(sortedCoupons);
         } catch (error) {
             console.error('Error fetching coupons:', error);
+            setError(error.message);
         }
     };
 
     const fetchTradeCoupons = async () => {
         try {
             const response = await tradeCouponView();
-            setTradeCoupons(response);
+            const sortedTradeCoupons = response.sort((a, b) => b.couponValue - a.couponValue);
+            setTradeCoupons(sortedTradeCoupons);
         } catch (error) {
             console.error('Error fetching coupons:', error);
+            setError(error.message);
         }
     };
 
@@ -45,6 +69,7 @@ function TradePointPage() {
             setPoint(response);
         } catch (error) {
             console.error('Error fetching profile information:', error);
+            setError(error.message);
         }
     };
 
@@ -54,6 +79,7 @@ function TradePointPage() {
             setChange(!change);
         } catch (error) {
             console.error('Error fetching coupons:', error);
+            setError(error.message);
         }
     };
 
@@ -78,113 +104,104 @@ function TradePointPage() {
             }
         } catch (error) {
             console.error('Error trading coupon:', error);
+            setError(error.message);
         }
     };
 
-    const breadcrumbItems = [
-        {
-            title: <Link to={"/"}>Home</Link>,
-            key: "/",
-        },
-        {
-            title: <Link to={"/profile"}>Profile</Link>,
-            key: "/profile",
-        },
-        {
-            title: "Coupon",
-            key: "/point/trade-point",
-        },
-    ];
-
-    const CouponCard = ({ coupon }) => {
-        return (
-            <div className="max-w-sm rounded overflow-hidden shadow-lg my-4 p-4 border">
-                <div className="font-bold text-xl mb-2">{coupon.couponName}</div>
-                <p className="text-gray-700 text-base">Value: {coupon.couponValue}</p>
-                <p className="text-orange-400 text-base">{coupon.couponValue * 1000} points</p>
-                {point >= coupon.couponValue * 1000 ? (
-                    <Button
-                        className="bg-orange-400"
-                        onClick={() => handleTradeCoupon(coupon)}
-                    >
-                        Trade
-                    </Button>
-                ) : (
-                    <Button
-                        className="bg-orange-400"
-                        disabled
-                    >
-                        Trade
-                    </Button>
-                )}
-            </div>
-        );
-    };
-
-    const CouponList = () => {
+    if (loading) {
         return (
             <Layout>
                 <Header />
-                <Content style={{ padding: "0 48px" }}>
-                    <Breadcrumb style={{ margin: "16px 0" }} items={breadcrumbItems} />
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <Card className="flex-1 p-4 bg-white rounded-lg shadow-md">
-                            <Card>
-                                <Typography className="text-xl font-semibold text-black">
-                                    My Point: {point}
-                                </Typography>
-                            </Card>
-                            <Card className="my-4">
-                                <div className="p-4 bg-orange-400 rounded-lg mb-4 text-center">
-                                    <Typography className="text-xl font-semibold text-white">
-                                        My Coupon
-                                    </Typography>
-                                </div>
-                                <table className="w-full min-w-[250px] table-auto">
-                                    <tbody>
-                                        {myCoupons?.map((coupon, key) => {
-                                            const className = `py-3 px-5 ${key === myCoupons.length - 1 ? "" : "border-b border-blue-gray-200"}`;
-
-                                            return (
-                                                <tr key={coupon.couponId} className="hover:bg-blue-gray-50">
-                                                    <td className={className}>
-                                                        <div className="flex items-center gap-4">
-                                                            <div>
-                                                                <Typography className="text-sm font-medium text-blue-gray-800">
-                                                                    {coupon.couponName}
-                                                                </Typography>
-                                                                <Typography className="text-xs font-light text-blue-gray-500">
-                                                                    Quantity: {coupon.couponQuantity}
-                                                                </Typography>
-                                                                <Typography className="text-xs font-light text-blue-gray-500">
-                                                                    Value: {coupon.couponValue * 100}%
-                                                                </Typography>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </Card>
-
-                        </Card>
-                        <Card className="flex-1 p-4 bg-white rounded-lg shadow-md">
-                            {tradeCoupons.map((coupon, index) => (
-                                <CouponCard key={index} coupon={coupon} />
-                            ))}
-                        </Card>
-                    </div>
+                <Content style={{ padding: "0 48px", marginTop: 16 }}>
+                    <Spin size="large" />
                 </Content>
             </Layout>
         );
-    };
+    }
+
+    if (error) {
+        return (
+            <Layout>
+                <Header />
+                <Content style={{ padding: "0 48px", marginTop: 16 }}>
+                    <Alert message="Error" description={error} type="error" showIcon />
+                </Content>
+            </Layout>
+        );
+    }
 
     return (
-        <div>
-            <CouponList />
-        </div>
+        <Layout>
+            <Header />
+            <Content style={{ padding: "0 48px" }}>
+
+                <Tabs defaultActiveKey="1" style={{ marginTop: 16 }}>
+                    <TabPane tab="My Coupons" key="1">
+                        <Card className="p-4 bg-white rounded-lg shadow-md">
+                            <div className="flex justify-start">
+                                <p className="mb-3 font-bold text-26 text-orange-400">MY POINT: {point}</p>
+                            </div>
+                            <Table dataSource={myCoupons} rowKey="couponId" pagination={{ pageSize: 5 }}>
+                                <Column title="Name" dataIndex="couponName" key="couponName" />
+                                <Column title="Quantity" dataIndex="couponQuantity" key="couponQuantity" />
+                                <Column title="Value" dataIndex="couponValue" key="couponValue" render={value => `${value * 100}%`} />
+                            </Table>
+                        </Card>
+                    </TabPane>
+                    <TabPane tab="Available Coupons" key="2">
+                        <Card className="p-4 bg-white rounded-lg shadow-md">
+                            <div className="flex justify-start">
+                            <p className="mb-3 font-bold text-26 text-orange-400">MY POINT: {point}</p>
+                            </div>
+                            <Table dataSource={tradeCoupons} rowKey="couponId" pagination={{ pageSize: 5 }}>
+                                <Column
+                                    title="Name"
+                                    dataIndex="couponName"
+                                    key="couponName"
+                                    render={(text, record) => (
+                                        <Space size="middle">
+                                            <span>{text}</span>
+                                        </Space>
+                                    )}
+                                />
+                                <Column title="Value" dataIndex="couponValue" key="couponValue" render={value => `${value} %`} />
+                                <Column title="Points" dataIndex="couponValue" key="couponPoints" render={value => `${value * 1000} points`} />
+                                <Column
+                                    title="Action"
+                                    key="action"
+                                    render={(text, record) => (
+                                        <Button
+                                            className="bg-orange-400"
+                                            onClick={() => handleTradeCoupon(record)}
+                                            disabled={point < record.couponValue * 1000}
+                                        >
+                                            Trade
+                                        </Button>
+                                    )}
+                                />
+                            </Table>
+                        </Card>
+                    </TabPane>
+                    <TabPane tab="Trade History" key="3">
+                        <Card className="p-4 bg-white rounded-lg shadow-md">
+                            <div className="flex justify-start">
+                            <p className="mb-3 font-bold text-26 text-orange-400">MY POINT: {point}</p>
+                            </div>
+                            <Table dataSource={tradeCouponHistory} rowKey="id" pagination={{ pageSize: 5 }}>
+                                <Column title="Name" dataIndex="couponName" key="couponName" />
+                                <Column title="Value" dataIndex="couponValue" key="couponValue" render={value => `${value * 100} %`} />
+                                <Column title="Traded On" dataIndex="takenDate" key="takenDate" render={date => new Date(date).toLocaleDateString()} />
+                                <Column title="Points Used" dataIndex="couponValue" key="pointsUsed" render={(value, record) => (
+                                    <span className="text-red-500">
+                                        {`- ${value * 1000} points`} {`(${record.couponQuantity})`}
+                                    </span>
+                                )} />
+                            </Table>
+                        </Card>
+                    </TabPane>
+                </Tabs>
+            </Content>
+        </Layout>
     );
 }
 

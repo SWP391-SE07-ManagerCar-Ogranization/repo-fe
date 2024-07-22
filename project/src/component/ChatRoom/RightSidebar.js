@@ -21,7 +21,7 @@ import {
 
 
 export default function RightSidebar({ group }) {
-    const { theme, setTheme } = useContext(ChatRoomContext)
+    const { theme, setTheme } = useContext(ChatRoomContext);
 
     return (
         <>
@@ -50,9 +50,7 @@ export default function RightSidebar({ group }) {
 
                             </Avatar.Group>
                         </div>
-                        <Button type='text'><PlusOutlined /> Add people</Button>
                     </Col>
-                    <Col span={24}></Col>
                 </Row>
             </div >
         </>
