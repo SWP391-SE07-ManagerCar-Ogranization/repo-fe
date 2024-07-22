@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import images from "../../assets/icons/logo.svg";
 import CarType from "../../component/layouts/components/carType";
 import tradition2 from "../../assets/images/bg_tradition2.png";
 import DriverType from "../../component/layouts/components/driverType";
@@ -13,10 +12,12 @@ import { useNavigate } from "react-router-dom";
 import { IoIosCloseCircle } from "react-icons/io";
 import LeafletGeocoder from "../../component/layouts/Map/LeafletGeocoder";
 import LeafletRoutingMachine from "../../component/layouts/Map/LeafletRoutingMachine";
-import { addInvoiceAndTransaction, paymentTransaction } from "../../service/TransactionService";
-import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
-
-import { Popover, Button } from "antd";
+import {
+  addInvoiceAndTransaction,
+  paymentTransaction,
+} from "../../service/TransactionService";
+import Header from "../../layouts/Header";
+import { Popover, Button, Spin } from "antd";
 import { toast } from "react-toastify";
 
 const UpdateMapCenter = ({ position }) => {
@@ -27,8 +28,6 @@ const UpdateMapCenter = ({ position }) => {
 
 const BookingTraditional = () => {
   const [suggestions, setSuggestions] = useState([]);
-  const provider = new OpenStreetMapProvider();
-  const [timeoutId, setTimeoutId] = useState(null);
   const [currentInput, setCurrentInput] = useState("");
 
   const [activePage, setActivePage] = useState("carsPage");
@@ -37,7 +36,6 @@ const BookingTraditional = () => {
   const currentTime = new Date();
   const formattedTime = currentTime.toISOString().slice(0, 16);
   const [timeCar, setTimeCar] = useState(formattedTime);
-  const [selectedCarType, setSelectedCarType] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
@@ -54,39 +52,13 @@ const BookingTraditional = () => {
 
   const [popup, setPopup] = useState(false);
 
-  // gợi ý search start
-
-  const handleSearch = async (value, inputField) => {
-    setCurrentInput(inputField); // Cập nhật trường hiện tại đang nhập
-    if (value.length > 3) {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      const newTimeoutId = setTimeout(async () => {
-        try {
-          const results = await provider.search({ query: value });
-          console.log("Results:", results);
-          setSuggestions(results);
-        } catch (error) {
-          console.log("error >>> ", error);
-        }
-      }, 500);
-      setTimeoutId(newTimeoutId);
-    } else {
-      setSuggestions([]);
-    }
-  };
-
   const selectSuggestion = (result) => {
     setPickup((prevState) => ({
       ...prevState,
-      [currentInput]: result.label, // Sử dụng currentInput để biết trường nào cần được cập nhật
+      [currentInput]: result.label,
     }));
-    setSuggestions([]); // Xóa danh sách gợi ý sau khi chọn
+    setSuggestions([]);
   };
-  // gợi ý search end
-
-  
 
   const searchLocation = async () => {
     if (!query) return;
@@ -191,7 +163,7 @@ const BookingTraditional = () => {
   const handleRouteFound = (summary) => {
     const distance = (summary.totalDistance / 1000).toFixed(2) + " km";
     const time = (summary.totalTime / 60).toFixed(2) + " minutes";
-    setRouteInfo({Distance: distance, Time: time});
+    setRouteInfo({ Distance: distance, Time: time });
   };
 
   const handleBooking = (e) => {
@@ -219,7 +191,7 @@ const BookingTraditional = () => {
 
   const [infoBooking, setInfoBooking] = useState();
 
-  const handleSummit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setPopup(!popup);
     const newInvoice = {
@@ -233,7 +205,7 @@ const BookingTraditional = () => {
         localStorage.getItem("token")
       );
       setInfoBooking(response);
-      console.log(response);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -242,42 +214,63 @@ const BookingTraditional = () => {
     setEnd(e.target.value);
     setQuery(e.target.value);
   };
-  //TODO
   const handlePayment = async () => {
-    const response = await paymentTransaction(infoBooking.userTransaction,localStorage.getItem("token"));
-    toast.success(response);
+    try {
+      const response = await paymentTransaction(
+        infoBooking.userTransaction,
+        localStorage.getItem("token")
+      );
+      toast.success(response);
+      console.log(infoBooking);
+      navigate(`/feedback-driver/${infoBooking?.accountDriver.accountId}`);
+    } catch (error) {
+      toast.error("Not enough balance to payment");
+    }
   };
-  //TODO
 
+  const [isLoading, setIsLoading] = useState(false);
   const content = (
-    <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
-      <table className="w-full h-full flex flex-row justify-center items-center">
-        <thead className="">
-          <tr className="flex flex-col">
-            <th className="py-4 px-5 bg-gray-200 text-left">Name Customer</th>
-            <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
-            <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
-          </tr>
-        </thead>
-        <tbody className="">
-          <tr className="flex flex-col">
-            <td className="py-4 px-5 border-b">{infoBooking?.nameCustomer}</td>
-            <td className="py-4 px-5 border-b">{infoBooking?.nameDriver}</td>
-            <td className="py-4 px-5 border-b">{infoBooking?.userTransaction.amount}đ</td>
-          </tr>
-        </tbody>
-      </table>
-      <Button
-        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
-        onClick={() => handlePayment()}
-      >
-        Payment
-      </Button>
-    </div>
+    <Spin spinning={isLoading} tip="Loading...">
+      <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
+        {infoBooking ? (
+          <table className="w-full h-full flex flex-row justify-center items-center">
+            <thead>
+              <tr className="flex flex-col">
+                <th className="py-4 px-5 bg-gray-200 text-left">
+                  Name Customer
+                </th>
+                <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
+                <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="flex flex-col">
+                <td className="py-4 px-5 border-b">
+                  {infoBooking.nameCustomer}
+                </td>
+                <td className="py-4 px-5 border-b">{infoBooking.accountDriver.name}</td>
+                <td className="py-4 px-5 border-b">
+                  {infoBooking.userTransaction.amount}đ
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center">Loading ...</div>
+        )}
+        <Button
+          className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
+          onClick={() => handlePayment()}
+        >
+          Payment
+        </Button>
+      </div>
+    </Spin>
   );
 
   return (
     <>
+      <Header />
       <div
         className="flex items-center flex-col relative justify-center min-h-screen"
         style={{
@@ -287,7 +280,7 @@ const BookingTraditional = () => {
         }}
       >
         <div>
-          <div className="flex  mt-5 justify-center w-[1150px]">
+          <div className="flex mt-5 justify-center w-[1150px]">
             <div className="flex flex-col items-center  rounded-[20px] w-[1120px] h-[200px] bg-[#FFFFFF] justify-center">
               <div className="flex flex-row justify-start w-full gap-5 mb-10 ml-[22px]">
                 <div
@@ -425,7 +418,6 @@ const BookingTraditional = () => {
                   onClick={() => setIsEdit(!isEdit)}
                   className="text-red-500 cursor-pointer text-[30px] transition duration-300 transform hover:rotate-90 hover:scale-110 mr-2"
                 />
-                {/* <PopUpContai /> */}
                 <div>
                   <p className="text-[#999999] mb-1">
                     Pickup Location: {pickup}
@@ -453,11 +445,15 @@ const BookingTraditional = () => {
                   )}
                 </div>
                 <div>
-                  <Popover content={content} title="Popup" trigger="click">
+                  <Popover
+                    content={content}
+                    title="Payment Information"
+                    trigger="click"
+                  >
                     <button
                       className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs md:text-sm lg:text-base font-medium bg-[#FF5F00] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 transition-all relative text-white border-2 z-10 border-white h-10 px-4 py-2 w-full shadow-3d"
                       type="submit"
-                      onClick={(e) => handleSummit(e)}
+                      onClick={(e) => handleSubmit(e)}
                     >
                       Confirm
                     </button>
@@ -505,7 +501,6 @@ const BookingTraditional = () => {
                 />
               )}
             </MapContainer>
-            {/* {popup && <PopUpContai />} */}
           </div>
         </div>
       )}

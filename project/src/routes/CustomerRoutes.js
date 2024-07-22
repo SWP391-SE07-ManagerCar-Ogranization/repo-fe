@@ -1,5 +1,4 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoutes";
 import UpdateProfile from "../component/userspage/UpdateProfile";
 import ProfilePage from "../component/userspage/ProfilePage";
@@ -11,17 +10,24 @@ import SearchGroupCar from "../component/carpool/searchGroupCar/SearchGroupCar";
 import Mytrip from "../component/carpool/Mytrip";
 import ListGroupCar from "../component/carpool/listGroupCar/ListGroupCar";
 import Success from "../layouts/payment/Success";
-import Booking from "../pages/BookingDriverInvoice/Car";
 import BookingTraditional from "../pages/BookingDriverInvoice/Car";
 import ViewTripBooking from "../pages/BookingDriverInvoice/ViewTripBooking";
-import CurrentPosition from "../pages/BookingDriverInvoice/CurrentPosition";
 import ChatRoom from "../component/ChatRoom"
 import Rooms from "../component/ChatRoom/Rooms";
 import ChatRoomPage from "../component/driver/ChatRoomPage";
+import FeedbackDriver from "../pages/Customer/FeedbackDriver";
 
 const CustomerRoutes = () => {
   return {
     children: [
+      {
+        path: "/feedback-driver/:driverId",
+        element: (
+          <ProtectedRoute roles={["CUSTOMER"]}>
+            <FeedbackDriver />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "/room",
         element: (

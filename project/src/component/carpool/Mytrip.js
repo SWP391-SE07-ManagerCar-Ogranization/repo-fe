@@ -278,7 +278,7 @@ function ListGroupCar() {
       setTransaction({
         transactionId: response.userTransaction.transactionId,
         amount: response.userTransaction.amount,
-        nameDriver: response.nameDriver,
+        nameDriver: response.accountDriver.name,
       });
       console.log(response);
     } catch (error) {

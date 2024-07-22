@@ -8,9 +8,8 @@ const options = [
   { label: "Motorbike", value: 1, icon: <RiMotorbikeFill /> },
   { label: "4 seater Car", value: 2, icon: <FaCar /> },
   { label: "6 Seater Car", value: 3, icon: <FaCar /> },
+  { label: "8 Seater Car", value: 4, icon: <FaCar /> },
 ];
-console.log("skdmklsmslkmxk", options[0].label);
-console.log("skdmklsmslkmxk", options[0].value);
 
 const CarType = () => {
   const [isOpen, setIsOpen] = useState(false);

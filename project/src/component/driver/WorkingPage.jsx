@@ -1,5 +1,5 @@
 import { Breadcrumb, Layout, Space, Switch, theme } from "antd";
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import Header from "../../layouts/Header";
 import { Content, Footer } from "antd/es/layout/layout";
@@ -8,12 +8,14 @@ import * as UserService from "../../service/UserService";
 import * as DriverService from "../../service/DriverService";
 import { toast } from "react-toastify";
 import { getCurrentLocation } from "../../service/PositionService";
-import { getUserTransactionByDriverInfo, getUserTransactionGroupCarByDriverInfo } from "../../service/TransactionService";
+import {
+  getUserTransactionByDriverInfo,
+  getUserTransactionGroupCarByDriverInfo,
+} from "../../service/TransactionService";
 import { Button } from "@material-tailwind/react";
-import { Card } from 'antd';
+import { Card } from "antd";
 
 const WorkingPage = () => {
-
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -25,7 +27,6 @@ const WorkingPage = () => {
     showCurrentLocation();
     fetchInfoUserTransaction();
     fetchTransactionGroupCar();
-    console.log(transactionGroupCar);
   }, []);
 
   const fetchStatusDriver = async () => {
@@ -58,7 +59,7 @@ const WorkingPage = () => {
       );
       toast.success("Update your working status !!");
     } catch (error) {
-      toast.error("Error updating working status");
+      toast.error("Need update information");
       setStatus(!checked);
     }
   };
@@ -67,7 +68,7 @@ const WorkingPage = () => {
     { invoice: {}, userTransaction: {}, nameCustomer: "" },
   ]);
   const [transactionGroupCar, setTransactionGroupCar] = useState([
-    { groupCar: {}, userTransactions: []},
+    { groupCar: {}, userTransactions: [] },
   ]);
   const fetchInfoUserTransaction = async () => {
     try {
@@ -80,9 +81,10 @@ const WorkingPage = () => {
   };
   const fetchTransactionGroupCar = async () => {
     try {
-      const response = await getUserTransactionGroupCarByDriverInfo(localStorage.getItem("token"));
+      const response = await getUserTransactionGroupCarByDriverInfo(
+        localStorage.getItem("token")
+      );
       setTransactionGroupCar(response);
-      console.log(response);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -120,36 +122,51 @@ const WorkingPage = () => {
 
   const handleConfirmInvoice = async (id) => {
     try {
-        const response = await DriverService.updateTripFinished(localStorage.getItem("token"), id);
-        if (response.toLowerCase().includes("Finished".toLowerCase())) {
-          fetchInfoUserTransaction();
-          toast.success(response);
-        }
-        else {
-          toast.error(response);
-        }
+      const response = await DriverService.updateTripFinished(
+        localStorage.getItem("token"),
+        id
+      );
+      if (response.toLowerCase().includes("Finished".toLowerCase())) {
+        fetchInfoUserTransaction();
+        toast.success(response);
+      } else {
+        toast.error(response);
+      }
     } catch (error) {
       toast.error("Error checkin invoice");
+    }
+  };
+  const handleIgnoreTrip = async (id) => {
+    try {
+      const response = await DriverService.ignoreTrip(
+        localStorage.getItem("token"),
+        id
+      );
+      fetchInfoUserTransaction();
+      toast.success(response);
+    } catch (error) {
+      toast.error("Error ignore trip");
     }
   };
 
   const handleConfirmGroupCar = async (id) => {
     try {
-        const response = await DriverService.updateGroupCarFinished(localStorage.getItem("token"), id);
-        if (response.toLowerCase().includes("Finished".toLowerCase())) {
-          fetchInfoUserTransaction();
-          toast.success(response);
-        }
-        else {
-          toast.error(response);
-        }
+      const response = await DriverService.updateGroupCarFinished(
+        localStorage.getItem("token"),
+        id
+      );
+      if (response.toLowerCase().includes("Finished".toLowerCase())) {
+        fetchInfoUserTransaction();
+        toast.success(response);
+      } else {
+        toast.error(response);
+      }
     } catch (error) {
       toast.error("Error checkin invoice");
     }
   };
 
   const contentList = (infoTransaction) => {
-    console.log(infoTransaction);
     return {
       Invoice: (
         <div className="flex justify-between">
@@ -163,13 +180,26 @@ const WorkingPage = () => {
               )?.toLocaleDateString("en-GB", optionFormatDateTime)}
             </p>
           </div>
-          <div>
-            <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => handleConfirmInvoice(infoTransaction.invoice.invoiceId)}>
+          <Space>
+            <Button
+              className="w-28 flex items-center gap-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() =>
+                handleConfirmInvoice(infoTransaction.invoice.invoiceId)
+              }
+            >
               <CheckOutlined />
               Confirm
             </Button>
-          </div>
+            <Button
+              className="flex items-center gap-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-28"
+              onClick={() =>
+                handleIgnoreTrip(infoTransaction.invoice.invoiceId)
+              }
+            >
+              <CloseOutlined />
+              Ignore
+            </Button>
+          </Space>
         </div>
       ),
       Transaction: (
@@ -200,7 +230,6 @@ const WorkingPage = () => {
     };
   };
   const contentListGroup = (infoTransaction) => {
-    console.log(infoTransaction);
     return {
       Group: (
         <div className="flex justify-between">
@@ -215,39 +244,42 @@ const WorkingPage = () => {
             </p>
           </div>
           <div>
-            <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => handleConfirmGroupCar(infoTransaction.groupCar.groupId)}>
+            <Button
+              className="flex items-center gap-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() =>
+                handleConfirmGroupCar(infoTransaction.groupCar.groupId)
+              }
+            >
               <CheckOutlined />
               Confirm
             </Button>
           </div>
         </div>
       ),
-      Transaction: (
-        infoTransaction.userTransactions.map((userTransactionDetail, index) => (
+      Transaction: infoTransaction.userTransactions.map(
+        (userTransactionDetail, index) => (
           <div key={index}>
             <p>
-            Amount:{" "}
-            {`${userTransactionDetail?.amount?.toLocaleString(
-              "en-US"
-            )}₫`}
-          </p>
-          <p>
-            Status:{" "}
-            {userTransactionDetail.transactionStatus ? (
-              <span className="text-green-500 font-semibold">Paid</span>
-            ) : (
-              <span className="text-red-500 font-semibold">Unpaid</span>
-            )}
-          </p>
-          <p>
-            Create At:{" "}
-            {new Date(
-              userTransactionDetail.createAt
-            ).toLocaleDateString("en-GB", optionFormatDateTime)}
-          </p>
+              Amount:{" "}
+              {`${userTransactionDetail?.amount?.toLocaleString("en-US")}₫`}
+            </p>
+            <p>
+              Status:{" "}
+              {userTransactionDetail.transactionStatus ? (
+                <span className="text-green-500 font-semibold">Paid</span>
+              ) : (
+                <span className="text-red-500 font-semibold">Unpaid</span>
+              )}
+            </p>
+            <p>
+              Create At:{" "}
+              {new Date(userTransactionDetail.createAt).toLocaleDateString(
+                "en-GB",
+                optionFormatDateTime
+              )}
+            </p>
           </div>
-        ))
+        )
       ),
     };
   };
@@ -296,38 +328,44 @@ const WorkingPage = () => {
                 onChange={handleStatusChange}
               />
             </Space>
-            {infoTransactions?.map((infoTransaction, index) => (
-              (!infoTransaction.invoice.finish) && (<div key={index}>
-                <Card
-                  style={{
-                    width: "100%",
-                  }}
-                  title={`Customer: ` + infoTransaction.nameCustomer}
-                  extra={<a href="#">Show Map</a>}
-                  tabList={tabList}
-                  activeTabKey={activeTabKey}
-                  onTabChange={onTabChange}
-                >
-                  {[contentList(infoTransaction)[activeTabKey]]}
-                </Card>
-              </div>)
-            ))}
-            {transactionGroupCar.map((infoTransaction, index) => (
-              (!infoTransaction.groupCar.finish) && (<div key={index}>
-                <Card
-                  style={{
-                    width: "100%",
-                  }}
-                  title="GROUP CAR"
-                  extra={<a href="#">Show Map</a>}
-                  tabList={tabListGroup}
-                  activeTabKey={activeTabKeyGroup}
-                  onTabChange={onTabGroupChange}
-                >
-                  {[contentListGroup(infoTransaction)[activeTabKeyGroup]]}
-                </Card>
-              </div>)
-            ))}
+            {infoTransactions?.map(
+              (infoTransaction, index) =>
+                !infoTransaction.invoice.finish && (
+                  <div key={index}>
+                    <Card
+                      style={{
+                        width: "100%",
+                      }}
+                      title={`Customer: ` + infoTransaction.nameCustomer}
+                      extra={<a href="#">Show Map</a>}
+                      tabList={tabList}
+                      activeTabKey={activeTabKey}
+                      onTabChange={onTabChange}
+                    >
+                      {[contentList(infoTransaction)[activeTabKey]]}
+                    </Card>
+                  </div>
+                )
+            )}
+            {transactionGroupCar.map(
+              (infoTransaction, index) =>
+                !infoTransaction.groupCar.finish && (
+                  <div key={index}>
+                    <Card
+                      style={{
+                        width: "100%",
+                      }}
+                      title="GROUP CAR"
+                      extra={<a href="#">Show Map</a>}
+                      tabList={tabListGroup}
+                      activeTabKey={activeTabKeyGroup}
+                      onTabChange={onTabGroupChange}
+                    >
+                      {[contentListGroup(infoTransaction)[activeTabKeyGroup]]}
+                    </Card>
+                  </div>
+                )
+            )}
           </div>
         </Content>
         <Footer>

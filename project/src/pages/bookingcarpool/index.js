@@ -137,13 +137,6 @@ function Bookingcarpool() {
       toast.error(error);
     }
     
-    // let request = await axios.post("http://localhost:8080/public/group-car/add", groupCar);
-    // groupCarData = request.data
-    // // kiet update path apis
-    // await axios.post(`http://localhost:8080/public/group-car/add-customer/${user.accountId}/${groupCarData.groupId}`)
-    // console.log("groupCarDataId >>> ", groupCarData.groupId)
-    // setGroupCar(groupCarData)
-
   };
   return (
     <div

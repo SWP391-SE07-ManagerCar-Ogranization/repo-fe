@@ -119,7 +119,6 @@ export default function Chatbox({ group, role }) {
     }
 
     const getAllPrivateMessagesByDriverAndCustomer_ = async (customerId, driverDetailId) => {
-        console.log("???????????????????????????/");
         try {
             const result = await getAllPrivateMessagesByDriverAndCustomer(customerId, driverDetailId)
             console.log(result);

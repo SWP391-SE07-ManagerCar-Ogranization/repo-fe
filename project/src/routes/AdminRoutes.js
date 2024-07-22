@@ -1,5 +1,4 @@
 import React from "react";
-import FeedbackDriver from "../pages/Customer/feedbackDriver";
 import Dashboard from "../layouts/dashboard";
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoutes";
@@ -8,14 +7,6 @@ import ProtectedRoute from "./ProtectedRoutes";
 const AdminRoutes = () => {
   return {
     children: [
-      {
-        path: "/feedback-driver",
-        element: (
-          <ProtectedRoute roles={["ADMIN"]}>
-            <FeedbackDriver />
-          </ProtectedRoute>
-        ),
-      },
      
       {
         path: "/dashboard/*",
