@@ -53,7 +53,7 @@ function ListGroupCar() {
   // start map
   const toggleMapVisibility = () => {
     setCheckMap(!checkMap);
-
+    setHideMapButtonVisible(false);
     if (checkMap) {
       // Xóa các marker và reset route khi đóng bản đồ
       resetMap();
@@ -92,6 +92,7 @@ function ListGroupCar() {
   const [position, setPosition] = useState([16.047079, 108.20623]); // initial map center
   const mapRef = useRef();
   const [distance, setDistance] = useState(0);
+  const [hideMapButtonVisible, setHideMapButtonVisible] = useState(false);
   const [resrep, setResrep] = useState({
     startPoint: startPoint,
     endPoint: endPoint,
@@ -168,6 +169,7 @@ function ListGroupCar() {
   }, [startPoint, endPoint]);
   const handleShowMap = (groupCar) => {
     setCheckMap(!checkMap);
+    setHideMapButtonVisible(false);
     geocodeAddress(groupCar.startPoint, (start) => {
       setStartPoint(start);
       geocodeAddress(groupCar.endPoint, (end) => {
@@ -175,7 +177,11 @@ function ListGroupCar() {
         setResrep({ ...resrep, startPoint: start.lat, endPoint: end.lat });
       });
     });
+    setTimeout(()=>{
+      setHideMapButtonVisible(true)
+    }, 5000)
   };
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -440,13 +446,13 @@ function ListGroupCar() {
 
         {checkMap && (
           <div className=" fixed flex flex-col inset-0 items-center justify-center z-50 mt-5 mb-5 bg-black bg-opacity-50 backdrop-blur">
-            <button
-              onClick={toggleMapVisibility}
-              className="mb-0 p-2 bg-blue-500 text-white rounded"
-            >
-              {checkMap ? "Hide Map" : "Show Map"}
-            </button>
-
+           <button
+                  onClick={toggleMapVisibility}
+                  className={`absolute top-4 right-4 p-2 ${hideMapButtonVisible ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-500 '} rounded z-50`}
+                  disabled={!hideMapButtonVisible}
+                >
+                  {checkMap ? "Hide Map" : "Show Map"}
+                </button>
             <MapContainer
               center={position}
               zoom={13}

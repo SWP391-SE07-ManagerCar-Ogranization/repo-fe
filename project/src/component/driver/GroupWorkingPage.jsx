@@ -74,22 +74,15 @@ const GroupWorkingPage = () => {
   const handleJoin = async (groupId) => {
     try {
         setLoadingJoin(true)
-        const response = await joinGroupCar(localStorage.getItem("token"),groupId);
+        await joinGroupCar(localStorage.getItem("token"),groupId);
         toast.success('Join successfully');
-      // Update quantity of the joined groupCar
-      // Set updated groupCars state
-      // handleSubmit();
-      // handlePayment();
-      // setGroupCars(updatedGroupCars);
       setReload(!reload);
+      setLoadingJoin(false);
     } catch (error) {
-      // Alert join fail
       toast.error('Join fail');
-    } finally{
-      setLoadingJoin(false)
+      setLoadingJoin(false);
     }
   };
-  // start show driverdetail
   const countDown = async (id) => {
     try {
       const result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`);
@@ -108,12 +101,10 @@ const GroupWorkingPage = () => {
     setCheckMap(!checkMap);
 
     if (checkMap) {
-      // Xóa các marker và reset route khi đóng bản đồ
       resetMap();
     }
   };
   const resetMap = () => {
-    // Reset các thông tin đường đi và điểm
     setStartPoint(null);
     setEndPoint(null);
     setPosition([16.047079, 108.20623]); // Reset vị trí ban đầu của bản đồ
