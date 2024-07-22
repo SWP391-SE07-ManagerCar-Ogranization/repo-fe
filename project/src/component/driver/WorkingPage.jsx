@@ -44,13 +44,14 @@ const WorkingPage = () => {
       setLocation({ lat: location[0], lon: location[1] });
       return location;
     } catch (error) {
-      toast.error("Error getting location:", error);
+      console.error("Error getting location:", error);
     }
   };
 
   const handleStatusChange = async (checked) => {
     setStatus(checked);
     try {
+      console.log("lat: " + location.lat);
       await DriverService.setWorkingStatus(
         localStorage.getItem("token"),
         checked,

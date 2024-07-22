@@ -164,6 +164,7 @@ const BookingTraditional = () => {
     const distance = (summary.totalDistance / 1000).toFixed(2) + " km";
     const time = (summary.totalTime / 60).toFixed(2) + " minutes";
     setRouteInfo({ Distance: distance, Time: time });
+    setRouteInfo({ Distance: distance, Time: time });
   };
 
   const handleBooking = (e) => {
@@ -324,19 +325,6 @@ const BookingTraditional = () => {
                         geocodeAddress(address, setStartPoint);
                       }}
                     />
-                    {suggestions.length > 0 && currentInput === "pickup" && (
-                      <ul className="absolute top-full left-0 mt-1 w-[600px] bg-white shadow-lg max-h-60 overflow-auto z-30 rounded-md">
-                        {suggestions.map((result) => (
-                          <li
-                            key={result.x + result.y}
-                            onClick={() => selectSuggestion(result)}
-                            className="p-2 hover:bg-gray-100 cursor-pointer"
-                          >
-                            {result.label}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
                   </div>
                 </div>
                 <div className="flex flex-col">
@@ -395,15 +383,12 @@ const BookingTraditional = () => {
           </div>
         </div>
 
-        <div className="h-[307px] mt-[400px] w-full flex flex-col bg-[#FF5F00] text-center tightest">
-          <span className="text-[72px] font-Roboto font-black pt-[1.5rem] pb-[1.5rem] leading-[72px] tightest">
+        <div className="h-[207px] mt-[400px] w-full flex flex-col bg-[#FF5F00] text-center tightest">
+          <span className="text-[60px] font-Roboto font-black pt-[0.5rem] pb-[1.5rem] leading-[72px] tightest">
             Don't rent a car.
           </span>
           <br />
-          <span className="text-[72px] font-Roboto font-black leading-[72px] tightest">
-            Rent THE Car.
-          </span>
-          <h1 className="font-Roboto font-bold text-3xl">
+          <h1 className="font-Roboto font-bold text-3xl ">
             Premium car rental at affordable rates. Worldwide.
           </h1>
         </div>
@@ -517,3 +502,4 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export default BookingTraditional;
+

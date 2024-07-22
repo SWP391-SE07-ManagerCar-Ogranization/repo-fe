@@ -12,6 +12,10 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import LeafletGeocoder from "../../component/layouts/Map/LeafletGeocoder";
 import LeafletRoutingMachine from "../../component/layouts/Map/LeafletRoutingMachine";
 import Swal from "sweetalert2";
+import {
+  addInvoiceAndTransaction,
+  paymentTransaction,
+} from "../../service/TransactionService";
 
 const UpdateMapCenter = ({ position }) => {
   const map = useMap();
@@ -105,39 +109,62 @@ function Driver() {
     });
   };
 
+  const [infoBooking, setInfoBooking] = useState();
+  const [popup, setPopup] = useState(false);
+
   const handleSummit = async (e) => {
     e.preventDefault();
+    setPopup(!popup);
     const newInvoice = {
-      endPoint: returnDriver,
       startPoint: pickUpDriver,
-      driverType: {
-        driverTypeId: 1,
-        driverTypeName: "motobile",
-      },
-      account: {
-        accountId: 7,
-      },
-      driverDetail: {
-        id: 4,
-        driverLicence: "LIC12345",
-        vehicleNumber: "MOTOR123",
-        rating: 4.5,
-        workingStatus: false,
-      },
-      amount: 20000,
-      paymentMethod: {
-        paymentMethodId: 1,
-        methodName: "Cash",
-      },
-      timeStart: theme.timeDriver,
+      endPoint: returnDriver,
+      timeStart: timeDriver,
     };
     try {
-      const data = await createInvoice(newInvoice);
-      return data;
+      const response = await addInvoiceAndTransaction(
+        newInvoice,
+        localStorage.getItem("token")
+      );
+      setInfoBooking(response);
+      console.log(response);
     } catch (error) {
       console.error(error);
     }
   };
+
+  // const handleSummit = async (e) => {
+  //   e.preventDefault();
+  //   const newInvoice = {
+  //     endPoint: returnDriver,
+  //     startPoint: pickUpDriver,
+  //     driverType: {
+  //       driverTypeId: 1,
+  //       driverTypeName: "motobile",
+  //     },
+  //     account: {
+  //       accountId: 7,
+  //     },
+  //     driverDetail: {
+  //       id: 4,
+  //       driverLicence: "LIC12345",
+  //       vehicleNumber: "MOTOR123",
+  //       rating: 4.5,
+  //       workingStatus: false,
+  //     },
+  //     amount: 20000,
+  //     paymentMethod: {
+  //       paymentMethodId: 1,
+  //       methodName: "Cash",
+  //     },
+  //     timeStart: theme.timeDriver,
+  //   };
+  //   try {
+  //     const data = await createInvoice(newInvoice);
+  //     return data;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <>

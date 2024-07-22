@@ -60,8 +60,6 @@
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0"
   },
-  
-  
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -90,5 +88,4 @@
     "sass": "^1.77.4",
     "tailwindcss": "^3.4.3"
   }
-  
 }
