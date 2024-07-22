@@ -8,17 +8,18 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import L from "leaflet";
+import { toast } from 'react-toastify';
 import "./App.css"
 import LeafletGeocoder from '../map/LeafletGeocoder';
 import LeafletRoutingMachine from '../map/LeafletRoutingMachine';
 import * as TransactionService from '../../../service/TransactionService'
 import * as PaymentService from '../../../service/PaymentService'
+import { handleSubmit, handlePayment } from '../carpoolFunction/carpoolFunction';
 import { Modal } from 'antd';
-import Header from "../../layouts/Header";
-
+import { formatDate } from '../carpoolFunction/formatDate';
 function ListGroupCar() {
   const [modal, contextHolder] = Modal.useModal();
-  const [driverDetail, setDriverDetail] = useState({ name: "Nguyen Duc Thinh", phone: "0703224025" });
+  const [driverDetail, setDriverDetail] = useState({});
   const [accounts, setAccounts] = useState([]);
   const [userObject, setUserObject] = useState({});
   const [groupCars, setGroupCars] = useState([]);
@@ -27,23 +28,20 @@ function ListGroupCar() {
   const [checkMembers, setCheckMembers] = useState(false);
   const [checkDriverDetail, setCheckDriverDetail] = useState(true);
   const { userString } = useParams();
-
+  const [hideMapButtonVisible, setHideMapButtonVisible] = useState(false)
+  const [loadingDriver, setLoadingDriver] = useState(false);
   // start show driverdetail
   const countDown = async (id) => {
-    let result;
     try {
-      result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`)
+      const result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`);
       setDriverDetail(result.data);
-      const instance = modal.success({
-
-        title: `Name : ${driverDetail.name}`,
-        content: `Phone : ${driverDetail.phone}`,
+      modal.success({
+        title: `Name : ${result.data.name}`,
+        content: `Phone : ${result.data.phone}`,
       });
     } catch (error) {
-      alert("The group does not have a driver yet");
+      toast.error("The group does not have a driver yet");
     }
-
-
   };
   // end show driverdetail
   // map start //
@@ -65,6 +63,7 @@ function ListGroupCar() {
   });
   const handleShowMap = (groupCar) => {
     setCheckMap(true)
+    setHideMapButtonVisible(false);
     geocodeAddress(groupCar.startPoint, (start) => {
       setStartPoint(start);
       geocodeAddress(groupCar.endPoint, (end) => {
@@ -73,6 +72,9 @@ function ListGroupCar() {
 
       });
     });
+    setTimeout(()=>{
+      setHideMapButtonVisible(true)
+    }, 5000)
   };
   useEffect(() => {
     if (startPoint && endPoint) {
@@ -81,7 +83,7 @@ function ListGroupCar() {
   }, [startPoint, endPoint]);
   const toggleMapVisibility = () => {
     setCheckMap(!checkMap);
-
+    setHideMapButtonVisible(false);
     if (checkMap) {
       // Xóa các marker và reset route khi đóng bản đồ
       resetMap();
@@ -107,7 +109,6 @@ function ListGroupCar() {
     map.setView(position);
     return null;
   };
-  let groupCarData = {};
   let DefaultIcon = L.icon({
     iconUrl: "/marker-icon.png",
     iconSize: [25, 41],
@@ -124,22 +125,6 @@ function ListGroupCar() {
     setRouteInfo(`Distance: ${distance}, time: ${time}`);
   };
 
-  const handleSubmit = async (e) => {
-    try {
-      await TransactionService.addTrans(resrep);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handlePayment = async (e) => {
-    try {
-      await PaymentService.charge(resrep.amount);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-
   const geocodeAddress = (address, callback) => {
     const geocoder = L.Control.Geocoder.nominatim();
     geocoder.geocode(address, (results) => {
@@ -153,9 +138,6 @@ function ListGroupCar() {
     });
   };
 
-  useEffect(() => {
-    console.log("routeInfo >>>> ", routeInfo)
-  }, [routeInfo])
   const handleSearchClick = () => {
     if (startPoint && endPoint) {
       // Đảm bảo rằng ref và bản đồ đã sẵn sàng
@@ -186,7 +168,7 @@ function ListGroupCar() {
         }).addTo(map);
       }
     } else {
-      alert("Please enter both start and end addresses.");
+      toast.error("Please enter both start and end addresses.");
     }
   };
   // Sử dụng useEffect để dọn dẹp khi component unmount
@@ -253,10 +235,7 @@ function ListGroupCar() {
     }
   };
  
-  const formatDate = (dateString) => {
-    const newDate = new Date(dateString);
-    return newDate.toLocaleString();
-  };
+ 
 
   const handleMembers = async (id) => {
     setCheckMembers(!checkMembers);
@@ -270,14 +249,11 @@ function ListGroupCar() {
       const groupCar = groupCars.find((car) => car.groupId === groupId);
 
       if (groupCar.customers.length >= groupCar.capacity) {
-        alert('Group is full');
+        toast.warning('Group is full');
         return;
       }
-
-      console.log(resrep);
-      // Replace 11 with userObject.accountId
-      await axios.post(`http://localhost:8080/public/addCustomer/${userObject.accountId}/${groupId}`);
-
+      await axios.post(`http://localhost:8080/public/group-car/add-customer/${userObject.accountId}/${groupId}`);
+      toast.success('Join successfully');
       // Alert join successful
       // Update quantity of the joined groupCar
       const updatedGroupCars = groupCars.map((car) => {
@@ -291,13 +267,13 @@ function ListGroupCar() {
       });
 
       // Set updated groupCars state
-      handleSubmit();
-      handlePayment();
+      handleSubmit(resrep);
+      handlePayment(resrep);
       setGroupCars(updatedGroupCars);
       setReload(!reload);
     } catch (error) {
       // Alert join fail
-      alert('Join fail');
+      toast.error('Join fail');
     }
   };
 
@@ -385,9 +361,13 @@ function ListGroupCar() {
         {/* start map */}
 
     {checkMap && <div className=" fixed flex flex-col inset-0 items-center justify-center z-50 mt-5 mb-5 bg-black bg-opacity-50 backdrop-blur">
-        <button onClick={toggleMapVisibility} className="mb-0 p-2 bg-blue-500 text-white rounded">
-          {checkMap ? "Hide Map" : "Show Map"}
-        </button>
+                <button
+                  onClick={toggleMapVisibility}
+                  className={`absolute top-4 right-4 p-2 ${hideMapButtonVisible ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-500 '} rounded z-50`}
+                  disabled={!hideMapButtonVisible}
+                >
+                  {checkMap ? "Hide Map" : "Show Map"}
+                </button>
 
         <MapContainer
           center={position}

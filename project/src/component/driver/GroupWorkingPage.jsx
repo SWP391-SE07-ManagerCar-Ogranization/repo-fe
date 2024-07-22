@@ -31,6 +31,7 @@ const GroupWorkingPage = () => {
   const [driverDetail, setDriverDetail] = useState({});
   const [checkDriverDetail, setCheckDriverDetail] = useState(true);
   const [checkGroupCar, setCheckGroupCar] = useState(false);
+  const [loadingJoin, setLoadingJoin] = useState(false); // set trạng thái join
   // info
   const fetchProfileInfo = async () => {
     try {
@@ -72,8 +73,8 @@ const GroupWorkingPage = () => {
   // join
   const handleJoin = async (groupId) => {
     try {
+        setLoadingJoin(true)
         const response = await joinGroupCar(localStorage.getItem("token"),groupId);
-        console.log(response);
         toast.success('Join successfully');
       // Update quantity of the joined groupCar
       // Set updated groupCars state
@@ -84,21 +85,21 @@ const GroupWorkingPage = () => {
     } catch (error) {
       // Alert join fail
       toast.error('Join fail');
+    } finally{
+      setLoadingJoin(false)
     }
   };
   // start show driverdetail
   const countDown = async (id) => {
-    let result;
     try {
-      result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`)
+      const result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`);
       setDriverDetail(result.data);
-      const instance = modal.success({
-
-        title: `Name : ${driverDetail.name}`,
-        content: `Phone : ${driverDetail.phone}`,
+      modal.success({
+        title: `Name : ${result.data.name}`,
+        content: `Phone : ${result.data.phone}`,
       });
     } catch (error) {
-      toast.error("Group not have a driver");
+       toast.error("The group does not have a driver yet");
     }
   };
   // map start //
@@ -339,8 +340,9 @@ const GroupWorkingPage = () => {
                         <button
                           className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-700 text-white"
                           onClick={() => handleJoin(groupCar.groupId)}
+                          disabled={loadingJoin}
                         >
-                          Join
+                          {loadingJoin ? 'Joining' : 'Join'}
                         </button>
                       </td>
                       <td className="px-6 py-4">

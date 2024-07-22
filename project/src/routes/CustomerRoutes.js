@@ -7,7 +7,7 @@ import WalletPage from "../component/userspage/WalletPage";
 import TradePointPage from "../component/userspage/TradePointPage";
 import SystemCharge from "../component/payment/SystemCharge";
 import SearchGroupCar from "../component/carpool/searchGroupCar/SearchGroupCar";
-import Mytrip from "../component/carpool/Mytrip";
+import Mytrip from "../component/carpool/mytrip/Mytrip"
 import ListGroupCar from "../component/carpool/listGroupCar/ListGroupCar";
 import Success from "../layouts/payment/Success";
 import BookingTraditional from "../pages/BookingDriverInvoice/Car";
