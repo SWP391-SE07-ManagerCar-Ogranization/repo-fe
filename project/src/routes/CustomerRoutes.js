@@ -21,7 +21,7 @@ const CustomerRoutes = () => {
   return {
     children: [
       {
-        path: "/feedback-driver/:driverId",
+        path: "/feedback-driver/:invoiceId",
         element: (
           <ProtectedRoute roles={["CUSTOMER"]}>
             <FeedbackDriver />

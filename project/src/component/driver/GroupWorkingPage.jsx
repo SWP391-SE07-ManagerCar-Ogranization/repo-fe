@@ -56,6 +56,7 @@ const GroupWorkingPage = () => {
       console.error('Failed to fetch group cars:', error);
     }
   };
+  
   useEffect(() => {
     loadGroupCar();
   }, []);
@@ -203,6 +204,8 @@ const GroupWorkingPage = () => {
       alert("Please enter both start and end addresses.");
     }
   };
+
+  
   // Sử dụng useEffect để dọn dẹp khi component unmount
   useEffect(() => {
     return () => {
@@ -295,7 +298,7 @@ const GroupWorkingPage = () => {
                     <th scope="col" className="px-6 py-3">Quantity</th>
                     <th scope="col" className="px-6 py-3">Join</th>
                     <th scope="col" className="px-6 py-3">Show Map</th>
-
+                    <th scope="col" className="px-6 py-3">Chat</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -344,6 +347,15 @@ const GroupWorkingPage = () => {
                           Show Map
                         </button>
                       </td>
+                      <td className="px-6 py-4">
+                        <button
+                          className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
+                          // onClick={() => handleShowChatRoom(groupCar)}
+                        >
+                          Chat
+                        </button>
+                      </td>
+
                     </tr>
 
                   ))}

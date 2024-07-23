@@ -8,7 +8,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import Driver from "../BookingDriverInvoice/Driver";
-import { useNavigate } from "react-router-dom";
 import { IoIosCloseCircle } from "react-icons/io";
 import LeafletGeocoder from "../../component/layouts/Map/LeafletGeocoder";
 import LeafletRoutingMachine from "../../component/layouts/Map/LeafletRoutingMachine";
@@ -17,8 +16,11 @@ import {
   paymentTransaction,
 } from "../../service/TransactionService";
 import Header from "../../layouts/Header";
-import { Popover, Button, Spin } from "antd";
+import { Button, Spin, Modal, Table } from "antd";
 import { toast } from "react-toastify";
+import { myCoupon } from "../../service/CouponService";
+import Swal from "sweetalert2";
+const { Column } = Table;
 
 const UpdateMapCenter = ({ position }) => {
   const map = useMap();
@@ -27,9 +29,6 @@ const UpdateMapCenter = ({ position }) => {
 };
 
 const BookingTraditional = () => {
-  const [suggestions, setSuggestions] = useState([]);
-  const [currentInput, setCurrentInput] = useState("");
-
   const [activePage, setActivePage] = useState("carsPage");
   const [pickup, setPickup] = useState("");
   const [end, setEnd] = useState("");
@@ -43,7 +42,6 @@ const BookingTraditional = () => {
   const [position, setPosition] = useState([16.047079, 108.20623]);
   const mapRef = useRef();
   const routingControlRef = useRef(null);
-  const navigate = useNavigate();
   const { theme } = useContext(CartContext);
 
   const [query, setQuery] = useState("");
@@ -52,14 +50,6 @@ const BookingTraditional = () => {
 
   const [popup, setPopup] = useState(false);
 
-  const selectSuggestion = (result) => {
-    setPickup((prevState) => ({
-      ...prevState,
-      [currentInput]: result.label,
-    }));
-    setSuggestions([]);
-  };
-
   const searchLocation = async () => {
     if (!query) return;
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
@@ -67,14 +57,11 @@ const BookingTraditional = () => {
     )}`;
 
     try {
-      console.log("Fetching location data from URL:", url);
       let response = await fetch(url);
       if (!response.ok) {
         toast.error("Can't Fetching location data");
       }
       let data = await response.json();
-      console.log("Received data:", data);
-
       if (data.length > 0) {
         var firstResult = data[0];
         var lat = firstResult.lat;
@@ -99,14 +86,12 @@ const BookingTraditional = () => {
     const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
       query
     )}&client_id=${accessKey}`;
-    console.log("Fetching images from:", url);
     try {
       let response = await fetch(url);
       if (!response.ok) {
         toast.error("cant not fetching image");
       }
       let data = await response.json();
-      console.log("Received image data:", data);
       setImages(data.results.map((result) => result.urls.small));
     } catch (error) {
       console.error("Error fetching images:", error);
@@ -191,9 +176,35 @@ const BookingTraditional = () => {
   };
 
   const [infoBooking, setInfoBooking] = useState();
-
-  const handleSubmit = async (e) => {
+  const confirmTrip = async (e) => {
     e.preventDefault();
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to confirm this trip`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, get it !",
+    });
+
+    if (result.isConfirmed) {
+      await handleSubmit();
+    }
+  };
+  const handleSubmit = async () => {
+    await Swal.fire({
+      title: "Got it!",
+      text: "Please waiting, We are looking for the nearest driver !",
+      icon: "success",
+      timer: 5000,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading(); // Hiển thị hiệu ứng loading
+      },
+    });
+    setIsEdit(!isEdit);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setPopup(!popup);
     const newInvoice = {
       startPoint: pickup,
@@ -207,6 +218,7 @@ const BookingTraditional = () => {
       );
       setInfoBooking(response);
       setIsLoading(false);
+      showModal();
     } catch (error) {
       console.error(error);
     }
@@ -219,17 +231,55 @@ const BookingTraditional = () => {
     try {
       const response = await paymentTransaction(
         infoBooking.userTransaction,
+        couponGet,
         localStorage.getItem("token")
       );
       toast.success(response);
-      console.log(infoBooking);
-      navigate(`/feedback-driver/${infoBooking?.accountDriver.accountId}`);
     } catch (error) {
       toast.error("Not enough balance to payment");
     }
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCouponShow, setIsCouponShow] = useState(false);
+  const showModal = () => {
+    fetchMyCoupons();
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const showCoupon = () => {
+    setIsCouponShow(!isCouponShow);
+  };
   const [isLoading, setIsLoading] = useState(false);
+  const [myCoupons, setMyCoupons] = useState([]);
+  const [couponGet, setCouponGet] = useState();
+
+  const fetchMyCoupons = async () => {
+    try {
+      const response = await myCoupon(localStorage.getItem("token"));
+      const sortedCoupons = response.sort(
+        (a, b) => b.couponValue - a.couponValue
+      );
+      setMyCoupons(sortedCoupons);
+    } catch (error) {
+      toast.error("Error fetching coupons:", error);
+    }
+  };
+
+  const handleGetCoupon = async (value) => {
+    try {
+      setCouponGet(value);
+      console.log(value);
+    } catch (error) {
+      toast.error("Can't get coupon !!");
+    }
+  };
+
   const content = (
     <Spin spinning={isLoading} tip="Loading...">
       <div className="flex flex-col items-center justify-center w-[400px] h-[200px]">
@@ -237,21 +287,42 @@ const BookingTraditional = () => {
           <table className="w-full h-full flex flex-row justify-center items-center">
             <thead>
               <tr className="flex flex-col">
-                <th className="py-4 px-5 bg-gray-200 text-left">
+                <th className="py-2 px-3 bg-gray-200 text-left">
                   Name Customer
                 </th>
-                <th className="py-4 px-5 bg-gray-200 text-left">Name Driver</th>
-                <th className="py-4 px-5 bg-gray-200 text-left">Amount</th>
+                <th className="py-2 px-3 bg-gray-200 text-left">Name Driver</th>
+                <th className="py-2 px-3 bg-gray-200 text-left">Amount</th>
+                <th className="py-2 px-3 bg-gray-200 text-left">Voucher</th>
               </tr>
             </thead>
             <tbody>
               <tr className="flex flex-col">
-                <td className="py-4 px-5 border-b">
+                <td className="py-2 px-3 border-b">
                   {infoBooking.nameCustomer}
                 </td>
-                <td className="py-4 px-5 border-b">{infoBooking.accountDriver.name}</td>
-                <td className="py-4 px-5 border-b">
-                  {infoBooking.userTransaction.amount}đ
+                <td className="py-2 px-3 border-b">
+                  {infoBooking.accountDriver.name}
+                </td>
+                <td className="py-2 px-3 border-b">
+                  {!couponGet ? (
+                    `${infoBooking.userTransaction.amount}đ`
+                  ) : (
+                    <>
+                      <s>{infoBooking.userTransaction.amount}đ</s>
+                      {" => "}
+                      <span>
+                        {infoBooking.userTransaction.amount *
+                          (1 - couponGet.couponValue)}
+                        đ
+                      </span>
+                    </>
+                  )}
+                </td>
+                <td className="py-2 px-3 border-b flex-between">
+                  <span>{couponGet?.couponName}</span>{" "}
+                  <Button onClick={showCoupon}>
+                    {isCouponShow ? "Hide" : "Select"}
+                  </Button>
                 </td>
               </tr>
             </tbody>
@@ -259,13 +330,40 @@ const BookingTraditional = () => {
         ) : (
           <div className="text-center">Loading ...</div>
         )}
-        <Button
-          className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
-          onClick={() => handlePayment()}
-        >
-          Payment
-        </Button>
       </div>
+      {isCouponShow && (
+        <Table
+          dataSource={myCoupons}
+          rowKey="couponId"
+          pagination={{ pageSize: 3 }}
+        >
+          <Column title="Name" dataIndex="couponName" key="couponName" />
+          <Column
+            title="Quantity"
+            dataIndex="couponQuantity"
+            key="couponQuantity"
+          />
+          <Column
+            title="Value"
+            dataIndex="couponValue"
+            key="couponValue"
+            render={(value) => `${value * 100}%`}
+          />
+          <Column
+            title="Action"
+            key="action"
+            render={(value) => (
+              <Button onClick={() => handleGetCoupon(value)}>Choose</Button>
+            )}
+          />
+        </Table>
+      )}
+      <Button
+        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
+        onClick={() => handlePayment()}
+      >
+        Payment
+      </Button>
     </Spin>
   );
 
@@ -430,19 +528,13 @@ const BookingTraditional = () => {
                   )}
                 </div>
                 <div>
-                  <Popover
-                    content={content}
-                    title="Payment Information"
-                    trigger="click"
+                  <button
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs md:text-sm lg:text-base font-medium bg-[#FF5F00] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 transition-all relative text-white border-2 z-10 border-white h-10 px-4 py-2 w-full shadow-3d"
+                    type="submit"
+                    onClick={(e) => confirmTrip(e)}
                   >
-                    <button
-                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs md:text-sm lg:text-base font-medium bg-[#FF5F00] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 transition-all relative text-white border-2 z-10 border-white h-10 px-4 py-2 w-full shadow-3d"
-                      type="submit"
-                      onClick={(e) => handleSubmit(e)}
-                    >
-                      Confirm
-                    </button>
-                  </Popover>
+                    Confirm
+                  </button>
                 </div>
               </div>
             </div>
@@ -489,6 +581,15 @@ const BookingTraditional = () => {
           </div>
         </div>
       )}
+
+      <Modal
+        title="Payment"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        {content}
+      </Modal>
     </>
   );
 };
@@ -502,4 +603,3 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export default BookingTraditional;
-

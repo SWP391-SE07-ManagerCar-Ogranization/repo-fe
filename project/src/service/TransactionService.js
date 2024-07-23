@@ -91,11 +91,11 @@ export const getUserTransactionByCustomerAndGroupCar = async (
   }
 };
 
-export const paymentTransaction = async (userTransaction, token) => {
+export const paymentTransaction = async (userTransaction, coupon, token) => {
   try {
     const temp = await axios.post(
       "http://localhost:8080/public/transaction/payment",
-      userTransaction,
+      {userTransaction, coupon},
       {
         headers: { Authorization: `Bearer ${token}` },
       }

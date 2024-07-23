@@ -45,14 +45,12 @@ const deleteFeedbackById = async (feedbackId) => {
 
 const addFeedback = async (feedback) => {
     try {
-        const res = await axios.post(`${API_BASE_URL}/add-new-feedback`, feedback)
-        console.log("RES- SUCCESS:", res);
-      
+        const res = await axios.post(`${API_BASE_URL}/add-new-feedback`, feedback, {
+            headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
+        });
         return res.data
     } catch (error) {
         console.error(error);
-        console.log("RES-ERROR: ",error);
-       
     }
 }
 

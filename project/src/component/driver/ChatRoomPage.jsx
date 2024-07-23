@@ -1,13 +1,8 @@
-import { Breadcrumb, Layout, Space, Switch, theme } from "antd";
+import { Breadcrumb, Layout, Space } from "antd";
 import React, { useEffect, useState, useContext } from "react";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import Header from "../../layouts/Header";
 import { Content, Footer } from "antd/es/layout/layout";
 import FooterWithSocialLinks from "../../layouts/Footer";
-import * as UserService from "../../service/UserService";
-import * as DriverService from "../../service/DriverService";
-import { toast } from "react-toastify";
-import { getCurrentLocation } from "../../service/PositionService";
 import ChatRoom from "../ChatRoom";
 import {
   getGroupsByDriverId
@@ -15,32 +10,19 @@ import {
 import {
   ChatRoomContext
 } from '../../context/ChatRoomContext'
+import { useLocation } from 'react-router-dom';
 
 const ChatRoomPage = () => {
+  const location = useLocation();
+  const newGroup = location.state?.newGroup;
   const {theme, setTheme} = useContext(ChatRoomContext)
-  const {userData, setRoleCheck, roleCheck} = theme
-//   const {
-//     token: { colorBgContainer, borderRadiusLG },
-//   } = theme.useToken();
+  const {userData} = theme
 const [groupCars, setGroupCars] = useState([])
 
-const newGroup = {
-    groupCarId: 2,
-    customerId: 3,
-    groupName: `GroupCar-1`,
-    startPoint: 'startPoint',
-    endPoint: 'endPoint',
-  }
-
-  // const privateChat = [
-  //   {
-      
-  //   }
-  // ]
 
   const getGroupsByDriverId_ = async () => {
     try {
-      const data = await getGroupsByDriverId(3)
+      const data = await getGroupsByDriverId(newGroup?.customerId)
       setGroupCars(data)
     } catch (error) {
       console.error(error);
@@ -85,8 +67,6 @@ const newGroup = {
             style={{
               padding: 24,
               minHeight: 1000,
-            //   background: colorBgContainer,
-            //   borderRadius: borderRadiusLG,
             }}
           >
             <Space>

@@ -5,8 +5,6 @@ const DateTimeDriver = () => {
   const currentTime = new Date();
   const formattedTime = currentTime.toISOString().slice(0, 16);
   const [timeDriver, setTimeDriver] = useState(formattedTime);
-  console.log("dateDriver:", timeDriver);
-  const { theme } = useContext(CartContext);
   const { setTheme } = useContext(CartContext);
   useEffect(() => {
     setTheme((prev) => ({ ...prev, timeDriver }));

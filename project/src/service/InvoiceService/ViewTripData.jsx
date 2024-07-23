@@ -10,7 +10,6 @@ export const getInvoiceByCustomer = async (token) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log(response);
     return Array.isArray(response.data) ? response.data : [];
   } catch (e) {
     console.log(e);

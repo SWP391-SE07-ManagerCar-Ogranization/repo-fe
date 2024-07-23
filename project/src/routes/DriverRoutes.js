@@ -4,6 +4,7 @@ import WorkingPage from "../component/driver/WorkingPage";
 import TrackRevenuePage from "../component/driver/TrackRevenuePage";
 import GroupWorkingPage from "../component/driver/GroupWorkingPage";
 import DriverProfilePage from "../component/driver/DriverProfilePage";
+import ChatRoomPage from "../component/driver/ChatRoomPage";
 
 const DriverRoutes = () => {
   return {
@@ -16,6 +17,14 @@ const DriverRoutes = () => {
           </ProtectedRoute>
         ),
       },
+      {
+       path: "/driverchat",
+       element: (
+         <ProtectedRoute roles={["DRIVER"]}>
+           <ChatRoomPage />
+         </ProtectedRoute>
+       )
+     },
       {
         path: "/group-working-page",
         element: (

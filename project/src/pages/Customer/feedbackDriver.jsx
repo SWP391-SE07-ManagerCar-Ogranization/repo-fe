@@ -13,7 +13,7 @@ import {
 import { addFeedback } from "../../service/FeedbackService";
 import { notification } from "antd";
 import { toast } from "react-toastify";
-import { getAccountById } from "../../service/AccountService";
+import {  getDriverByInvoiceId } from "../../service/AccountService";
 import { useNavigate, useParams } from "react-router-dom";
 
 function FeedbackDriver() {
@@ -24,7 +24,7 @@ function FeedbackDriver() {
   const [driver, setDriver] = useState({});
   const [hover, setHover] = useState(0);
   const [api, contextHolder] = notification.useNotification();
-  const {driverId} = useParams();
+  const {invoiceId} = useParams();
   const feedbacks = [
     "Excellent service",
     "punctual",
@@ -36,7 +36,7 @@ function FeedbackDriver() {
 
   const handleAddFeedback = async () => {
     const feedbackObject = {
-      driverDetailId: driverId,
+      driverDetailId: invoiceId,
       feedbackContent: feedback === "Other" ? "" : feedback,
       rating: rating,
     };
@@ -51,7 +51,7 @@ function FeedbackDriver() {
 
   const getDriverById_ = async () => {
     try {
-      const driver = await getAccountById(driverId);
+      const driver = await getDriverByInvoiceId(invoiceId);
       setDriver(driver);
     } catch (error) {
       
@@ -60,7 +60,6 @@ function FeedbackDriver() {
 
   useEffect(() => {
     getDriverById_();
-    console.log(driverId);
   }, []);
 
   return (

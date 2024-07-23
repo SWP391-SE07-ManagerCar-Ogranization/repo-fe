@@ -200,6 +200,16 @@ export default function StickyNavbar() {
             History Trip
           </a>
         </Typography>
+        <Typography
+          as="li"
+          variant="small"
+          color="blue-gray"
+          className="p-1 font-normal"
+        >
+          <Link to="/driver-profile" className="flex items-center">
+            Driver Profile
+          </Link>
+        </Typography>
       </ul>
     ) : (
       <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">

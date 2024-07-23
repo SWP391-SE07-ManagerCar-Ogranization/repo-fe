@@ -12,11 +12,9 @@ import Tooltip from "./Tooltip";
 import * as UserService from "../../service/UserService";
 import { Button, Input, Space } from "antd";
 import DropdownSearch from "./DropDownSearch";
-
-const { Search } = Input;
+import { Link } from "react-router-dom";
 
 function ViewTripBooking() {
-  const [userId, setUserId] = useState(null);
   const [listInvoice, setListInvoice] = useState([]);
   const [accountInfo, setAccountInfo] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,7 +54,6 @@ function ViewTripBooking() {
         const accountPromises = invoices.map(async (invoice) => {
           if (invoice.userTransaction?.transactionId) {
             const accountId = user.accountId;
-            console.log(" user.accountId 111111", accountId);
 
             if (accountId && !accountData[accountId]) {
               try {
@@ -192,7 +189,7 @@ function ViewTripBooking() {
                           className="text-center border-t h-[80px]"
                         >
                           <td className="py-2 cursor-pointer">
-                            {account?.name || "Kiet"}
+                            {account?.name}
                           </td>
                           <td className="py-2 cursor-pointer">
                             {formatDateTime(trip.timeStart)}
@@ -229,7 +226,7 @@ function ViewTripBooking() {
                           </td>
                           <td className="py-2 w-[100px] h-[40px] shadow-md transition duration-300 ease-in-out transform hover:scale-105">
                             <button className="bg-gray-600 text-white px-4 py-2 rounded">
-                              Feedback
+                              <Link to={`/feedback-driver/${trip.invoiceId}`}>Feedback</Link>
                             </button>
                           </td>
                         </tr>

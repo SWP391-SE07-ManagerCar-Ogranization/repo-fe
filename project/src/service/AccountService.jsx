@@ -22,7 +22,14 @@ const getAccountById = async (accountId) => {
         console.error(error);
     }
 }
-
+const getDriverByInvoiceId = async (invoiceId) => {
+    try {
+        const res = await axios.get(`${API_BASE_URL}/driver/invoice/${invoiceId}`)
+        return res.data
+    } catch (error) {
+        console.error(error);
+    }
+}
 const getAllDrivers = async () => {
     try {
 
@@ -65,6 +72,7 @@ export {
     getAccountById,
     updateStatus,
     getAllCustomers,
-    getAllDrivers
+    getAllDrivers,
+    getDriverByInvoiceId
 };
 
