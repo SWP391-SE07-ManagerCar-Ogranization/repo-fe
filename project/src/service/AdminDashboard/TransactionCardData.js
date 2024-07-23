@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const todayTransactionRevenue = async () => {
     try {
-        const  temp = await axios.get("http://3.25.115.186/public/statistic/getTodayTransactionRevenue");
+        const  temp = await axios.get("http://localhost:8080/public/statistic/getTodayTransactionRevenue");
         return temp.data;
     }catch (e) {
         console.log(e);
@@ -13,7 +13,7 @@ export const todayTransactionRevenue = async () => {
 
 export const thisMonthTransactionRevenue = async () => {
     try {
-        const  temp = await axios.get("http://3.25.115.186/public/statistic/getThisMonthTransactionRevenue");
+        const  temp = await axios.get("http://localhost:8080/public/statistic/getThisMonthTransactionRevenue");
         return temp.data;
     }catch (e) {
         console.log(e);
@@ -23,7 +23,7 @@ export const thisMonthTransactionRevenue = async () => {
 
 export const thisYearTransactionRevenue = async () => {
     try {
-        const  temp = await axios.get("http://3.25.115.186/public/statistic/getThisYearTransactionRevenue");
+        const  temp = await axios.get("http://localhost:8080/public/statistic/getThisYearTransactionRevenue");
         return temp.data;
     }catch (e) {
         console.log(e);

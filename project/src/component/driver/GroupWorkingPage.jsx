@@ -55,7 +55,7 @@ const GroupWorkingPage = () => {
   // info end
   const loadGroupCar = async () => {
     try {
-      const result = await axios.get(`http://3.25.115.186/public/groupCars`);
+      const result = await axios.get(`http://localhost:8080/public/groupCars`);
       setGroupCars(result.data);
     } catch (error) {
       console.error('Failed to fetch group cars:', error);
@@ -71,7 +71,7 @@ const GroupWorkingPage = () => {
   };
   const handleMembers = async (id) => {
     setCheckMembers(!checkMembers);
-    const listAccount = await axios.get(`http://3.25.115.186/public/getAccountsByGroupId/${id}`)
+    const listAccount = await axios.get(`http://localhost:8080/public/getAccountsByGroupId/${id}`)
     setAccounts(listAccount.data);
     // Ensure groupCarDetail is updated
 
@@ -91,7 +91,7 @@ const GroupWorkingPage = () => {
   };
   const countDown = async (id) => {
     try {
-      const result = await axios.get(`http://3.25.115.186/public/getAccountOfDriverDetailByGroupId/${id}`);
+      const result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`);
       setDriverDetail(result.data);
       modal.success({
         title: `Name : ${result.data.name}`,

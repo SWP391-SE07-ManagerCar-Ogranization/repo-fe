@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = 'http://3.25.115.186/public';
+const API_BASE_URL = 'http://localhost:8080/public';
 
 export const getAllCustomersByGroupCarId = async (id) => {
     try {
