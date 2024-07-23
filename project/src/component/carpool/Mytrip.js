@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef, useContext } from 'react'
+import React, { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { IoIosCloseCircle } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { Card } from "antd";
@@ -15,9 +15,12 @@ import LeafletRoutingMachine from "./map/LeafletRoutingMachine";
 import { Modal } from "antd";
 import { toast } from "react-toastify";
 import { getAccountDriverByGroupCarJoin } from "../../service/DriverService";
-import { getUserTransactionByCustomerAndGroupCar, paymentTransaction } from "../../service/TransactionService";
-import { ChatRoomContext } from "../../context/ChatRoomContext"
-import ChatRoom from '../ChatRoom';
+import {
+  getUserTransactionByCustomerAndGroupCar,
+  paymentTransaction,
+} from "../../service/TransactionService";
+import { ChatRoomContext } from "../../context/ChatRoomContext";
+import ChatRoom from "../ChatRoom";
 
 function ListGroupCar() {
   const [groupCars, setGroupCars] = useState([]);
@@ -36,19 +39,18 @@ function ListGroupCar() {
     amount: "",
     nameDriver: "",
   });
-  const {theme, setTheme} = useContext(ChatRoomContext)
-  const [displayChatRoom, setDisplayChatRoom] = useState(null)
+  const { theme, setTheme } = useContext(ChatRoomContext);
+  const [displayChatRoom, setDisplayChatRoom] = useState(null);
 
-  useEffect(()=> {
-      setTheme((prev)=> ({
-          ...prev,
-          groupCars,
-          setGroupCars,
-          displayChatRoom,
-          setDisplayChatRoom
-      })
-      )
-  }, [setTheme, groupCars, setGroupCars, displayChatRoom, setDisplayChatRoom])
+  useEffect(() => {
+    setTheme((prev) => ({
+      ...prev,
+      groupCars,
+      setGroupCars,
+      displayChatRoom,
+      setDisplayChatRoom,
+    }));
+  }, [setTheme, groupCars, setGroupCars, displayChatRoom, setDisplayChatRoom]);
 
   // start map
   const toggleMapVisibility = () => {
@@ -112,8 +114,6 @@ function ListGroupCar() {
     setRouteInfo(`Distance: ${distance}, time: ${time}`);
   };
 
-
-
   const geocodeAddress = (address, callback) => {
     const geocoder = L.Control.Geocoder.nominatim();
     geocoder.geocode(address, (results) => {
@@ -160,8 +160,8 @@ function ListGroupCar() {
     }
   };
   useEffect(() => {
-    console.log("routeInfo >>>> ", routeInfo)
-  }, [routeInfo])
+    console.log("routeInfo >>>> ", routeInfo);
+  }, [routeInfo]);
   useEffect(() => {
     if (startPoint && endPoint) {
       handleSearchClick();
@@ -177,19 +177,21 @@ function ListGroupCar() {
         setResrep({ ...resrep, startPoint: start.lat, endPoint: end.lat });
       });
     });
-    setTimeout(()=>{
-      setHideMapButtonVisible(true)
-    }, 5000)
+    setTimeout(() => {
+      setHideMapButtonVisible(true);
+    }, 5000);
   };
-
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleOk = async() => {
+  const handleOk = async () => {
     try {
-      const response = await paymentTransaction(transaction, localStorage.getItem('token'));
+      const response = await paymentTransaction(
+        transaction,
+        localStorage.getItem("token")
+      );
       toast.success(response);
       setIsModalOpen(false);
     } catch (error) {
@@ -220,8 +222,6 @@ function ListGroupCar() {
     } catch (error) {
       toast.error("The group does not have a driver yet");
     }
-
-
   };
   // end show driverdetail
   useEffect(() => {
@@ -235,7 +235,6 @@ function ListGroupCar() {
     }
   }, [groupIdDetail]);
 
-
   useEffect(() => {
     if (groupCarDetail.customers) {
       setCustomersDetail(groupCarDetail.customers);
@@ -245,7 +244,7 @@ function ListGroupCar() {
   const handleMembers = async (id) => {
     setCheckMembers(!checkMembers);
     const listAccount = await axios.get(
-      `http://localhost:8080/public/getAccountsByGroupId/${id}`
+      `http://3.24.136.21:8080/public/getAccountsByGroupId/${id}`
     );
     setAccounts(listAccount.data);
     // Ensure groupCarDetail is updated
@@ -255,7 +254,7 @@ function ListGroupCar() {
     try {
       // thay 11 bằng userId
       const result = await axios.get(
-        `http://localhost:8080/public/groupCarsByCustomerId/${userId}`
+        `http://3.24.136.21:8080/public/groupCarsByCustomerId/${userId}`
       );
       setGroupCars(result.data);
     } catch (error) {
@@ -266,7 +265,7 @@ function ListGroupCar() {
   const loadGroupCarByGroupId = async (groupId) => {
     try {
       const result = await axios.get(
-        `http://localhost:8080/public/groupCarById/${groupId}`
+        `http://3.24.136.21:8080/public/groupCarById/${groupId}`
       );
       setGroupCarDetail(result.data);
     } catch (error) {
@@ -294,12 +293,8 @@ function ListGroupCar() {
 
   //CHATROOM HANDLE
   const handleShowChatRoom = (group) => {
-    console.log("add chat room"+group);
-    const {
-      groupId,
-      startPoint,
-      endPoint,
-    } = group
+    console.log("add chat room" + group);
+    const { groupId, startPoint, endPoint } = group;
 
     const newGroup = {
       groupCarId: groupId,
@@ -308,12 +303,11 @@ function ListGroupCar() {
       groupName: `GroupCar-${groupId}`,
       startPoint: startPoint,
       endPoint: endPoint,
-
-    }
-    console.log("HHHHH",newGroup);
-    setCheckMap(false)
-    setDisplayChatRoom(newGroup)
-  }
+    };
+    console.log("HHHHH", newGroup);
+    setCheckMap(false);
+    setDisplayChatRoom(newGroup);
+  };
 
   //CHATROOM END
 
@@ -363,7 +357,9 @@ function ListGroupCar() {
               <th scope="col" className="px-6 py-3">
                 Payment
               </th>
-              <th scope="col" className="px-6 py-3">ChatBox</th>
+              <th scope="col" className="px-6 py-3">
+                ChatBox
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -396,14 +392,14 @@ function ListGroupCar() {
                 <td className="px-6 py-4">{groupCar.capacity}</td>
                 <td className="px-6 py-4">{groupCar.customers?.length ?? 0}</td>
                 <td className="px-6 py-4">
-                      <button
-                        className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
-                        onClick={()=>handleShowMap(groupCar)}
-                      >
-                        Show Map
-                      </button>
-                    </td>
-                    <td className="px-6 py-4">
+                  <button
+                    className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
+                    onClick={() => handleShowMap(groupCar)}
+                  >
+                    Show Map
+                  </button>
+                </td>
+                <td className="px-6 py-4">
                   {checkDriverDetail ? (
                     <button
                       className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
@@ -446,13 +442,17 @@ function ListGroupCar() {
 
         {checkMap && (
           <div className=" fixed flex flex-col inset-0 items-center justify-center z-50 mt-5 mb-5 bg-black bg-opacity-50 backdrop-blur">
-           <button
-                  onClick={toggleMapVisibility}
-                  className={`absolute top-4 right-4 p-2 ${hideMapButtonVisible ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-500 '} rounded z-50`}
-                  disabled={!hideMapButtonVisible}
-                >
-                  {checkMap ? "Hide Map" : "Show Map"}
-                </button>
+            <button
+              onClick={toggleMapVisibility}
+              className={`absolute top-4 right-4 p-2 ${
+                hideMapButtonVisible
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 text-gray-500 "
+              } rounded z-50`}
+              disabled={!hideMapButtonVisible}
+            >
+              {checkMap ? "Hide Map" : "Show Map"}
+            </button>
             <MapContainer
               center={position}
               zoom={13}
@@ -502,42 +502,57 @@ function ListGroupCar() {
         {/* end map */}
       </div>
 
-{displayChatRoom != null && <ChatRoom group={displayChatRoom} role="CUTOMER"/> }
-      
+      {displayChatRoom != null && (
+        <ChatRoom group={displayChatRoom} role="CUTOMER" />
+      )}
 
-      {checkMembers && <div className="fixed inset-0 flex items-center justify-center z-40 text-center">
-        <Card
-          title="Members"
-          extra={<IoIosCloseCircle onClick={() => setCheckMembers(!checkMembers)} style={{ width: 20, height: 20 }} />}
-          style={{ width: 500, maxWidth: '80%', height: 400 }}
-        >
-          <div className="overflow-auto h-full">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
-              <thead className="bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                  <th scope="col" className="px-6 py-3 w-1/3 text-center">Customer Id</th>
-                  <th scope="col" className="px-6 py-3 w-1/3 text-center">Customer Name</th>
-                  <th scope="col" className="px-6 py-3 w-1/3 text-center">Phone</th>
-                </tr>
-              </thead>
-              <tbody>
-                {accounts.map((account) =>
-                (
-                  <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td className="px-6 py-4 w-1/3 text-center">{account.accountId}</td>
-                    <td className="px-6 py-4 w-1/3 text-center">{account.name}</td>
-                    <td className="px-6 py-4 w-1/3 text-center">{account.phone}</td>
+      {checkMembers && (
+        <div className="fixed inset-0 flex items-center justify-center z-40 text-center">
+          <Card
+            title="Members"
+            extra={
+              <IoIosCloseCircle
+                onClick={() => setCheckMembers(!checkMembers)}
+                style={{ width: 20, height: 20 }}
+              />
+            }
+            style={{ width: 500, maxWidth: "80%", height: 400 }}
+          >
+            <div className="overflow-auto h-full">
+              <table className="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
+                <thead className="bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 w-1/3 text-center">
+                      Customer Id
+                    </th>
+                    <th scope="col" className="px-6 py-3 w-1/3 text-center">
+                      Customer Name
+                    </th>
+                    <th scope="col" className="px-6 py-3 w-1/3 text-center">
+                      Phone
+                    </th>
                   </tr>
-                )
-
-
-                )}
-
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      </div>}
+                </thead>
+                <tbody>
+                  {accounts.map((account) => (
+                    <tr className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600">
+                      <td className="px-6 py-4 w-1/3 text-center">
+                        {account.accountId}
+                      </td>
+                      <td className="px-6 py-4 w-1/3 text-center">
+                        {account.name}
+                      </td>
+                      <td className="px-6 py-4 w-1/3 text-center">
+                        {account.phone}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+      )}
       {/* start card driver */}
       {checkDriverDetail && contextHolder}
     </div>
