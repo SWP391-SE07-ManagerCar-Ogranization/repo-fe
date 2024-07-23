@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const REST_API_BASE_URL = "http://localhost:8080/public";
+const REST_API_BASE_URL = "http://3.24.136.21/public";
 
 export const getInvoiceByCustomer = async (token) => {
   try {

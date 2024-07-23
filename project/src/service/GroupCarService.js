@@ -1,9 +1,9 @@
 import axios from "axios";
-const API_BASE_URL = 'http://localhost:8080/public';
+const API_BASE_URL = 'http://3.24.136.21/public';
 
 export const addGroupCar = async (token, groupCar) => {
     try {
-        const temp = await axios.post("http://localhost:8080/public/group-car/add", groupCar, {
+        const temp = await axios.post("http://3.24.136.21/public/group-car/add", groupCar, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return temp.data;

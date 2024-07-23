@@ -210,7 +210,7 @@ function ListGroupCar() {
   };
   const countDown = async (id) => {
     try {
-      const result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`);
+      const result = await axios.get(`http://3.24.136.21/public/getAccountOfDriverDetailByGroupId/${id}`);
       setDriverDetail(result.data);
       modal.success({
         title: `Name : ${result.data.name}`,
@@ -242,7 +242,7 @@ function ListGroupCar() {
   const handleMembers = async (id) => {
     setCheckMembers(!checkMembers);
     const listAccount = await axios.get(
-      `http://localhost:8080/public/getAccountsByGroupId/${id}`
+      `http://3.24.136.21/public/getAccountsByGroupId/${id}`
     );
     setAccounts(listAccount.data);
     // Ensure groupCarDetail is updated
@@ -251,7 +251,7 @@ function ListGroupCar() {
   const loadGroupCar = async () => {
     try {
       const result = await axios.get(
-        `http://localhost:8080/public/groupCarsByCustomerId/${userId}`
+        `http://3.24.136.21/public/groupCarsByCustomerId/${userId}`
       );
       
       const groupCarsWithDriverDetail = await Promise.all(result.data.map(async (groupCar) => {
@@ -272,7 +272,7 @@ function ListGroupCar() {
   const loadGroupCarByGroupId = async (groupId) => {
     try {
       const result = await axios.get(
-        `http://localhost:8080/public/groupCarById/${groupId}`
+        `http://3.24.136.21/public/groupCarById/${groupId}`
       );
       setGroupCarDetail(result.data);
     } catch (error) {

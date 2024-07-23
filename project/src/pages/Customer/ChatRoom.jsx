@@ -27,7 +27,7 @@ const ChatRoom = () => {
     }
 
     const registerUser = () => {
-        let Sock = new SockJS('http://localhost:8080/chat')
+        let Sock = new SockJS('http://3.24.136.21/chat')
         // stompClient = (Sock);
         stompClient.connect({}, onConected, onError)
 
