@@ -20,8 +20,14 @@ import * as TransactionService from '../../service/TransactionService'
 import * as PaymentService from '../../service/PaymentService'
 import { toast } from "react-toastify";
 import { joinGroupCar } from "../../service/DriverService";
+import {useNavigate} from "react-router-dom"
+import {
+  getGroupsByDriverId
+} from '../../service/GroupCarService'
 
 const GroupWorkingPage = () => {
+  const navigate = useNavigate();
+  const [groupCarsCheck, setGroupCarsCheck] = useState([]);
   // load groupCar start
   const [user, setUser] = useState({});
   const [modal, contextHolder] = Modal.useModal();
@@ -37,7 +43,6 @@ const GroupWorkingPage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await UserService.getYourProfile(token);
-      console.log(response);
       setUser(response.account);
     } catch (error) {
       console.error("Error fetching profile information:", error);
@@ -169,7 +174,6 @@ const GroupWorkingPage = () => {
   };
 
   useEffect(() => {
-    console.log("routeInfo >>>> ", routeInfo)
   }, [routeInfo])
   const handleSearchClick = () => {
     if (startPoint && endPoint) {
@@ -231,12 +235,51 @@ const GroupWorkingPage = () => {
       handleSearchClick();
     }
   }, [startPoint, endPoint]);
-  // map end //
-  // load groupCar end
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const getGroupsByDriverId_ = async () => {
+    try {
+      const data = await getGroupsByDriverId(user?.accountId)
+      setGroupCarsCheck(data)
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(()=>{
+    getGroupsByDriverId_();
+  },[])
+  
+  //CHATROOM HANDLE
+  const handleShowChatRoom = (group) => {
+    const {
+      groupId,
+      startPoint,
+      endPoint,
+    } = group
+    const newGroup = {
+      groupCarId: groupId,
+      customerId: user?.accountId,
+      groupName: `GroupCar-${groupId}`,
+      startPoint: startPoint,
+      endPoint: endPoint,
+
+    }
+
+
+    const check = groupCarsCheck?.some(element => element.id === group?.groupId);
+    // if (check) {
+    //   toast.error('You are not in the group yet')
+    //   return
+    // }
+    navigate('/driverchat',{state: {newGroup}})
+    
+  }
+
 
   return (
     <>
@@ -350,7 +393,7 @@ const GroupWorkingPage = () => {
                       <td className="px-6 py-4">
                         <button
                           className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-pink-500 text-white"
-                          // onClick={() => handleShowChatRoom(groupCar)}
+                          onClick={() => handleShowChatRoom(groupCar)}
                         >
                           Chat
                         </button>

@@ -363,7 +363,7 @@ function ListGroupCar() {
               <th scope="col" className="px-6 py-3">
                 Payment
               </th>
-              <th scope="col" className="px-6 py-3">Detail</th>
+              <th scope="col" className="px-6 py-3">ChatBox</th>
             </tr>
           </thead>
           <tbody>
@@ -435,7 +435,7 @@ function ListGroupCar() {
                     className="flex flex-row w-[180px] font-Roboto font-bold rounded-md justify-center items-center h-[52px] bg-blue-gray-500 text-white"
                     onClick={() => handleShowChatRoom(groupCar)}
                   >
-                    Detail
+                    ChatBox
                   </button>
                 </td>
               </tr>

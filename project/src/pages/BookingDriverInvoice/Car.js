@@ -227,6 +227,25 @@ const BookingTraditional = () => {
     setEnd(e.target.value);
     setQuery(e.target.value);
   };
+  const confirmPayment = async (e) => {
+    e.preventDefault();
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to pay this trip`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, get it !",
+    });
+
+    if (result.isConfirmed) {
+      await handlePayment();
+      Swal.fire('Got it!', 'Payment Successfully !.', 'success');
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      setIsModalOpen(false);
+    }
+  };
   const handlePayment = async () => {
     try {
       const response = await paymentTransaction(
@@ -246,8 +265,8 @@ const BookingTraditional = () => {
     fetchMyCoupons();
     setIsModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleOk = (e) => {
+    confirmPayment(e);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -358,12 +377,6 @@ const BookingTraditional = () => {
           />
         </Table>
       )}
-      <Button
-        className="text-[#FFFFFF] bg-[#FF5F00] mt-2"
-        onClick={() => handlePayment()}
-      >
-        Payment
-      </Button>
     </Spin>
   );
 
@@ -587,6 +600,18 @@ const BookingTraditional = () => {
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            Return
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleOk}
+          >
+            Payment
+          </Button>,
+        ]}
       >
         {content}
       </Modal>

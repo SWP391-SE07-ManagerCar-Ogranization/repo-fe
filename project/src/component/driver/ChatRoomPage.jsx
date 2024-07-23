@@ -1,4 +1,4 @@
-import { Breadcrumb, Layout, Space } from "antd";
+import { Breadcrumb, Layout, Space, Switch, theme } from "antd";
 import React, { useEffect, useState, useContext } from "react";
 import Header from "../../layouts/Header";
 import { Content, Footer } from "antd/es/layout/layout";
@@ -10,15 +10,15 @@ import {
 import {
   ChatRoomContext
 } from '../../context/ChatRoomContext'
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ChatRoomPage = () => {
   const location = useLocation();
+  const navigate = useNavigate()
   const newGroup = location.state?.newGroup;
   const {theme, setTheme} = useContext(ChatRoomContext)
-  const {userData} = theme
+  const {userData, setRoleCheck, roleCheck} = theme
 const [groupCars, setGroupCars] = useState([])
-
 
   const getGroupsByDriverId_ = async () => {
     try {
@@ -67,6 +67,8 @@ const [groupCars, setGroupCars] = useState([])
             style={{
               padding: 24,
               minHeight: 1000,
+            //   background: colorBgContainer,
+            //   borderRadius: borderRadiusLG,
             }}
           >
             <Space>
