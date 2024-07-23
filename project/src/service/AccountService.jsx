@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = 'http://localhost:8080/public';
+const API_BASE_URL = 'http://3.25.115.186/public';
 
 
 const getAllCustomers = async () => {

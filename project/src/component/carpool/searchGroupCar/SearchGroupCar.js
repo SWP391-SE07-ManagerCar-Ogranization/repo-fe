@@ -31,7 +31,7 @@ function SearchGroupCar () {
   const countDown =async (id) => {
     let result;
     try {
-      result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`)
+      result = await axios.get(`http://3.25.115.186/public/getAccountOfDriverDetailByGroupId/${id}`)
       setDriverDetail(result.data);
       const instance = modal.success({  
       
@@ -196,7 +196,7 @@ function SearchGroupCar () {
         groupCarAndUserObject = JSON.parse(decodeURIComponent(groupCarAndUserString));
         const { groupCar, user  } = groupCarAndUserObject;
         // addOwnerTrip(user, groupCarData
-        // axios.post(`http://localhost:8080/public/addCustomer/${user.id}/${groupCarData.groupId}`);
+        // axios.post(`http://3.25.115.186/public/addCustomer/${user.id}/${groupCarData.groupId}`);
         console.log("groupCardata >>> ", groupCar)
         console.log("userId >>>> ", user.accountId)
         setGroupCarObject(groupCar)
@@ -208,12 +208,12 @@ function SearchGroupCar () {
     }
   }, [groupCarAndUserString]);
   const loadGroupCar = async ()=>{
-      const result = await axios.get(`http://localhost:8080/public/groupCars`);
+      const result = await axios.get(`http://3.25.115.186/public/groupCars`);
       setGroupCars(result.data);
   }
   const handleJoin = async (groupId) => {
     try {
-      await axios.post(`http://localhost:8080/public/addCustomer/${userObject.id}/${groupId}`);
+      await axios.post(`http://3.25.115.186/public/addCustomer/${userObject.id}/${groupId}`);
       // Alert join successful
       alert('Join successfully');
       // Update quantity of the joined groupCar
@@ -239,7 +239,7 @@ function SearchGroupCar () {
   };
   const handleMembers = async (id) => {
     setCheckMembers(!checkMembers);
-    const listAccount = await axios.get(`http://localhost:8080/public/getAccountsByGroupId/${id}`)
+    const listAccount = await axios.get(`http://3.25.115.186/public/getAccountsByGroupId/${id}`)
     setAccounts(listAccount.data);
      // Ensure groupCarDetail is updated
   };

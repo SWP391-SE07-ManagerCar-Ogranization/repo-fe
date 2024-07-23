@@ -108,7 +108,7 @@ export default function Chatbox({ group, role }) {
     const getDriverDetailDataByGroupId = async () => {
 
         try {
-            const result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${userData.groupCarId}`)
+            const result = await axios.get(`http://3.25.115.186/public/getAccountOfDriverDetailByGroupId/${userData.groupCarId}`)
             console.log("RESULT:>>", result.data);
             setDriverDetail(result.data);
 
@@ -191,7 +191,7 @@ export default function Chatbox({ group, role }) {
     //ws
 
     const registerUser = () => {
-        let Sock = new SockJS("http://localhost:8080/public/ws")
+        let Sock = new SockJS("http://3.25.115.186/public/ws")
         stompClient = over(Sock)
         stompClient.connect({}, onConnected, onError)
     }

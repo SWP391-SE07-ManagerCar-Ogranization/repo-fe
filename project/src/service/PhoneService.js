@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const sendSMS = async (toMobileNo) => {
     try {
-        const  temp = await axios.post(`http://localhost:8080/public/sendSms/${toMobileNo}`);
+        const  temp = await axios.post(`http://3.25.115.186/public/sendSms/${toMobileNo}`);
         return temp.data;
     }catch (e) {
         console.log(e);
@@ -12,7 +12,7 @@ export const sendSMS = async (toMobileNo) => {
 
 export const verifyOTP = async (phone, otp) =>{
     try {
-        const  temp = await axios.post("http://localhost:8080/public/validateOtp", {phone, otp});
+        const  temp = await axios.post("http://3.25.115.186/public/validateOtp", {phone, otp});
         return temp.data;
     } catch (e) {
         console.log(e);

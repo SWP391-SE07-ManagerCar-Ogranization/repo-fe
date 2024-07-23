@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const couponView = async () => {
     try {
-        const temp = await axios.get("http://localhost:8080/public/coupon/view");
+        const temp = await axios.get("http://3.25.115.186/public/coupon/view");
         return temp.data;
     } catch (e) {
         console.log(e);
@@ -12,7 +12,7 @@ export const couponView = async () => {
 
 export const freeCouponView = async () => {
     try {
-        const temp = await axios.get("http://localhost:8080/public/customer/coupon/free-coupon-view");
+        const temp = await axios.get("http://3.25.115.186/public/customer/coupon/free-coupon-view");
         return temp.data;
     } catch (e) {
         console.log(e);
@@ -22,7 +22,7 @@ export const freeCouponView = async () => {
 
 export const tradeCouponView = async () => {
     try {
-        const temp = await axios.get("http://localhost:8080/public/customer/coupon/trade-coupon-view");
+        const temp = await axios.get("http://3.25.115.186/public/customer/coupon/trade-coupon-view");
         return temp.data;
     } catch (e) {
         console.log(e);
@@ -32,7 +32,7 @@ export const tradeCouponView = async () => {
 
 export const addCoupon = async (coupon) => {
     try {
-        const temp = await axios.post("http://localhost:8080/public/coupon/add", coupon);
+        const temp = await axios.post("http://3.25.115.186/public/coupon/add", coupon);
         return temp.data;
     } catch (e) {
         console.log(e);
@@ -42,7 +42,7 @@ export const addCoupon = async (coupon) => {
 
 export const deleteCoupon = async (couponId) => {
     try {
-        const temp = await axios.delete(`http://localhost:8080/public/coupon/delete/${couponId}`);
+        const temp = await axios.delete(`http://3.25.115.186/public/coupon/delete/${couponId}`);
         return temp.data;
     } catch (e) {
         console.log(e);
@@ -52,7 +52,7 @@ export const deleteCoupon = async (couponId) => {
 
 export const updateCoupon = async (coupon) => {
     try {
-        const temp = await axios.put("http://localhost:8080/public/coupon/edit", coupon);
+        const temp = await axios.put("http://3.25.115.186/public/coupon/edit", coupon);
         return temp.data;
     } catch (e) {
         console.log(e);
@@ -62,7 +62,7 @@ export const updateCoupon = async (coupon) => {
 
 export const getCoupon = async (coupon , token) => {
     try {
-        const temp = await axios.post("http://localhost:8080/public/customer/coupon/get",coupon, {
+        const temp = await axios.post("http://3.25.115.186/public/customer/coupon/get",coupon, {
             headers: {Authorization: `Bearer ${token}`}
         });
         console.log(temp);
@@ -75,7 +75,7 @@ export const getCoupon = async (coupon , token) => {
 
 export const myCoupon = async (token) => {
     try {
-        const temp = await axios.get("http://localhost:8080/public/customer/coupon/myCoupon", {
+        const temp = await axios.get("http://3.25.115.186/public/customer/coupon/myCoupon", {
             headers: {Authorization: `Bearer ${token}`}
         });
         return temp.data;
@@ -87,7 +87,7 @@ export const myCoupon = async (token) => {
 
 export const getTakenCoupon = async (token) => {
     try {
-        const temp = await axios.get("http://localhost:8080/public/customer/coupon/takenCoupon", {
+        const temp = await axios.get("http://3.25.115.186/public/customer/coupon/takenCoupon", {
             headers: {Authorization: `Bearer ${token}`}
         });
         return temp.data;
@@ -99,7 +99,7 @@ export const getTakenCoupon = async (token) => {
 
 export const getMyTradeCoupon = async (token) => {
     try {
-        const temp = await axios.get("http://localhost:8080/public/customer/coupon/trade-history", {
+        const temp = await axios.get("http://3.25.115.186/public/customer/coupon/trade-history", {
             headers: {Authorization: `Bearer ${token}`}
         });
         return temp.data;

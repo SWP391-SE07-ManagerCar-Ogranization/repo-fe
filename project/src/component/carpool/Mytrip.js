@@ -245,7 +245,7 @@ function ListGroupCar() {
   const handleMembers = async (id) => {
     setCheckMembers(!checkMembers);
     const listAccount = await axios.get(
-      `http://localhost:8080/public/getAccountsByGroupId/${id}`
+      `http://3.25.115.186/public/getAccountsByGroupId/${id}`
     );
     setAccounts(listAccount.data);
     // Ensure groupCarDetail is updated
@@ -255,7 +255,7 @@ function ListGroupCar() {
     try {
       // thay 11 bằng userId
       const result = await axios.get(
-        `http://localhost:8080/public/groupCarsByCustomerId/${userId}`
+        `http://3.25.115.186/public/groupCarsByCustomerId/${userId}`
       );
       setGroupCars(result.data);
     } catch (error) {
@@ -266,7 +266,7 @@ function ListGroupCar() {
   const loadGroupCarByGroupId = async (groupId) => {
     try {
       const result = await axios.get(
-        `http://localhost:8080/public/groupCarById/${groupId}`
+        `http://3.25.115.186/public/groupCarById/${groupId}`
       );
       setGroupCarDetail(result.data);
     } catch (error) {

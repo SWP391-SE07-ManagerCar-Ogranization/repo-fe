@@ -33,7 +33,7 @@ function ListGroupCar() {
   // start show driverdetail
   const countDown = async (id) => {
     try {
-      const result = await axios.get(`http://localhost:8080/public/getAccountOfDriverDetailByGroupId/${id}`);
+      const result = await axios.get(`http://3.25.115.186/public/getAccountOfDriverDetailByGroupId/${id}`);
       setDriverDetail(result.data);
       modal.success({
         title: `Name : ${result.data.name}`,
@@ -189,7 +189,7 @@ function ListGroupCar() {
         let userParse = JSON.parse(decodeURIComponent(userString));
 
         // addOwnerTrip(user, groupCarData)
-        // axios.post(`http://localhost:8080/public/addCustomer/${user.id}/${groupCarData.groupId}`);
+        // axios.post(`http://3.25.115.186/public/addCustomer/${user.id}/${groupCarData.groupId}`);
 
         console.log("userId >>>> ", userParse.accountId)
         setResrep({ ...resrep, accountId: userParse.accountId });
@@ -202,7 +202,7 @@ function ListGroupCar() {
   }, [userString]);
   // useEffect(()=>{
   //   try{
-  //     axios.post(`http://localhost:8080/public/addCustomer/${userObject.id}/${groupCarDetail.groupId}`);
+  //     axios.post(`http://3.25.115.186/public/addCustomer/${userObject.id}/${groupCarDetail.groupId}`);
   //     console.log("success add owner")
   //   }catch(error){
   //     console.log("fail add owner >>> ", error)
@@ -220,7 +220,7 @@ function ListGroupCar() {
 
   const loadGroupCar = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/public/groupCars`);
+      const result = await axios.get(`http://3.25.115.186/public/groupCars`);
       setGroupCars(result.data);
     } catch (error) {
       console.error('Failed to fetch group cars:', error);
@@ -228,7 +228,7 @@ function ListGroupCar() {
   };
   const loadGroupCarByGroupId = async (groupId) => {
     try {
-      const result = await axios.get(`http://localhost:8080/public/groupCarById/${groupId}`);
+      const result = await axios.get(`http://3.25.115.186/public/groupCarById/${groupId}`);
       setGroupCarDetail(result.data);
     } catch (error) {
       console.error(`Failed to fetch group car with groupId ${groupId}:`, error);
@@ -239,7 +239,7 @@ function ListGroupCar() {
 
   const handleMembers = async (id) => {
     setCheckMembers(!checkMembers);
-    const listAccount = await axios.get(`http://localhost:8080/public/getAccountsByGroupId/${id}`)
+    const listAccount = await axios.get(`http://3.25.115.186/public/getAccountsByGroupId/${id}`)
     setAccounts(listAccount.data);
     // Ensure groupCarDetail is updated
   };
@@ -252,7 +252,7 @@ function ListGroupCar() {
         toast.warning('Group is full');
         return;
       }
-      await axios.post(`http://localhost:8080/public/group-car/add-customer/${userObject.accountId}/${groupId}`);
+      await axios.post(`http://3.25.115.186/public/group-car/add-customer/${userObject.accountId}/${groupId}`);
       toast.success('Join successfully');
       // Alert join successful
       // Update quantity of the joined groupCar
